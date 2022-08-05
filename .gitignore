@@ -13,3 +13,15 @@
 
 # Dependency directories (remove the comment below to include it)
 # vendor/
+
+dist/*
+bin/*
+.vscode/*
+.envrc
+reports.csv
+.DS_Store
+evolution.csv
+pricy.html
+credentials.json
+token.json
+coverage.txt
