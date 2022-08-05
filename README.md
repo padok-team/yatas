@@ -42,7 +42,7 @@ Flags:
 ### AWS
 
 - AWS_S3_001  S3 Encryption
-- AWS_S3_002  S3 One Zone Only
+- AWS_S3_002  S3 Account Zone Only
 - AWS_VOL_001 EC2 Volumes Encryption
 - AWS_RDS_001 RDS Encryption
 - AWS_RDS_002 RDS Backup
@@ -51,4 +51,5 @@ Flags:
 - AWS_VPC_001 VPC CIDR
 - AWS_VPC_002 VPC Flow Logs
 - AWS_VPC_003 VPC Gateway
+- AWS_VPC_004 VPC Only One
 

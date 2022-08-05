@@ -124,11 +124,34 @@ func checkIfOnlyOneGateway(s *session.Session, vpcs []*ec2.Vpc, c *[]types.Check
 	*c = append(*c, check)
 }
 
+func checkIfOnlyOneVPC(s *session.Session, vpcs []*ec2.Vpc, c *[]types.Check) {
+	var check types.Check
+	check.Name = "VPC Only One"
+	check.Id = "AWS_VPC_004"
+	check.Description = "Check if VPC has only one VPC"
+	check.Status = "OK"
+	for _, vpc := range vpcs {
+		if len(vpcs) > 1 {
+			check.Status = "FAIL"
+			status := "FAIL"
+			Message := "VPC Id:" + *vpc.VpcId
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+		} else {
+			status := "OK"
+			Message := "VPC Id:" + *vpc.VpcId
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+		}
+	}
+
+	*c = append(*c, check)
+}
+
 func RunVPCTests(s *session.Session) []types.Check {
 	var checks []types.Check
 	vpcs := GetListVPC(s)
 	checkCIDR20(s, vpcs, &checks)
 	checkIfVPCFLowLogsEnabled(s, vpcs, &checks)
 	checkIfOnlyOneGateway(s, vpcs, &checks)
+	checkIfOnlyOneVPC(s, vpcs, &checks)
 	return checks
 }
