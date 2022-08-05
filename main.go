@@ -35,7 +35,7 @@ func run() error {
 	if err := cmd.Execute(); err != nil {
 		return err
 	}
-	fmt.Println("Yatas is running...")
+	fmt.Println("YATAS is done ✅")
 
 	return nil
 }

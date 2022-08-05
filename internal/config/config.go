@@ -1,8 +1,6 @@
 package config
 
 import (
-	"fmt"
-
 	"github.com/stangirard/yatas/internal/helpers"
 	"gopkg.in/yaml.v3"
 )
@@ -44,7 +42,6 @@ func ParseConfig(configFile string) (Config, error) {
 		return Config{}, err
 	}
 
-	fmt.Printf("--- t:\n%v\n\n", config)
 	return config, nil
 }
 
