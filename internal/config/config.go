@@ -2,9 +2,8 @@ package config
 
 import (
 	"fmt"
-	"io/ioutil"
-	"os"
 
+	"github.com/stangirard/yatas/internal/helpers"
 	"gopkg.in/yaml.v3"
 )
 
@@ -33,7 +32,7 @@ type Config struct {
 func ParseConfig(configFile string) (Config, error) {
 	// Read the file .yatas.yml
 	// File to array of bytes
-	data, err := readFile(configFile)
+	data, err := helpers.ReadFile(configFile)
 	if err != nil {
 		return Config{}, err
 	}
@@ -53,18 +52,4 @@ func unmarshalYAML(data []byte, config *Config) error {
 	err := yaml.Unmarshal([]byte(data), &config)
 
 	return err
-}
-
-func readFile(configPath string) ([]byte, error) {
-	file, err := os.Open(configPath)
-	if err != nil {
-		return nil, err
-	}
-	defer file.Close()
-
-	data, err := ioutil.ReadAll(file)
-	if err != nil {
-		return nil, err
-	}
-	return data, nil
 }
