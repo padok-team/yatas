@@ -81,8 +81,8 @@ func checkIfBackupEnabled(s *session.Session, instances []*rds.DBInstance, c *[]
 
 func checkIfAutoUpgradeEnabled(s *session.Session, instances []*rds.DBInstance, c *[]types.Check) {
 	var check types.Check
-	check.Name = "RDS Auto Upgrade"
-	check.Description = "Check if RDS auto upgrade is enabled"
+	check.Name = "RDS Minor Auto Upgrade"
+	check.Description = "Check if RDS minor auto upgrade is enabled"
 	check.Status = "OK"
 	svc := rds.New(s)
 	for _, instance := range instances {

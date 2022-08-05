@@ -49,4 +49,5 @@ Flags:
 -  Check if RDS private is enabled
 -  Check if VPC CIDR is /20 or bigger
 -  Check if VPC Flow Logs are enabled
+-  Check if VPC has only one gateway
 

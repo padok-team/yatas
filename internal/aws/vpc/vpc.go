@@ -86,10 +86,46 @@ func checkIfVPCFLowLogsEnabled(s *session.Session, vpcs []*ec2.Vpc, c *[]types.C
 	*c = append(*c, check)
 }
 
+func checkIfOnlyOneGateway(s *session.Session, vpcs []*ec2.Vpc, c *[]types.Check) {
+	var check types.Check
+	check.Name = "VPC Gateway"
+	check.Description = "Check if VPC has only one gateway"
+	check.Status = "OK"
+	svc := ec2.New(s)
+	for _, vpc := range vpcs {
+		params := &ec2.DescribeInternetGatewaysInput{
+			Filters: []*ec2.Filter{
+				{
+					Name: aws.String("attachment.vpc-id"),
+					Values: []*string{
+						vpc.VpcId,
+					},
+				},
+			},
+		}
+		resp, err := svc.DescribeInternetGateways(params)
+		if err != nil {
+			panic(err)
+		}
+		if len(resp.InternetGateways) > 1 {
+			check.Status = "FAIL"
+			status := "FAIL"
+			Message := "VPC has more than one gateway on " + *vpc.VpcId
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+		} else {
+			status := "OK"
+			Message := "VPC has only one gateway on " + *vpc.VpcId
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+		}
+	}
+	*c = append(*c, check)
+}
+
 func RunVPCTests(s *session.Session) []types.Check {
 	var checks []types.Check
 	vpcs := GetListVPC(s)
 	checkCIDR20(s, vpcs, &checks)
 	checkIfVPCFLowLogsEnabled(s, vpcs, &checks)
+	checkIfOnlyOneGateway(s, vpcs, &checks)
 	return checks
 }
