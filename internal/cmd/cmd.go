@@ -3,6 +3,7 @@ package cmd
 import (
 	"github.com/stangirard/yatas/internal/config"
 	"github.com/stangirard/yatas/internal/plugins"
+	"github.com/stangirard/yatas/internal/report"
 )
 
 func Execute() error {
@@ -12,7 +13,11 @@ func Execute() error {
 		return err
 	}
 
-	plugins.Run(&config)
+	checks, err := plugins.Execute(&config)
+	if err != nil {
+		return err
+	}
+	report.PrettyPrintChecks(checks)
 
-	return err
+	return nil
 }
