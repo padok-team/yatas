@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/stangirard/yatas/cmd"
+	"github.com/stangirard/yatas/internal/cmd"
 )
 
 var (

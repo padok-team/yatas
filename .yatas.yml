@@ -1,0 +1,21 @@
+plugins:
+  - name: "hds"
+    enabled: true
+    description: "Rose is a plugin that allows you to use the rose language."
+    cloud_provider: "aws"
+  - name: "rose"
+    enabled: true
+    description: "Rose is a plugin that allows you to use the rose language."
+    cloud_provider: "aws"
+
+aws:
+  - name: "parent"
+    access_key: "xxxx"
+    secret_key: "xxxx"
+    region: "us-east-1"
+    profile: "default"
+    role_arn: "arn:aws:iam::123456789012:role/roleName"
+    role_session_name: "sessionName"
+    role_external_id: "externalId"
+    
+      
