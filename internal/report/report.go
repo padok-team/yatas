@@ -1,6 +1,7 @@
 package report
 
 import (
+	"flag"
 	"fmt"
 
 	"github.com/stangirard/yatas/internal/types"
@@ -12,13 +13,18 @@ var status = map[string]string{
 	"FAIL": "❌",
 }
 
+var details = flag.Bool("details", false, "print detailed results")
+
 func PrettyPrintChecks(checks []types.Check) {
+	flag.Parse()
 	for _, check := range checks {
-		fmt.Println("✓ Check: ", check.Name)
-		fmt.Println("\tDescritpion: ", check.Description)
-		fmt.Println("\tStatus: ", status[check.Status])
-		for _, result := range check.Results {
-			fmt.Println("\t\t🧪Result: ", status[result.Status], result.Message)
+		fmt.Println("✓ Check: ", check.Name, " - ", status[check.Status])
+		if *details {
+			fmt.Println("\tDescritpion: ", check.Description)
+			fmt.Println("\tResults:")
+			for _, result := range check.Results {
+				fmt.Println("\t\t", status[result.Status], result.Message)
+			}
 		}
 
 	}

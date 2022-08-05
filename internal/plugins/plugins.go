@@ -24,7 +24,7 @@ func Execute(c *config.Config) ([]types.Check, error) {
 func runPlugins(c *config.Config, plugins []string) ([]types.Check, error) {
 	var checksAll []types.Check
 	for _, plugin := range plugins {
-		logger.Info(fmt.Sprint("Running plugin: ", plugin))
+		logger.Debug(fmt.Sprint("Running plugin: ", plugin))
 		switch plugin {
 		case "aws":
 			checks, err := aws.Run(c)
@@ -46,7 +46,7 @@ func findPlugins(c *config.Config) []string {
 			plugins = append(plugins, plugin.Name)
 		}
 	}
-	logger.Info(fmt.Sprint("Plugins Found in config: ", plugins))
+	logger.Debug(fmt.Sprint("Plugins Found in config: ", plugins))
 
 	return plugins
 }
