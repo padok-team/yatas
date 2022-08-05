@@ -15,15 +15,18 @@ type Config struct {
 		Description   string `yaml:"description"`
 		CloudProvider string `yaml:"cloud_provider"`
 	} `yaml:"plugins"`
-	Aws []struct {
-		Name            string `yaml:"name"`
-		AccessKey       string `yaml:"access_key"`
-		SecretKey       string `yaml:"secret_key"`
-		Region          string `yaml:"region"`
-		Profile         string `yaml:"profile"`
-		RoleArn         string `yaml:"role_arn"`
-		RoleSessionName string `yaml:"role_session_name"`
-		RoleExternalID  string `yaml:"role_external_id"`
+	Aws struct {
+		Enabled bool `yaml:"enabled"`
+		Account struct {
+			Name            string `yaml:"name"`
+			AccessKey       string `yaml:"access_key"`
+			SecretKey       string `yaml:"secret_key"`
+			Region          string `yaml:"region"`
+			Profile         string `yaml:"profile"`
+			RoleArn         string `yaml:"role_arn"`
+			RoleSessionName string `yaml:"role_session_name"`
+			RoleExternalID  string `yaml:"role_external_id"`
+		} `yaml:"account"`
 	} `yaml:"aws"`
 }
 

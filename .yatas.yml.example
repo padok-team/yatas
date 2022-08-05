@@ -9,7 +9,9 @@ plugins:
     cloud_provider: "aws"
 
 aws:
-  - name: "parent"
+  enabled: true
+  account:
+    name: "parent"
     access_key: "xxxx"
     secret_key: "xxxx"
     region: "us-east-1"
