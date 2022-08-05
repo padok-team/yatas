@@ -86,7 +86,15 @@ func CheckS3Location(s *session.Session, bucket, region string) bool {
 		Bucket: aws.String(bucket),
 	}
 	resp, err := svc.GetBucketLocation(params)
-	if *resp.LocationConstraint != "" && err == nil {
+	if err != nil {
+		return false
+	}
+	logger.Debug(fmt.Sprintf("%v", resp))
+	logger.Error(fmt.Sprintf("%v", err))
+
+	if resp.LocationConstraint == nil {
+		return false
+	} else if *resp.LocationConstraint != "" {
 		if *resp.LocationConstraint == region {
 			return true
 		} else {
