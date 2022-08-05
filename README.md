@@ -4,6 +4,10 @@ Yet Another Testing &amp; Auditing Solution
 ## Features
 YATAS is a simple and easy to use tool to audit your infrastructure for misconfiguration or potential security issues.
 
+<p align="center">
+<img src="docs/demo.png" alt="demo" width="40%">
+<p align="center">
+
 ## Installation
 
 ```bash
