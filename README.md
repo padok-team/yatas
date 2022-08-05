@@ -41,6 +41,8 @@ Flags:
 
 ### AWS
 
+- AWS_S3_001  S3 Encryption
+- AWS_S3_002  S3 One Zone Only
 - AWS_VOL_001 EC2 Volumes Encryption
 - AWS_RDS_001 RDS Encryption
 - AWS_RDS_002 RDS Backup

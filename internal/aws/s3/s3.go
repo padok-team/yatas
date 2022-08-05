@@ -34,7 +34,6 @@ func checkIfEncryptionEnabled(s *session.Session, buckets []*s3.Bucket, c *[]typ
 	svc := s3.New(s)
 	for _, bucket := range buckets {
 		if !CheckS3Location(s, *bucket.Name, *s.Config.Region) {
-			fmt.Println("S3 encryption is not enabled on " + *bucket.Name)
 			continue
 		}
 		params := &s3.GetBucketEncryptionInput{
@@ -58,6 +57,27 @@ func checkIfEncryptionEnabled(s *session.Session, buckets []*s3.Bucket, c *[]typ
 	*c = append(*c, check)
 }
 
+func CheckIfBucketInOneZone(s *session.Session, buckets []*s3.Bucket, c *[]types.Check) {
+	var check types.Check
+	check.Name = "S3 Bucket in one zone"
+	check.Id = "AWS_S3_002"
+	check.Description = "Check if S3 buckets are in one zone"
+	check.Status = "OK"
+	for _, bucket := range buckets {
+		if !CheckS3Location(s, *bucket.Name, *s.Config.Region) {
+			check.Status = "FAIL"
+			status := "FAIL"
+			Message := "S3 bucket " + *bucket.Name + " is not in the same zone as the account"
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+		} else {
+			status := "OK"
+			Message := "S3 bucket " + *bucket.Name + " is in the same zone as the account"
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+		}
+	}
+	*c = append(*c, check)
+}
+
 func CheckS3Location(s *session.Session, bucket, region string) bool {
 	logger.Debug("Getting S3 location")
 	svc := s3.New(s)
@@ -66,7 +86,7 @@ func CheckS3Location(s *session.Session, bucket, region string) bool {
 		Bucket: aws.String(bucket),
 	}
 	resp, err := svc.GetBucketLocation(params)
-	if resp.LocationConstraint != nil && err != nil {
+	if *resp.LocationConstraint != "" && err == nil {
 		if *resp.LocationConstraint == region {
 			return true
 		} else {
@@ -83,5 +103,6 @@ func RunS3Test(s *session.Session) []types.Check {
 	logger.Debug("Starting S3 tests")
 	buckets := GetListS3(s)
 	checkIfEncryptionEnabled(s, buckets, &checks)
+	CheckIfBucketInOneZone(s, buckets, &checks)
 	return checks
 }
