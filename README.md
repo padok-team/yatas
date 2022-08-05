@@ -34,5 +34,19 @@ Flags:
 
 | Name | Description | Checks |
 |------|-------------|--------|
-| *AWS* | AWS checks | EC2 and S3 encryption |
+| *AWS* | AWS checks | Good practices and security checks|
+
+
+## Checks 
+
+### AWS
+
+- Check if S3 encryption is enabled
+- Check if EC2 encryption is enabled
+- Check if RDS encryption is enabled
+- Check if RDS backup is enabled
+- Check if RDS auto minor upgrade is enabled
+-  Check if RDS private is enabled
+-  Check if VPC CIDR is /20 or bigger
+-  Check if VPC Flow Logs are enabled
 
