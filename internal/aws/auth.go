@@ -43,16 +43,10 @@ func createSessionWithSSO(c *config.Config) *session.Session {
 	var s *session.Session
 	if c.AWS.Account.Profile == "" {
 		s = session.Must(session.NewSessionWithOptions(session.Options{
-			Config: aws.Config{
-				Region: aws.String(c.AWS.Account.Region),
-			},
 			SharedConfigState: session.SharedConfigEnable}))
 	} else {
 		s = session.Must(session.NewSessionWithOptions(session.Options{
-			Profile: c.AWS.Account.Profile,
-			Config: aws.Config{
-				Region: aws.String(c.AWS.Account.Region),
-			},
+			Profile:           c.AWS.Account.Profile,
 			SharedConfigState: session.SharedConfigEnable}))
 
 	}

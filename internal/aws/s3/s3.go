@@ -33,6 +33,10 @@ func checkIfEncryptionEnabled(s *session.Session, buckets []*s3.Bucket, c *[]typ
 	check.Status = "OK"
 	svc := s3.New(s)
 	for _, bucket := range buckets {
+		if !CheckS3Location(s, *bucket.Name, *s.Config.Region) {
+			fmt.Println("S3 encryption is not enabled on " + *bucket.Name)
+			continue
+		}
 		params := &s3.GetBucketEncryptionInput{
 			Bucket: aws.String(*bucket.Name),
 		}
@@ -52,6 +56,26 @@ func checkIfEncryptionEnabled(s *session.Session, buckets []*s3.Bucket, c *[]typ
 		}
 	}
 	*c = append(*c, check)
+}
+
+func CheckS3Location(s *session.Session, bucket, region string) bool {
+	logger.Debug("Getting S3 location")
+	svc := s3.New(s)
+
+	params := &s3.GetBucketLocationInput{
+		Bucket: aws.String(bucket),
+	}
+	resp, err := svc.GetBucketLocation(params)
+	if resp.LocationConstraint != nil && err != nil {
+		if *resp.LocationConstraint == region {
+			return true
+		} else {
+			return false
+		}
+
+	} else {
+		return false
+	}
 }
 
 func RunS3Test(s *session.Session) []types.Check {
