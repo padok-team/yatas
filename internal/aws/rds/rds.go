@@ -26,6 +26,7 @@ func GetListRDS(s *session.Session) []*rds.DBInstance {
 func checkIfEncryptionEnabled(s *session.Session, instances []*rds.DBInstance, c *[]types.Check) {
 	var check types.Check
 	check.Name = "RDS Encryption"
+	check.Id = "AWS_RDS_001"
 	check.Description = "Check if RDS encryption is enabled"
 	check.Status = "OK"
 	svc := rds.New(s)
@@ -54,6 +55,7 @@ func checkIfEncryptionEnabled(s *session.Session, instances []*rds.DBInstance, c
 func checkIfBackupEnabled(s *session.Session, instances []*rds.DBInstance, c *[]types.Check) {
 	var check types.Check
 	check.Name = "RDS Backup"
+	check.Id = "AWS_RDS_002"
 	check.Description = "Check if RDS backup is enabled"
 	check.Status = "OK"
 	svc := rds.New(s)
@@ -82,6 +84,7 @@ func checkIfBackupEnabled(s *session.Session, instances []*rds.DBInstance, c *[]
 func checkIfAutoUpgradeEnabled(s *session.Session, instances []*rds.DBInstance, c *[]types.Check) {
 	var check types.Check
 	check.Name = "RDS Minor Auto Upgrade"
+	check.Id = "AWS_RDS_003"
 	check.Description = "Check if RDS minor auto upgrade is enabled"
 	check.Status = "OK"
 	svc := rds.New(s)
@@ -110,6 +113,7 @@ func checkIfAutoUpgradeEnabled(s *session.Session, instances []*rds.DBInstance, 
 func checkIfRDSPrivateEnabled(s *session.Session, instances []*rds.DBInstance, c *[]types.Check) {
 	var check types.Check
 	check.Name = "RDS Private"
+	check.Id = "AWS_RDS_004"
 	check.Description = "Check if RDS private is enabled"
 	check.Status = "OK"
 	svc := rds.New(s)

@@ -5,14 +5,16 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+type Plugin struct {
+	Name        string   `yaml:"name"`
+	Enabled     bool     `yaml:"enabled"`
+	Description string   `yaml:"description"`
+	Exclude     []string `yaml:"exclude"`
+}
+
 type Config struct {
-	Plugins []struct {
-		Name          string `yaml:"name"`
-		Enabled       bool   `yaml:"enabled"`
-		Description   string `yaml:"description"`
-		CloudProvider string `yaml:"cloud_provider"`
-	} `yaml:"plugins"`
-	AWS struct {
+	Plugins []Plugin `yaml:"plugins"`
+	AWS     struct {
 		Enabled bool `yaml:"enabled"`
 		Account struct {
 			Profile string `yaml:"profile"`
@@ -20,6 +22,17 @@ type Config struct {
 			Region  string `yaml:"region"`
 		} `yaml:"account"`
 	} `yaml:"aws"`
+}
+
+func (c *Config) CheckExclude(id string) bool {
+	for _, plugins := range c.Plugins {
+		for _, exclude := range plugins.Exclude {
+			if exclude == id {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func ParseConfig(configFile string) (Config, error) {

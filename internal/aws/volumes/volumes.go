@@ -20,6 +20,7 @@ func GetVolumes(s *session.Session) []*ec2.Volume {
 func checkIfEncryptionEnabled(s *session.Session, volumes []*ec2.Volume, c *[]types.Check) {
 	var check types.Check
 	check.Name = "EC2 Volumes Encryption"
+	check.Id = "AWS_VOL_001"
 	check.Description = "Check if EC2 encryption is enabled"
 	check.Status = "OK"
 	svc := ec2.New(s)

@@ -28,6 +28,7 @@ func GetListS3(s *session.Session) []*s3.Bucket {
 func checkIfEncryptionEnabled(s *session.Session, buckets []*s3.Bucket, c *[]types.Check) {
 	var check types.Check
 	check.Name = "S3 Encryption"
+	check.Id = "AWS_S3_001"
 	check.Description = "Check if S3 encryption is enabled"
 	check.Status = "OK"
 	svc := s3.New(s)

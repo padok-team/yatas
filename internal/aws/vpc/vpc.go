@@ -23,6 +23,7 @@ func GetListVPC(s *session.Session) []*ec2.Vpc {
 func checkCIDR20(s *session.Session, vpcs []*ec2.Vpc, c *[]types.Check) {
 	var check types.Check
 	check.Name = "VPC CIDR"
+	check.Id = "AWS_VPC_001"
 	check.Description = "Check if VPC CIDR is /20 or bigger"
 	check.Status = "OK"
 	svc := ec2.New(s)
@@ -54,6 +55,7 @@ func checkCIDR20(s *session.Session, vpcs []*ec2.Vpc, c *[]types.Check) {
 func checkIfVPCFLowLogsEnabled(s *session.Session, vpcs []*ec2.Vpc, c *[]types.Check) {
 	var check types.Check
 	check.Name = "VPC Flow Logs"
+	check.Id = "AWS_VPC_002"
 	check.Description = "Check if VPC Flow Logs are enabled"
 	check.Status = "OK"
 	svc := ec2.New(s)
@@ -89,6 +91,7 @@ func checkIfVPCFLowLogsEnabled(s *session.Session, vpcs []*ec2.Vpc, c *[]types.C
 func checkIfOnlyOneGateway(s *session.Session, vpcs []*ec2.Vpc, c *[]types.Check) {
 	var check types.Check
 	check.Name = "VPC Gateway"
+	check.Id = "AWS_VPC_003"
 	check.Description = "Check if VPC has only one gateway"
 	check.Status = "OK"
 	svc := ec2.New(s)

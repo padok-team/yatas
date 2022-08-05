@@ -41,13 +41,12 @@ Flags:
 
 ### AWS
 
-- Check if S3 encryption is enabled
-- Check if EC2 encryption is enabled
-- Check if RDS encryption is enabled
-- Check if RDS backup is enabled
-- Check if RDS auto minor upgrade is enabled
--  Check if RDS private is enabled
--  Check if VPC CIDR is /20 or bigger
--  Check if VPC Flow Logs are enabled
--  Check if VPC has only one gateway
+- AWS_VOL_001 EC2 Volumes Encryption
+- AWS_RDS_001 RDS Encryption
+- AWS_RDS_002 RDS Backup
+- AWS_RDS_003 RDS Minor Auto Upgrade
+- AWS_RDS_004 RDS Private
+- AWS_VPC_001 VPC CIDR
+- AWS_VPC_002 VPC Flow Logs
+- AWS_VPC_003 VPC Gateway
 

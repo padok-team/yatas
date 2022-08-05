@@ -4,6 +4,8 @@ import (
 	"flag"
 	"fmt"
 
+	"github.com/fatih/color"
+	"github.com/stangirard/yatas/internal/config"
 	"github.com/stangirard/yatas/internal/types"
 )
 
@@ -15,15 +17,21 @@ var status = map[string]string{
 
 var details = flag.Bool("details", false, "print detailed results")
 
-func PrettyPrintChecks(checks []types.Check) {
+func PrettyPrintChecks(checks []types.Check, c *config.Config) {
 	flag.Parse()
 	for _, check := range checks {
-		fmt.Println("✓ Check: ", check.Name, " - ", status[check.Status])
+		if c.CheckExclude(check.Id) {
+			continue
+		}
+		fmt.Println(status[check.Status], check.Id, check.Name)
 		if *details {
-			fmt.Println("\tDescription: ", check.Description)
-			fmt.Println("\tResults:")
 			for _, result := range check.Results {
-				fmt.Println("\t\t", status[result.Status], result.Message)
+				if result.Status == "FAIL" {
+					color.Red("\t" + result.Message)
+				} else {
+					fmt.Println("\t" + result.Message)
+				}
+
 			}
 		}
 

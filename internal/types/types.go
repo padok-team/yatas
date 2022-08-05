@@ -9,6 +9,7 @@ type Check struct {
 	Name        string   `yaml:"name"`
 	Description string   `yaml:"description"`
 	Status      string   `yaml:"status"`
+	Id          string   `yaml:"id"`
 	Results     []Result `yaml:"results"`
 }
 

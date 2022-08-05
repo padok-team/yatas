@@ -2,6 +2,9 @@ plugins:
   - name: "aws"
     enabled: true
     description: "Check for AWS good practices"
+    exclude:
+     - AWS_S3_001
+
 
 
 aws:

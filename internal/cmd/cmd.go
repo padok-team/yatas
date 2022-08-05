@@ -17,7 +17,7 @@ func Execute() error {
 	if err != nil {
 		return err
 	}
-	report.PrettyPrintChecks(checks)
+	report.PrettyPrintChecks(checks, &config)
 
 	return nil
 }
