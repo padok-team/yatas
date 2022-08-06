@@ -23,7 +23,7 @@ func main() {
 //go:embed VERSION
 var version string // Version of the application embeded
 
-// Run Pricy
+// Run YATAS
 func run() error {
 	flag.Parse()
 
