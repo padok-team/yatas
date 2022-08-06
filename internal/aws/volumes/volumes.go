@@ -48,10 +48,10 @@ func checkIfEncryptionEnabled(s *session.Session, volumes []*ec2.Volume, c *[]ty
 }
 
 func CheckIfVolumesTypeGP3(s *session.Session, volumes []*ec2.Volume, c *[]types.Check) {
-	logger.Info("Running AWS_VOL_004")
+	logger.Info("Running AWS_VOL_005")
 	var check types.Check
 	check.Name = "EC2 Volumes Type"
-	check.Id = "AWS_VOL_004"
+	check.Id = "AWS_VOL_005"
 	check.Description = "Check if all volumes are of type gp3"
 	check.Status = "OK"
 	for _, volume := range volumes {
