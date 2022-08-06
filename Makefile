@@ -35,4 +35,4 @@ test:
 .PHONY: release
 release: test
 	npm run release
-	git push --follow-tags   
+	git push --follow-tags origin main 
