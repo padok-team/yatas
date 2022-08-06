@@ -1,0 +1,25 @@
+{
+  "name": "yatas",
+  "version": "0.2.0",
+  "description": "Yet Another Testing &amp; Auditing Solution",
+  "scripts": {
+    "release": "standard-version"
+  },
+  "standard-version": {
+    "skip": {
+      "changelog": true
+    }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/StanGirard/YATAS.git"
+  },
+  "author": "stangirard",
+  "bugs": {
+    "url": "https://github.com/StanGirard/YATAS/issues"
+  },
+  "homepage": "https://github.com/StanGirard/YATAS#readme",
+  "devDependencies": {
+    "standard-version": "^9.5.0"
+  }
+}

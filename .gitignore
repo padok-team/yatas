@@ -26,3 +26,5 @@ credentials.json
 token.json
 coverage.txt
 .yatas.yml
+package-lock.json
+node_modules/*
