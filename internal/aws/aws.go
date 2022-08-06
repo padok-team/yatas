@@ -3,6 +3,7 @@ package aws
 import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/stangirard/yatas/internal/aws/cloudtrail"
+	"github.com/stangirard/yatas/internal/aws/ecr"
 	"github.com/stangirard/yatas/internal/aws/rds"
 	"github.com/stangirard/yatas/internal/aws/s3"
 	"github.com/stangirard/yatas/internal/aws/volumes"
@@ -27,6 +28,7 @@ func initTest(s *session.Session) []types.Check {
 	checks = append(checks, rds.RunRDSTests(s)...)
 	checks = append(checks, vpc.RunVPCTests(s)...)
 	checks = append(checks, cloudtrail.RunCloudtrailTests(s)...)
+	checks = append(checks, ecr.RunECRTests(s)...)
 	logger.Info("AWS checks completed ✅")
 
 	return checks
