@@ -20,6 +20,6 @@
   },
   "homepage": "https://github.com/StanGirard/YATAS#readme",
   "devDependencies": {
-    "standard-version": "^9.5.0"
+    "standard-version": "9.5.0"
   }
 }
