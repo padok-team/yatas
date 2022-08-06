@@ -29,6 +29,7 @@ yatas ## --details
 
 Flags:
 - `--details`: Show details of the issues found.
+- `--compare`: Compare the results of the previous run with the current run and show the differences.
 
 ## Plugins
 

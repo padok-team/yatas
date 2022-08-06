@@ -1,0 +1,193 @@
+- name: S3 Encryption
+  description: Check if S3 encryption is enabled
+  status: FAIL
+  id: AWS_S3_001
+  results:
+    - message: S3 encryption is enabled on s3-yatas-test
+      status: OK
+    - message: S3 encryption is not enabled on test-2-yatas
+      status: FAIL
+- name: S3 Bucket in one zone
+  description: Check if S3 buckets are in one zone
+  status: OK
+  id: AWS_S3_002
+  results:
+    - message: S3 bucket s3-yatas-test is in the same zone as the account
+      status: OK
+    - message: S3 bucket test-2-yatas is in the same zone as the account
+      status: OK
+- name: EC2 Volumes Encryption
+  description: Check if EC2 encryption is enabled
+  status: FAIL
+  id: AWS_VOL_001
+  results:
+    - message: EC2 encryption is not enabled on vol-04f57bf4c92666d94
+      status: FAIL
+    - message: EC2 encryption is enabled on vol-0fc4d5d3d5238d6c4
+      status: OK
+- name: EC2 Volumes Snapshots
+  description: Check if all volumes have snapshots
+  status: FAIL
+  id: AWS_VOL_002
+  results:
+    - message: Volume vol-04f57bf4c92666d94 has snapshot snap-0c4176fc053e30841
+      status: OK
+    - message: Volume vol-0fc4d5d3d5238d6c4 has no snapshot
+      status: FAIL
+- name: EC2 Snapshots Encryption
+  description: Check if all snapshots are encrypted
+  status: FAIL
+  id: AWS_VOL_003
+  results:
+    - message: Snapshot snap-0c4176fc053e30841 is not encrypted
+      status: FAIL
+- name: EC2 Volumes Type
+  description: Check if all volumes are of type gp3
+  status: FAIL
+  id: AWS_VOL_005
+  results:
+    - message: Volume vol-04f57bf4c92666d94 is not of type gp3
+      status: FAIL
+    - message: Volume vol-0fc4d5d3d5238d6c4 is not of type gp3
+      status: FAIL
+- name: EC2 Snapshots Age
+  description: Check if all snapshots are younger than 24h
+  status: OK
+  id: AWS_VOL_004
+  results:
+    - message: Snapshot snap-0c4176fc053e30841 is younger than 24h
+      status: OK
+- name: RDS Encryption
+  description: Check if RDS encryption is enabled
+  status: FAIL
+  id: AWS_RDS_001
+  results:
+    - message: RDS encryption is not enabled on database-1
+      status: FAIL
+    - message: RDS encryption is enabled on database-2
+      status: OK
+- name: RDS Backup
+  description: Check if RDS backup is enabled
+  status: FAIL
+  id: AWS_RDS_002
+  results:
+    - message: RDS backup is not enabled on database-1
+      status: FAIL
+    - message: RDS backup is enabled on database-2
+      status: OK
+- name: RDS Minor Auto Upgrade
+  description: Check if RDS minor auto upgrade is enabled
+  status: OK
+  id: AWS_RDS_003
+  results:
+    - message: RDS auto upgrade is enabled on database-1
+      status: OK
+    - message: RDS auto upgrade is enabled on database-2
+      status: OK
+- name: RDS Private
+  description: Check if RDS private is enabled
+  status: OK
+  id: AWS_RDS_004
+  results:
+    - message: RDS private is enabled on database-1
+      status: OK
+    - message: RDS private is enabled on database-2
+      status: OK
+- name: VPC CIDR
+  description: Check if VPC CIDR is /20 or bigger
+  status: OK
+  id: AWS_VPC_001
+  results:
+    - message: VPC CIDR is /20 or bigger on vpc-08ffec87e034a8953
+      status: OK
+    - message: VPC CIDR is /20 or bigger on vpc-0b2c22d807fc44f37
+      status: OK
+    - message: VPC CIDR is /20 or bigger on vpc-0024a11d205909a29
+      status: OK
+    - message: VPC CIDR is /20 or bigger on vpc-0eb1f4880065f4d85
+      status: OK
+- name: VPC Flow Logs
+  description: Check if VPC Flow Logs are enabled
+  status: FAIL
+  id: AWS_VPC_002
+  results:
+    - message: VPC Flow Logs are enabled on vpc-08ffec87e034a8953
+      status: OK
+    - message: VPC Flow Logs are not enabled on vpc-0b2c22d807fc44f37
+      status: FAIL
+    - message: VPC Flow Logs are not enabled on vpc-0024a11d205909a29
+      status: FAIL
+    - message: VPC Flow Logs are not enabled on vpc-0eb1f4880065f4d85
+      status: FAIL
+- name: VPC Gateway
+  description: Check if VPC has only one gateway
+  status: OK
+  id: AWS_VPC_003
+  results:
+    - message: VPC has only one gateway on vpc-08ffec87e034a8953
+      status: OK
+    - message: VPC has only one gateway on vpc-0b2c22d807fc44f37
+      status: OK
+    - message: VPC has only one gateway on vpc-0024a11d205909a29
+      status: OK
+    - message: VPC has only one gateway on vpc-0eb1f4880065f4d85
+      status: OK
+- name: VPC Only One
+  description: Check if VPC has only one VPC
+  status: FAIL
+  id: AWS_VPC_004
+  results:
+    - message: VPC Id:vpc-08ffec87e034a8953
+      status: FAIL
+    - message: VPC Id:vpc-0b2c22d807fc44f37
+      status: FAIL
+    - message: VPC Id:vpc-0024a11d205909a29
+      status: FAIL
+    - message: VPC Id:vpc-0eb1f4880065f4d85
+      status: FAIL
+- name: Cloudtrails Encryption
+  description: Check if all cloudtrails are encrypted
+  status: OK
+  id: AWS_CLD_001
+  results:
+    - message: Cloudtrail test is encrypted
+      status: OK
+- name: Cloudtrails Global Service Events Activated
+  description: Check if all cloudtrails have global service events enabled
+  status: OK
+  id: AWS_CLD_002
+  results:
+    - message: Cloudtrail test has global service events enabled
+      status: OK
+- name: Cloudtrails Multi Region
+  description: Check if all cloudtrails are multi region
+  status: OK
+  id: AWS_CLD_003
+  results:
+    - message: Cloudtrail test is multi region
+      status: OK
+- name: Image Scanning Enabled
+  description: Check if all ECRs have image scanning enabled
+  status: OK
+  id: AWS_ECR_001
+  results: []
+- name: Lambda Private
+  description: Check if all Lambdas are private
+  status: OK
+  id: AWS_LMD_001
+  results: []
+- name: Lambda In Security Group
+  description: Check if all Lambdas are in a security group
+  status: OK
+  id: AWS_LMD_002
+  results: []
+- name: Dynamodb Encryption
+  description: Check if DynamoDB encryption is enabled
+  status: OK
+  id: AWS_DYN_001
+  results: []
+- name: Dynamodb Continuous Backups
+  description: Check if DynamoDB continuous backups are enabled
+  status: OK
+  id: AWS_DYN_002
+  results: []
