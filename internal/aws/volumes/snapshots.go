@@ -74,23 +74,32 @@ func CheckIfAllSnapshotsEncrypted(s *session.Session, snapshots []*ec2.Snapshot,
 	*c = append(*c, check)
 }
 
-func CheckIfSnapshotYoungerthan24h(s *session.Session, snapshots []*ec2.Snapshot, testName string, c *[]types.Check) {
+func CheckIfSnapshotYoungerthan24h(s *session.Session, vs couple, testName string, c *[]types.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check types.Check
 	check.Name = "EC2 Snapshots Age"
 	check.Id = testName
 	check.Description = "Check if all snapshots are younger than 24h"
 	check.Status = "OK"
-	for _, snapshot := range snapshots {
-		creationTime := *snapshot.StartTime
-		if creationTime.After(time.Now().Add(-24 * time.Hour)) {
-			status := "OK"
-			Message := "Snapshot " + *snapshot.SnapshotId + " is younger than 24h"
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
-		} else {
+	for _, volume := range vs.volume {
+		snapshotYoungerThan24h := false
+		for _, snapshot := range vs.snapshot {
+			if *snapshot.VolumeId == *volume.VolumeId {
+				creationTime := *snapshot.StartTime
+				if creationTime.After(time.Now().Add(-24 * time.Hour)) {
+					snapshotYoungerThan24h = true
+					break
+				}
+			}
+		}
+		if !snapshotYoungerThan24h {
 			check.Status = "FAIL"
 			status := "FAIL"
-			Message := "Snapshot " + *snapshot.SnapshotId + " is older than 24h"
+			Message := "Volume " + *volume.VolumeId + " has no snapshot younger than 24h"
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+		} else {
+			status := "OK"
+			Message := "Volume " + *volume.VolumeId + " has snapshot younger than 24h"
 			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
 		}
 	}

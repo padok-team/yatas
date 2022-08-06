@@ -72,11 +72,17 @@ func CheckIfVolumesTypeGP3(s *session.Session, volumes []*ec2.Volume, testName s
 	*c = append(*c, check)
 }
 
+type couple struct {
+	volume   []*ec2.Volume
+	snapshot []*ec2.Snapshot
+}
+
 func RunVolumesTest(s *session.Session, c *config.Config) []types.Check {
 	var checks []types.Check
 	logger.Debug("Starting EC2 volumes tests")
 	volumes := GetVolumes(s)
 	snapshots := GetSnapshots(s)
+	couples := couple{volumes, snapshots}
 
 	config.CheckTest(c, "AWS_VOL_001", checkIfEncryptionEnabled)(s, volumes, "AWS_VOL_001", &checks)
 	config.CheckTest(c, "AWS_VOL_002", CheckIfVolumesTypeGP3)(s, volumes, "AWS_VOL_002", &checks)
@@ -85,7 +91,7 @@ func RunVolumesTest(s *session.Session, c *config.Config) []types.Check {
 	config.CheckTest(c, "AWS_VOL_005", CheckIfVolumesTypeGP3)(s, volumes, "AWS_VOL_003", &checks)
 
 	config.CheckTest(c, "AWS_BAK_001", CheckIfAllSnapshotsEncrypted)(s, snapshots, "AWS_VOL_003", &checks)
-	config.CheckTest(c, "AWS_BAK_002", CheckIfSnapshotYoungerthan24h)(s, snapshots, "AWS_VOL_004", &checks)
+	config.CheckTest(c, "AWS_BAK_002", CheckIfSnapshotYoungerthan24h)(s, couples, "AWS_VOL_004", &checks)
 
 	return checks
 }
