@@ -62,4 +62,5 @@ Flags:
 - AWS_ECR_001 Image Scanning Enabled
 - AWS_LMD_001 Lambda Private
 - AWS_LMD_002 Lambda In Security Group
-
+- AWS_DYN_001 Dynamodb Encryption
+- AWS_DYN_002 Dynamodb Continuous Backups
