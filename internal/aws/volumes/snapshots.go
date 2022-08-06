@@ -9,7 +9,9 @@ import (
 
 func GetSnapshots(s *session.Session) []*ec2.Snapshot {
 	svc := ec2.New(s)
-	input := &ec2.DescribeSnapshotsInput{}
+	input := &ec2.DescribeSnapshotsInput{
+		OwnerIds: []*string{aws.String("self")},
+	}
 	result, err := svc.DescribeSnapshots(input)
 	if err != nil {
 		panic(err)
