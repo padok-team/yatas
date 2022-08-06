@@ -28,3 +28,4 @@ coverage.txt
 .yatas.yml
 package-lock.json
 node_modules/*
+results.yaml

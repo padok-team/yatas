@@ -2,14 +2,17 @@ package cmd
 
 import (
 	"flag"
+	"fmt"
 
+	"github.com/schollz/progressbar/v3"
 	"github.com/stangirard/yatas/internal/config"
 	"github.com/stangirard/yatas/internal/plugins"
 	"github.com/stangirard/yatas/internal/report"
 )
 
 var (
-	compare = flag.Bool("compare", false, "compare with previous report")
+	compare  = flag.Bool("compare", false, "compare with previous report")
+	progress = flag.Bool("progress", true, "show progress bar")
 )
 
 func Execute() error {
@@ -19,11 +22,17 @@ func Execute() error {
 		return err
 	}
 
+	if *progress {
+		config.Progress = progressbar.Default(-1)
+	}
 	checks, err := plugins.Execute(&config)
 	if err != nil {
 		return err
 	}
-
+	if *progress {
+		config.Progress.Finish()
+	}
+	fmt.Println()
 	if *compare {
 		previous := report.ReadPreviousResults()
 		if err != nil {

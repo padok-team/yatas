@@ -1,6 +1,7 @@
 package config
 
 import (
+	"github.com/schollz/progressbar/v3"
 	"github.com/stangirard/yatas/internal/helpers"
 	"gopkg.in/yaml.v3"
 )
@@ -22,6 +23,7 @@ type Config struct {
 			Region  string `yaml:"region"`
 		} `yaml:"account"`
 	} `yaml:"aws"`
+	Progress *progressbar.ProgressBar
 }
 
 func (c *Config) CheckExclude(id string) bool {
@@ -60,6 +62,9 @@ func unmarshalYAML(data []byte, config *Config) error {
 }
 
 func CheckTest[A, B, C, D any](config *Config, id string, test func(A, B, C, D)) func(A, B, C, D) {
+	if config.Progress != nil {
+		config.Progress.Add(1)
+	}
 	if !config.CheckExclude(id) {
 		return test
 	} else {
