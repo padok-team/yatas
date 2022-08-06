@@ -5,6 +5,7 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/rds"
+	"github.com/stangirard/yatas/internal/config"
 	"github.com/stangirard/yatas/internal/logger"
 	"github.com/stangirard/yatas/internal/types"
 )
@@ -23,11 +24,11 @@ func GetListRDS(s *session.Session) []*rds.DBInstance {
 	return resp.DBInstances
 }
 
-func checkIfEncryptionEnabled(s *session.Session, instances []*rds.DBInstance, c *[]types.Check) {
-	logger.Info("Running AWS_RDS_001")
+func checkIfEncryptionEnabled(s *session.Session, instances []*rds.DBInstance, testName string, c *[]types.Check) {
+	logger.Info(fmt.Sprint("Running ", testName))
 	var check types.Check
 	check.Name = "RDS Encryption"
-	check.Id = "AWS_RDS_001"
+	check.Id = testName
 	check.Description = "Check if RDS encryption is enabled"
 	check.Status = "OK"
 	svc := rds.New(s)
@@ -53,11 +54,11 @@ func checkIfEncryptionEnabled(s *session.Session, instances []*rds.DBInstance, c
 	*c = append(*c, check)
 }
 
-func checkIfBackupEnabled(s *session.Session, instances []*rds.DBInstance, c *[]types.Check) {
-	logger.Info("Running AWS_RDS_002")
+func checkIfBackupEnabled(s *session.Session, instances []*rds.DBInstance, testName string, c *[]types.Check) {
+	logger.Info(fmt.Sprint("Running ", testName))
 	var check types.Check
 	check.Name = "RDS Backup"
-	check.Id = "AWS_RDS_002"
+	check.Id = testName
 	check.Description = "Check if RDS backup is enabled"
 	check.Status = "OK"
 	svc := rds.New(s)
@@ -83,11 +84,11 @@ func checkIfBackupEnabled(s *session.Session, instances []*rds.DBInstance, c *[]
 	*c = append(*c, check)
 }
 
-func checkIfAutoUpgradeEnabled(s *session.Session, instances []*rds.DBInstance, c *[]types.Check) {
-	logger.Info("Running AWS_RDS_003")
+func checkIfAutoUpgradeEnabled(s *session.Session, instances []*rds.DBInstance, testName string, c *[]types.Check) {
+	logger.Info(fmt.Sprint("Running ", testName))
 	var check types.Check
 	check.Name = "RDS Minor Auto Upgrade"
-	check.Id = "AWS_RDS_003"
+	check.Id = testName
 	check.Description = "Check if RDS minor auto upgrade is enabled"
 	check.Status = "OK"
 	svc := rds.New(s)
@@ -113,11 +114,11 @@ func checkIfAutoUpgradeEnabled(s *session.Session, instances []*rds.DBInstance, 
 	*c = append(*c, check)
 }
 
-func checkIfRDSPrivateEnabled(s *session.Session, instances []*rds.DBInstance, c *[]types.Check) {
-	logger.Info("Running AWS_RDS_004")
+func checkIfRDSPrivateEnabled(s *session.Session, instances []*rds.DBInstance, testName string, c *[]types.Check) {
+	logger.Info(fmt.Sprint("Running ", testName))
 	var check types.Check
 	check.Name = "RDS Private"
-	check.Id = "AWS_RDS_004"
+	check.Id = testName
 	check.Description = "Check if RDS private is enabled"
 	check.Status = "OK"
 	svc := rds.New(s)
@@ -143,12 +144,13 @@ func checkIfRDSPrivateEnabled(s *session.Session, instances []*rds.DBInstance, c
 	*c = append(*c, check)
 }
 
-func RunRDSTests(s *session.Session) []types.Check {
+func RunRDSTests(s *session.Session, c *config.Config) []types.Check {
 	var checks []types.Check
 	instances := GetListRDS(s)
-	checkIfEncryptionEnabled(s, instances, &checks)
-	checkIfBackupEnabled(s, instances, &checks)
-	checkIfAutoUpgradeEnabled(s, instances, &checks)
-	checkIfRDSPrivateEnabled(s, instances, &checks)
+	config.CheckTest(c, "AWS_RDS_001", checkIfEncryptionEnabled)(s, instances, "AWS_RDS_001", &checks)
+	config.CheckTest(c, "AWS_RDS_002", checkIfBackupEnabled)(s, instances, "AWS_RDS_002", &checks)
+	config.CheckTest(c, "AWS_RDS_003", checkIfAutoUpgradeEnabled)(s, instances, "AWS_RDS_003", &checks)
+	config.CheckTest(c, "AWS_RDS_004", checkIfRDSPrivateEnabled)(s, instances, "AWS_RDS_004", &checks)
+
 	return checks
 }

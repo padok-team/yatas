@@ -7,6 +7,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/stangirard/yatas/internal/config"
 	"github.com/stangirard/yatas/internal/logger"
 	"github.com/stangirard/yatas/internal/types"
 )
@@ -25,11 +26,11 @@ func GetListS3(s *session.Session) []*s3.Bucket {
 	return resp.Buckets
 }
 
-func checkIfEncryptionEnabled(s *session.Session, buckets []*s3.Bucket, c *[]types.Check) {
-	logger.Info("Running AWS_S3_001")
+func checkIfEncryptionEnabled(s *session.Session, buckets []*s3.Bucket, testName string, c *[]types.Check) {
+	logger.Info(fmt.Sprint("Running ", testName))
 	var check types.Check
 	check.Name = "S3 Encryption"
-	check.Id = "AWS_S3_001"
+	check.Id = testName
 	check.Description = "Check if S3 encryption is enabled"
 	check.Status = "OK"
 	svc := s3.New(s)
@@ -58,11 +59,11 @@ func checkIfEncryptionEnabled(s *session.Session, buckets []*s3.Bucket, c *[]typ
 	*c = append(*c, check)
 }
 
-func CheckIfBucketInOneZone(s *session.Session, buckets []*s3.Bucket, c *[]types.Check) {
-	logger.Info("Running AWS_S3_002")
+func CheckIfBucketInOneZone(s *session.Session, buckets []*s3.Bucket, testName string, c *[]types.Check) {
+	logger.Info(fmt.Sprint("Running ", testName))
 	var check types.Check
 	check.Name = "S3 Bucket in one zone"
-	check.Id = "AWS_S3_002"
+	check.Id = testName
 	check.Description = "Check if S3 buckets are in one zone"
 	check.Status = "OK"
 	for _, bucket := range buckets {
@@ -108,11 +109,13 @@ func CheckS3Location(s *session.Session, bucket, region string) bool {
 	}
 }
 
-func RunS3Test(s *session.Session) []types.Check {
+type testFunc func(*session.Session, []*s3.Bucket, []types.Check)
+
+func RunS3Test(s *session.Session, c *config.Config) []types.Check {
 	var checks []types.Check
 	logger.Debug("Starting S3 tests")
 	buckets := GetListS3(s)
-	checkIfEncryptionEnabled(s, buckets, &checks)
-	CheckIfBucketInOneZone(s, buckets, &checks)
+	config.CheckTest(c, "AWS_S3_001", checkIfEncryptionEnabled)(s, buckets, "AWS_S3_001", &checks)
+	config.CheckTest(c, "AWS_S3_002", CheckIfBucketInOneZone)(s, buckets, "AWS_S3_002", &checks)
 	return checks
 }

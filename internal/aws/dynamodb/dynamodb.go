@@ -1,8 +1,11 @@
 package dynamodb
 
 import (
+	"fmt"
+
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
+	"github.com/stangirard/yatas/internal/config"
 	"github.com/stangirard/yatas/internal/logger"
 	"github.com/stangirard/yatas/internal/types"
 )
@@ -17,11 +20,11 @@ func GetDynamodbs(s *session.Session) []*string {
 	return result.TableNames
 }
 
-func CheckIfDynamodbEncrypted(s *session.Session, dynamodbs []*string, c *[]types.Check) {
-	logger.Info("Running AWS_DYN_001")
+func CheckIfDynamodbEncrypted(s *session.Session, dynamodbs []*string, testName string, c *[]types.Check) {
+	logger.Info(fmt.Sprint("Running ", testName))
 	var check types.Check
 	check.Name = "Dynamodb Encryption"
-	check.Id = "AWS_DYN_001"
+	check.Id = testName
 	check.Description = "Check if DynamoDB encryption is enabled"
 	check.Status = "OK"
 	svc := dynamodb.New(s)
@@ -47,11 +50,11 @@ func CheckIfDynamodbEncrypted(s *session.Session, dynamodbs []*string, c *[]type
 	*c = append(*c, check)
 }
 
-func CheckIfDynamodbContinuousBackupsEnabled(s *session.Session, dynamodbs []*string, c *[]types.Check) {
-	logger.Info("Running AWS_DYN_002")
+func CheckIfDynamodbContinuousBackupsEnabled(s *session.Session, dynamodbs []*string, testName string, c *[]types.Check) {
+	logger.Info(fmt.Sprint("Running ", testName))
 	var check types.Check
 	check.Name = "Dynamodb Continuous Backups"
-	check.Id = "AWS_DYN_002"
+	check.Id = testName
 	check.Description = "Check if DynamoDB continuous backups are enabled"
 	check.Status = "OK"
 	svc := dynamodb.New(s)
@@ -77,10 +80,10 @@ func CheckIfDynamodbContinuousBackupsEnabled(s *session.Session, dynamodbs []*st
 	*c = append(*c, check)
 }
 
-func RunDynamodbTests(s *session.Session) []types.Check {
+func RunDynamodbTests(s *session.Session, c *config.Config) []types.Check {
 	var checks []types.Check
 	dynamodbs := GetDynamodbs(s)
-	CheckIfDynamodbEncrypted(s, dynamodbs, &checks)
-	CheckIfDynamodbContinuousBackupsEnabled(s, dynamodbs, &checks)
+	config.CheckTest(c, "AWS_DYN_001", CheckIfDynamodbEncrypted)(s, dynamodbs, "AWS_DYN_001", &checks)
+	config.CheckTest(c, "AWS_DYN_002", CheckIfDynamodbContinuousBackupsEnabled)(s, dynamodbs, "AWS_DYN_002", &checks)
 	return checks
 }

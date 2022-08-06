@@ -58,3 +58,12 @@ func unmarshalYAML(data []byte, config *Config) error {
 
 	return err
 }
+
+func CheckTest[A, B, C, D any](config *Config, id string, test func(A, B, C, D)) func(A, B, C, D) {
+	if !config.CheckExclude(id) {
+		return test
+	} else {
+		return func(A, B, C, D) {}
+	}
+
+}

@@ -1,12 +1,14 @@
 package vpc
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
+	"github.com/stangirard/yatas/internal/config"
 	"github.com/stangirard/yatas/internal/logger"
 	"github.com/stangirard/yatas/internal/types"
 )
@@ -21,11 +23,11 @@ func GetListVPC(s *session.Session) []*ec2.Vpc {
 	return result.Vpcs
 }
 
-func checkCIDR20(s *session.Session, vpcs []*ec2.Vpc, c *[]types.Check) {
-	logger.Info("Running AWS_VPC_001")
+func checkCIDR20(s *session.Session, vpcs []*ec2.Vpc, testName string, c *[]types.Check) {
+	logger.Info(fmt.Sprint("Running ", testName))
 	var check types.Check
 	check.Name = "VPC CIDR"
-	check.Id = "AWS_VPC_001"
+	check.Id = testName
 	check.Description = "Check if VPC CIDR is /20 or bigger"
 	check.Status = "OK"
 	svc := ec2.New(s)
@@ -54,11 +56,11 @@ func checkCIDR20(s *session.Session, vpcs []*ec2.Vpc, c *[]types.Check) {
 	*c = append(*c, check)
 }
 
-func checkIfVPCFLowLogsEnabled(s *session.Session, vpcs []*ec2.Vpc, c *[]types.Check) {
-	logger.Info("Running AWS_VPC_002")
+func checkIfVPCFLowLogsEnabled(s *session.Session, vpcs []*ec2.Vpc, testName string, c *[]types.Check) {
+	logger.Info(fmt.Sprint("Running ", testName))
 	var check types.Check
 	check.Name = "VPC Flow Logs"
-	check.Id = "AWS_VPC_002"
+	check.Id = testName
 	check.Description = "Check if VPC Flow Logs are enabled"
 	check.Status = "OK"
 	svc := ec2.New(s)
@@ -91,11 +93,11 @@ func checkIfVPCFLowLogsEnabled(s *session.Session, vpcs []*ec2.Vpc, c *[]types.C
 	*c = append(*c, check)
 }
 
-func checkIfOnlyOneGateway(s *session.Session, vpcs []*ec2.Vpc, c *[]types.Check) {
-	logger.Info("Running AWS_VPC_003")
+func checkIfOnlyOneGateway(s *session.Session, vpcs []*ec2.Vpc, testName string, c *[]types.Check) {
+	logger.Info(fmt.Sprint("Running ", testName))
 	var check types.Check
 	check.Name = "VPC Gateway"
-	check.Id = "AWS_VPC_003"
+	check.Id = testName
 	check.Description = "Check if VPC has only one gateway"
 	check.Status = "OK"
 	svc := ec2.New(s)
@@ -128,11 +130,11 @@ func checkIfOnlyOneGateway(s *session.Session, vpcs []*ec2.Vpc, c *[]types.Check
 	*c = append(*c, check)
 }
 
-func checkIfOnlyOneVPC(s *session.Session, vpcs []*ec2.Vpc, c *[]types.Check) {
-	logger.Info("Running AWS_VPC_004")
+func checkIfOnlyOneVPC(s *session.Session, vpcs []*ec2.Vpc, testName string, c *[]types.Check) {
+	logger.Info(fmt.Sprint("Running ", testName))
 	var check types.Check
 	check.Name = "VPC Only One"
-	check.Id = "AWS_VPC_004"
+	check.Id = testName
 	check.Description = "Check if VPC has only one VPC"
 	check.Status = "OK"
 	for _, vpc := range vpcs {
@@ -151,12 +153,12 @@ func checkIfOnlyOneVPC(s *session.Session, vpcs []*ec2.Vpc, c *[]types.Check) {
 	*c = append(*c, check)
 }
 
-func RunVPCTests(s *session.Session) []types.Check {
+func RunVPCTests(s *session.Session, c *config.Config) []types.Check {
 	var checks []types.Check
 	vpcs := GetListVPC(s)
-	checkCIDR20(s, vpcs, &checks)
-	checkIfVPCFLowLogsEnabled(s, vpcs, &checks)
-	checkIfOnlyOneGateway(s, vpcs, &checks)
-	checkIfOnlyOneVPC(s, vpcs, &checks)
+	config.CheckTest(c, "AWS_VPC_001", checkCIDR20)(s, vpcs, "AWS_VPC_001", &checks)
+	config.CheckTest(c, "AWS_VPC_002", checkIfOnlyOneVPC)(s, vpcs, "AWS_VPC_002", &checks)
+	config.CheckTest(c, "AWS_VPC_003", checkIfOnlyOneGateway)(s, vpcs, "AWS_VPC_003", &checks)
+	config.CheckTest(c, "AWS_VPC_004", checkIfVPCFLowLogsEnabled)(s, vpcs, "AWS_VPC_004", &checks)
 	return checks
 }

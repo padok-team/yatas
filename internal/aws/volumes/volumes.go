@@ -1,8 +1,11 @@
 package volumes
 
 import (
+	"fmt"
+
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
+	"github.com/stangirard/yatas/internal/config"
 	"github.com/stangirard/yatas/internal/logger"
 	"github.com/stangirard/yatas/internal/types"
 )
@@ -17,11 +20,11 @@ func GetVolumes(s *session.Session) []*ec2.Volume {
 	return result.Volumes
 }
 
-func checkIfEncryptionEnabled(s *session.Session, volumes []*ec2.Volume, c *[]types.Check) {
-	logger.Info("Running AWS_VOL_001")
+func checkIfEncryptionEnabled(s *session.Session, volumes []*ec2.Volume, testName string, c *[]types.Check) {
+	logger.Info(fmt.Sprint("Running ", testName))
 	var check types.Check
 	check.Name = "EC2 Volumes Encryption"
-	check.Id = "AWS_VOL_001"
+	check.Id = testName
 	check.Description = "Check if EC2 encryption is enabled"
 	check.Status = "OK"
 	svc := ec2.New(s)
@@ -47,11 +50,11 @@ func checkIfEncryptionEnabled(s *session.Session, volumes []*ec2.Volume, c *[]ty
 	*c = append(*c, check)
 }
 
-func CheckIfVolumesTypeGP3(s *session.Session, volumes []*ec2.Volume, c *[]types.Check) {
-	logger.Info("Running AWS_VOL_005")
+func CheckIfVolumesTypeGP3(s *session.Session, volumes []*ec2.Volume, testName string, c *[]types.Check) {
+	logger.Info(fmt.Sprint("Running ", testName))
 	var check types.Check
 	check.Name = "EC2 Volumes Type"
-	check.Id = "AWS_VOL_005"
+	check.Id = testName
 	check.Description = "Check if all volumes are of type gp3"
 	check.Status = "OK"
 	for _, volume := range volumes {
@@ -69,15 +72,20 @@ func CheckIfVolumesTypeGP3(s *session.Session, volumes []*ec2.Volume, c *[]types
 	*c = append(*c, check)
 }
 
-func RunVolumesTest(s *session.Session) []types.Check {
+func RunVolumesTest(s *session.Session, c *config.Config) []types.Check {
 	var checks []types.Check
 	logger.Debug("Starting EC2 volumes tests")
 	volumes := GetVolumes(s)
 	snapshots := GetSnapshots(s)
-	checkIfEncryptionEnabled(s, volumes, &checks)
-	CheckIfAllVolumesHaveSnapshots(s, volumes, &checks)
-	CheckIfAllSnapshotsEncrypted(s, snapshots, &checks)
-	CheckIfVolumesTypeGP3(s, volumes, &checks)
-	CheckIfSnapshotYoungerthan24h(s, snapshots, &checks)
+
+	config.CheckTest(c, "AWS_VOL_001", checkIfEncryptionEnabled)(s, volumes, "AWS_VOL_001", &checks)
+	config.CheckTest(c, "AWS_VOL_002", CheckIfVolumesTypeGP3)(s, volumes, "AWS_VOL_002", &checks)
+	config.CheckTest(c, "AWS_VOL_003", checkIfEncryptionEnabled)(s, volumes, "AWS_VOL_003", &checks)
+	config.CheckTest(c, "AWS_VOL_004", CheckIfAllVolumesHaveSnapshots)(s, volumes, "AWS_VOL_003", &checks)
+	config.CheckTest(c, "AWS_VOL_005", CheckIfVolumesTypeGP3)(s, volumes, "AWS_VOL_003", &checks)
+
+	config.CheckTest(c, "AWS_BAK_001", CheckIfAllSnapshotsEncrypted)(s, snapshots, "AWS_VOL_003", &checks)
+	config.CheckTest(c, "AWS_BAK_002", CheckIfSnapshotYoungerthan24h)(s, snapshots, "AWS_VOL_004", &checks)
+
 	return checks
 }

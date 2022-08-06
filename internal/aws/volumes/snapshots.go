@@ -1,6 +1,7 @@
 package volumes
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -22,11 +23,11 @@ func GetSnapshots(s *session.Session) []*ec2.Snapshot {
 	return result.Snapshots
 }
 
-func CheckIfAllVolumesHaveSnapshots(s *session.Session, volumes []*ec2.Volume, c *[]types.Check) {
-	logger.Info("Running AWS_VOL_002")
+func CheckIfAllVolumesHaveSnapshots(s *session.Session, volumes []*ec2.Volume, testName string, c *[]types.Check) {
+	logger.Info(fmt.Sprint("Running ", testName))
 	var check types.Check
 	check.Name = "EC2 Volumes Snapshots"
-	check.Id = "AWS_VOL_002"
+	check.Id = testName
 	check.Description = "Check if all volumes have snapshots"
 	check.Status = "OK"
 	snapshots := GetSnapshots(s)
@@ -51,11 +52,11 @@ func CheckIfAllVolumesHaveSnapshots(s *session.Session, volumes []*ec2.Volume, c
 	*c = append(*c, check)
 }
 
-func CheckIfAllSnapshotsEncrypted(s *session.Session, snapshots []*ec2.Snapshot, c *[]types.Check) {
-	logger.Info("Running AWS_VOL_003")
+func CheckIfAllSnapshotsEncrypted(s *session.Session, snapshots []*ec2.Snapshot, testName string, c *[]types.Check) {
+	logger.Info(fmt.Sprint("Running ", testName))
 	var check types.Check
 	check.Name = "EC2 Snapshots Encryption"
-	check.Id = "AWS_VOL_003"
+	check.Id = testName
 	check.Description = "Check if all snapshots are encrypted"
 	check.Status = "OK"
 	for _, snapshot := range snapshots {
@@ -73,11 +74,11 @@ func CheckIfAllSnapshotsEncrypted(s *session.Session, snapshots []*ec2.Snapshot,
 	*c = append(*c, check)
 }
 
-func CheckIfSnapshotYoungerthan24h(s *session.Session, snapshots []*ec2.Snapshot, c *[]types.Check) {
-	logger.Info("Running AWS_VOL_005")
+func CheckIfSnapshotYoungerthan24h(s *session.Session, snapshots []*ec2.Snapshot, testName string, c *[]types.Check) {
+	logger.Info(fmt.Sprint("Running ", testName))
 	var check types.Check
 	check.Name = "EC2 Snapshots Age"
-	check.Id = "AWS_VOL_004"
+	check.Id = testName
 	check.Description = "Check if all snapshots are younger than 24h"
 	check.Status = "OK"
 	for _, snapshot := range snapshots {

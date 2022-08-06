@@ -18,21 +18,21 @@ import (
 func Run(c *config.Config) ([]types.Check, error) {
 	s := initAuth(c)
 	logger.Info("Launching AWS checks")
-	checks := initTest(s)
+	checks := initTest(s, c)
 	return checks, nil
 }
 
-func initTest(s *session.Session) []types.Check {
+func initTest(s *session.Session, c *config.Config) []types.Check {
 
 	var checks []types.Check
-	checks = append(checks, s3.RunS3Test(s)...)
-	checks = append(checks, volumes.RunVolumesTest(s)...)
-	checks = append(checks, rds.RunRDSTests(s)...)
-	checks = append(checks, vpc.RunVPCTests(s)...)
-	checks = append(checks, cloudtrail.RunCloudtrailTests(s)...)
-	checks = append(checks, ecr.RunECRTests(s)...)
-	checks = append(checks, lambda.RunLambdaTests(s)...)
-	checks = append(checks, dynamodb.RunDynamodbTests(s)...)
+	checks = append(checks, s3.RunS3Test(s, c)...)
+	checks = append(checks, volumes.RunVolumesTest(s, c)...)
+	checks = append(checks, rds.RunRDSTests(s, c)...)
+	checks = append(checks, vpc.RunVPCTests(s, c)...)
+	checks = append(checks, cloudtrail.RunCloudtrailTests(s, c)...)
+	checks = append(checks, ecr.RunECRTests(s, c)...)
+	checks = append(checks, lambda.RunLambdaTests(s, c)...)
+	checks = append(checks, dynamodb.RunDynamodbTests(s, c)...)
 	logger.Info("AWS checks completed ✅")
 
 	return checks

@@ -1,9 +1,12 @@
 package lambda
 
 import (
+	"fmt"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/lambda"
+	"github.com/stangirard/yatas/internal/config"
 	"github.com/stangirard/yatas/internal/logger"
 	"github.com/stangirard/yatas/internal/types"
 )
@@ -20,11 +23,11 @@ func GetLambdas(s *session.Session) []*lambda.FunctionConfiguration {
 	return result.Functions
 }
 
-func CheckIfLambdaPrivate(s *session.Session, lambdas []*lambda.FunctionConfiguration, c *[]types.Check) {
-	logger.Info("Running AWS_LMD_001")
+func CheckIfLambdaPrivate(s *session.Session, lambdas []*lambda.FunctionConfiguration, testName string, c *[]types.Check) {
+	logger.Info(fmt.Sprint("Running ", testName))
 	var check types.Check
 	check.Name = "Lambda Private"
-	check.Id = "AWS_LMD_001"
+	check.Id = testName
 	check.Description = "Check if all Lambdas are private"
 	check.Status = "OK"
 	for _, lambda := range lambdas {
@@ -42,11 +45,11 @@ func CheckIfLambdaPrivate(s *session.Session, lambdas []*lambda.FunctionConfigur
 	*c = append(*c, check)
 }
 
-func CheckIfLambdaInSecurityGroup(s *session.Session, lambdas []*lambda.FunctionConfiguration, c *[]types.Check) {
-	logger.Info("Running AWS_LMD_002")
+func CheckIfLambdaInSecurityGroup(s *session.Session, lambdas []*lambda.FunctionConfiguration, testName string, c *[]types.Check) {
+	logger.Info(fmt.Sprint("Running ", testName))
 	var check types.Check
 	check.Name = "Lambda In Security Group"
-	check.Id = "AWS_LMD_002"
+	check.Id = testName
 	check.Description = "Check if all Lambdas are in a security group"
 	check.Status = "OK"
 	for _, lambda := range lambdas {
@@ -64,10 +67,10 @@ func CheckIfLambdaInSecurityGroup(s *session.Session, lambdas []*lambda.Function
 	*c = append(*c, check)
 }
 
-func RunLambdaTests(s *session.Session) []types.Check {
+func RunLambdaTests(s *session.Session, c *config.Config) []types.Check {
 	var checks []types.Check
 	lambdas := GetLambdas(s)
-	CheckIfLambdaPrivate(s, lambdas, &checks)
-	CheckIfLambdaInSecurityGroup(s, lambdas, &checks)
+	config.CheckTest(c, "AWS_LMD_001", CheckIfLambdaPrivate)(s, lambdas, "AWS_LMD_001", &checks)
+	config.CheckTest(c, "AWS_LMD_002", CheckIfLambdaInSecurityGroup)(s, lambdas, "AWS_LMD_002", &checks)
 	return checks
 }

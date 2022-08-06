@@ -1,9 +1,12 @@
 package ecr
 
 import (
+	"fmt"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ecr"
+	"github.com/stangirard/yatas/internal/config"
 	"github.com/stangirard/yatas/internal/logger"
 	"github.com/stangirard/yatas/internal/types"
 )
@@ -20,11 +23,11 @@ func GetECRs(s *session.Session) []*ecr.Repository {
 	return result.Repositories
 }
 
-func CheckIfImageScanningEnabled(s *session.Session, ecr []*ecr.Repository, c *[]types.Check) {
-	logger.Info("Running AWS_ECR_001")
+func CheckIfImageScanningEnabled(s *session.Session, ecr []*ecr.Repository, testName string, c *[]types.Check) {
+	logger.Info(fmt.Sprint("Running ", testName))
 	var check types.Check
 	check.Name = "Image Scanning Enabled"
-	check.Id = "AWS_ECR_001"
+	check.Id = testName
 	check.Description = "Check if all ECRs have image scanning enabled"
 	check.Status = "OK"
 	for _, ecr := range ecr {
@@ -42,9 +45,9 @@ func CheckIfImageScanningEnabled(s *session.Session, ecr []*ecr.Repository, c *[
 	*c = append(*c, check)
 }
 
-func RunECRTests(s *session.Session) []types.Check {
+func RunECRTests(s *session.Session, c *config.Config) []types.Check {
 	var checks []types.Check
 	ecr := GetECRs(s)
-	CheckIfImageScanningEnabled(s, ecr, &checks)
+	config.CheckTest(c, "AWS_ECR_001", CheckIfImageScanningEnabled)(s, ecr, "AWS_CLD_001", &checks)
 	return checks
 }
