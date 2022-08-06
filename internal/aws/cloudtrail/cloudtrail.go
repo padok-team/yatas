@@ -1,6 +1,8 @@
 package cloudtrail
 
 import (
+	"fmt"
+
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/cloudtrail"
@@ -17,6 +19,7 @@ func GetCloudtrails(s *session.Session) []*cloudtrail.Trail {
 	if err != nil {
 		panic(err)
 	}
+	fmt.Println(result)
 	return result.TrailList
 }
 
@@ -28,7 +31,7 @@ func CheckIfCloudtrailsEncrypted(s *session.Session, cloudtrails []*cloudtrail.T
 	check.Description = "Check if all cloudtrails are encrypted"
 	check.Status = "OK"
 	for _, cloudtrail := range cloudtrails {
-		if *cloudtrail.KmsKeyId != "" {
+		if cloudtrail.KmsKeyId == nil || *cloudtrail.KmsKeyId == "" {
 			check.Status = "FAIL"
 			status := "FAIL"
 			Message := "Cloudtrail " + *cloudtrail.Name + " is not encrypted"
