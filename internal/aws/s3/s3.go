@@ -26,6 +26,7 @@ func GetListS3(s *session.Session) []*s3.Bucket {
 }
 
 func checkIfEncryptionEnabled(s *session.Session, buckets []*s3.Bucket, c *[]types.Check) {
+	logger.Info("Running AWS_S3_001")
 	var check types.Check
 	check.Name = "S3 Encryption"
 	check.Id = "AWS_S3_001"
@@ -58,6 +59,7 @@ func checkIfEncryptionEnabled(s *session.Session, buckets []*s3.Bucket, c *[]typ
 }
 
 func CheckIfBucketInOneZone(s *session.Session, buckets []*s3.Bucket, c *[]types.Check) {
+	logger.Info("Running AWS_S3_002")
 	var check types.Check
 	check.Name = "S3 Bucket in one zone"
 	check.Id = "AWS_S3_002"
@@ -87,10 +89,10 @@ func CheckS3Location(s *session.Session, bucket, region string) bool {
 	}
 	resp, err := svc.GetBucketLocation(params)
 	if err != nil {
+		logger.Error(fmt.Sprintf("%v", err))
 		return false
 	}
 	logger.Debug(fmt.Sprintf("%v", resp))
-	logger.Error(fmt.Sprintf("%v", err))
 
 	if resp.LocationConstraint == nil {
 		return false

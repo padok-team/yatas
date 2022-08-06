@@ -18,6 +18,7 @@ func GetVolumes(s *session.Session) []*ec2.Volume {
 }
 
 func checkIfEncryptionEnabled(s *session.Session, volumes []*ec2.Volume, c *[]types.Check) {
+	logger.Info("Running AWS_VOL_001")
 	var check types.Check
 	check.Name = "EC2 Volumes Encryption"
 	check.Id = "AWS_VOL_001"
@@ -51,5 +52,6 @@ func RunVolumesTest(s *session.Session) []types.Check {
 	logger.Debug("Starting EC2 volumes tests")
 	volumes := GetVolumes(s)
 	checkIfEncryptionEnabled(s, volumes, &checks)
+	CheckIfAllVolumesHaveSnapshots(s, volumes, &checks)
 	return checks
 }

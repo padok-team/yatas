@@ -7,6 +7,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
+	"github.com/stangirard/yatas/internal/logger"
 	"github.com/stangirard/yatas/internal/types"
 )
 
@@ -21,6 +22,7 @@ func GetListVPC(s *session.Session) []*ec2.Vpc {
 }
 
 func checkCIDR20(s *session.Session, vpcs []*ec2.Vpc, c *[]types.Check) {
+	logger.Info("Running AWS_VPC_001")
 	var check types.Check
 	check.Name = "VPC CIDR"
 	check.Id = "AWS_VPC_001"
@@ -53,6 +55,7 @@ func checkCIDR20(s *session.Session, vpcs []*ec2.Vpc, c *[]types.Check) {
 }
 
 func checkIfVPCFLowLogsEnabled(s *session.Session, vpcs []*ec2.Vpc, c *[]types.Check) {
+	logger.Info("Running AWS_VPC_002")
 	var check types.Check
 	check.Name = "VPC Flow Logs"
 	check.Id = "AWS_VPC_002"
@@ -89,6 +92,7 @@ func checkIfVPCFLowLogsEnabled(s *session.Session, vpcs []*ec2.Vpc, c *[]types.C
 }
 
 func checkIfOnlyOneGateway(s *session.Session, vpcs []*ec2.Vpc, c *[]types.Check) {
+	logger.Info("Running AWS_VPC_003")
 	var check types.Check
 	check.Name = "VPC Gateway"
 	check.Id = "AWS_VPC_003"
@@ -125,6 +129,7 @@ func checkIfOnlyOneGateway(s *session.Session, vpcs []*ec2.Vpc, c *[]types.Check
 }
 
 func checkIfOnlyOneVPC(s *session.Session, vpcs []*ec2.Vpc, c *[]types.Check) {
+	logger.Info("Running AWS_VPC_004")
 	var check types.Check
 	check.Name = "VPC Only One"
 	check.Id = "AWS_VPC_004"

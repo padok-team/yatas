@@ -24,6 +24,7 @@ func GetListRDS(s *session.Session) []*rds.DBInstance {
 }
 
 func checkIfEncryptionEnabled(s *session.Session, instances []*rds.DBInstance, c *[]types.Check) {
+	logger.Info("Running AWS_RDS_001")
 	var check types.Check
 	check.Name = "RDS Encryption"
 	check.Id = "AWS_RDS_001"
@@ -53,6 +54,7 @@ func checkIfEncryptionEnabled(s *session.Session, instances []*rds.DBInstance, c
 }
 
 func checkIfBackupEnabled(s *session.Session, instances []*rds.DBInstance, c *[]types.Check) {
+	logger.Info("Running AWS_RDS_002")
 	var check types.Check
 	check.Name = "RDS Backup"
 	check.Id = "AWS_RDS_002"
@@ -82,6 +84,7 @@ func checkIfBackupEnabled(s *session.Session, instances []*rds.DBInstance, c *[]
 }
 
 func checkIfAutoUpgradeEnabled(s *session.Session, instances []*rds.DBInstance, c *[]types.Check) {
+	logger.Info("Running AWS_RDS_003")
 	var check types.Check
 	check.Name = "RDS Minor Auto Upgrade"
 	check.Id = "AWS_RDS_003"
@@ -111,6 +114,7 @@ func checkIfAutoUpgradeEnabled(s *session.Session, instances []*rds.DBInstance, 
 }
 
 func checkIfRDSPrivateEnabled(s *session.Session, instances []*rds.DBInstance, c *[]types.Check) {
+	logger.Info("Running AWS_RDS_004")
 	var check types.Check
 	check.Name = "RDS Private"
 	check.Id = "AWS_RDS_004"
