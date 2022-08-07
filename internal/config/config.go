@@ -13,6 +13,12 @@ type Plugin struct {
 	Exclude     []string `yaml:"exclude"`
 }
 
+type Ignore struct {
+	ID     string   `yaml:"id"`
+	Regex  bool     `yaml:"regex"`
+	Values []string `yaml:"values"`
+}
+
 type Config struct {
 	Plugins []Plugin `yaml:"plugins"`
 	AWS     struct {
@@ -23,6 +29,7 @@ type Config struct {
 			Region  string `yaml:"region"`
 		} `yaml:"account"`
 	} `yaml:"aws"`
+	Ignore   []Ignore `yaml:"ignore"`
 	Progress *progressbar.ProgressBar
 }
 

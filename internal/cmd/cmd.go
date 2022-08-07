@@ -26,6 +26,7 @@ func Execute() error {
 		config.Progress = progressbar.Default(-1)
 	}
 	checks, err := plugins.Execute(&config)
+	checks = report.RemoveIgnored(&config, checks)
 	if err != nil {
 		return err
 	}

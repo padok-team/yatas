@@ -40,6 +40,31 @@ Flags:
 
 ## Checks 
 
+You can ignore results of checks by add the following to your `.yatas.yml` file:
+
+```yaml
+ignore:
+  - id: "AWS_VPC_004"
+    regex: true
+    values: 
+      - "VPC Flow Logs are not enabled on vpc-.*"
+  - id: "AWS_VPC_003"
+    regex: false
+    values: 
+      - "VPC has only one gateway on vpc-08ffec87e034a8953"
+```
+
+You can exclude a test by adding the following to your `.yatas.yml` file:
+
+```yaml
+plugins:
+  - name: "aws"
+    enabled: true
+    description: "Check for AWS good practices"
+    exclude:
+      - AWS_S3_001
+```
+
 ### AWS - 25 Checks
 
 - AWS_S3_001 S3 Encryption

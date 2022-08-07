@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
+	"regexp"
 
 	"github.com/fatih/color"
 	"github.com/stangirard/yatas/internal/config"
@@ -31,6 +32,42 @@ func countResultOkOverall(results []types.Result) (int, int) {
 	return ok, all
 }
 
+func IsIgnored(c *config.Config, r types.Result, check types.Check) bool {
+	for _, ignored := range c.Ignore {
+		if ignored.ID == check.Id {
+			for i := range ignored.Values {
+				if ignored.Regex && regexp.MustCompile(ignored.Values[i]).MatchString(r.Message) {
+					return true
+				} else if !ignored.Regex && r.Message == ignored.Values[i] {
+					return true
+				}
+			}
+		}
+	}
+	return false
+}
+
+func RemoveIgnored(c *config.Config, checks []types.Check) []types.Check {
+	var newChecks []types.Check
+	for _, check := range checks {
+		var checktmp types.Check
+		checktmp.Id = check.Id
+		checktmp.Name = check.Name
+		checktmp.Status = "OK"
+		checktmp.Results = []types.Result{}
+		for _, result := range check.Results {
+			if !IsIgnored(c, result, check) {
+				if result.Status == "FAIL" {
+					checktmp.Status = "FAIL"
+				}
+				checktmp.Results = append(checktmp.Results, result)
+			}
+		}
+		newChecks = append(newChecks, checktmp)
+	}
+	return newChecks
+}
+
 func PrettyPrintChecks(checks []types.Check, c *config.Config) {
 	flag.Parse()
 	for _, check := range checks {
@@ -42,10 +79,11 @@ func PrettyPrintChecks(checks []types.Check, c *config.Config) {
 		fmt.Println(status[check.Status], check.Id, check.Name, "-", count)
 		if *details {
 			for _, result := range check.Results {
+
 				if result.Status == "FAIL" {
 					color.Red("\t" + result.Message)
 				} else {
-					fmt.Println("\t" + result.Message)
+					color.Green("\t" + result.Message)
 				}
 
 			}
