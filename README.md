@@ -67,7 +67,7 @@ plugins:
       - AWS_S3_001
 ```
 
-## Specify which tests to run 
+### Specify which tests to run 
 
 To only run a specific test, add the following to your `.yatas.yml` file:
 
@@ -79,6 +79,7 @@ plugins:
     include:
       - "AWS_VPC_003"
       - "AWS_VPC_004"
+```
 
 ### AWS - 25 Checks
 
