@@ -4,6 +4,9 @@ plugins:
     description: "Check for AWS good practices"
     exclude:
      # - AWS_S3_001
+    include:
+     # - "AWS_VPC_004"
+     # - "AWS_VPC_003"
 
 ignore:
   - id: "AWS_VPC_004"

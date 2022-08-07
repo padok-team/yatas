@@ -1,6 +1,8 @@
 package config
 
 import (
+	"strings"
+
 	"github.com/schollz/progressbar/v3"
 	"github.com/stangirard/yatas/internal/helpers"
 	"gopkg.in/yaml.v3"
@@ -11,6 +13,7 @@ type Plugin struct {
 	Enabled     bool     `yaml:"enabled"`
 	Description string   `yaml:"description"`
 	Exclude     []string `yaml:"exclude"`
+	Include     []string `yaml:"include"`
 }
 
 type Ignore struct {
@@ -44,6 +47,27 @@ func (c *Config) CheckExclude(id string) bool {
 	return false
 }
 
+func (c *Config) CheckInclude(id string) bool {
+	//Split Id at _ and get first value
+	idSplit := strings.Split(id, "_")[0]
+
+	for _, plugins := range c.Plugins {
+		if strings.ToUpper(plugins.Name) == idSplit {
+			if len(plugins.Include) == 0 {
+				return true
+			} else {
+				for _, include := range plugins.Include {
+					if include == id {
+						return true
+					}
+				}
+				return false
+			}
+		}
+	}
+	return true
+}
+
 func ParseConfig(configFile string) (Config, error) {
 	// Read the file .yatas.yml
 	// File to array of bytes
@@ -72,7 +96,7 @@ func CheckTest[A, B, C, D any](config *Config, id string, test func(A, B, C, D))
 	if config.Progress != nil {
 		config.Progress.Add(1)
 	}
-	if !config.CheckExclude(id) {
+	if !config.CheckExclude(id) && config.CheckInclude(id) {
 		return test
 	} else {
 		return func(A, B, C, D) {}

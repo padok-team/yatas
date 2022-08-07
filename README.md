@@ -40,6 +40,7 @@ Flags:
 
 ## Checks 
 
+### Ignore results for known issues
 You can ignore results of checks by add the following to your `.yatas.yml` file:
 
 ```yaml
@@ -54,6 +55,7 @@ ignore:
       - "VPC has only one gateway on vpc-08ffec87e034a8953"
 ```
 
+### Exclude a test
 You can exclude a test by adding the following to your `.yatas.yml` file:
 
 ```yaml
@@ -64,6 +66,19 @@ plugins:
     exclude:
       - AWS_S3_001
 ```
+
+## Specify which tests to run 
+
+To only run a specific test, add the following to your `.yatas.yml` file:
+
+```yaml
+plugins:
+  - name: "aws"
+    enabled: true
+    description: "Check for AWS good practices"
+    include:
+      - "AWS_VPC_003"
+      - "AWS_VPC_004"
 
 ### AWS - 25 Checks
 
