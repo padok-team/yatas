@@ -9,11 +9,15 @@ import (
 )
 
 type Plugin struct {
-	Name        string   `yaml:"name"`
-	Enabled     bool     `yaml:"enabled"`
-	Description string   `yaml:"description"`
-	Exclude     []string `yaml:"exclude"`
-	Include     []string `yaml:"include"`
+	Name           string   `yaml:"name"`
+	Enabled        bool     `yaml:"enabled"`
+	Description    string   `yaml:"description"`
+	Exclude        []string `yaml:"exclude"`
+	Include        []string `yaml:"include"`
+	Command        string   `yaml:"command"`
+	Args           []string `yaml:"args"`
+	ExpectedOutput string   `yaml:"expected_output"`
+	ExpectedStatus int      `yaml:"expected_status"`
 }
 
 type Ignore struct {

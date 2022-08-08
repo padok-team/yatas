@@ -2,9 +2,11 @@ package plugins
 
 import (
 	"fmt"
+	"regexp"
 
 	"github.com/stangirard/yatas/internal/aws"
 	"github.com/stangirard/yatas/internal/config"
+	"github.com/stangirard/yatas/internal/custom"
 	"github.com/stangirard/yatas/internal/logger"
 	"github.com/stangirard/yatas/internal/types"
 )
@@ -25,13 +27,21 @@ func runPlugins(c *config.Config, plugins []string) ([]types.Check, error) {
 	var checksAll []types.Check
 	for _, plugin := range plugins {
 		logger.Debug(fmt.Sprint("Running plugin: ", plugin))
-		switch plugin {
-		case "aws":
+		var commandPat = regexp.MustCompile(`custom.*`)
+		switch cmd := plugin; {
+		case cmd == "aws":
 			checks, err := aws.Run(c)
 			checksAll = append(checksAll, checks...)
 			if err != nil {
 				return nil, err
 			}
+		case commandPat.MatchString(plugin):
+			checks, err := custom.Run(c, cmd)
+			checksAll = append(checksAll, checks...)
+			if err != nil {
+				return nil, err
+			}
+
 		default:
 			logger.Error(fmt.Sprint("Plugin not found: ", plugin))
 		}

@@ -86,12 +86,10 @@ func RunVolumesTest(s *session.Session, c *config.Config) []types.Check {
 
 	config.CheckTest(c, "AWS_VOL_001", checkIfEncryptionEnabled)(s, volumes, "AWS_VOL_001", &checks)
 	config.CheckTest(c, "AWS_VOL_002", CheckIfVolumesTypeGP3)(s, volumes, "AWS_VOL_002", &checks)
-	config.CheckTest(c, "AWS_VOL_003", checkIfEncryptionEnabled)(s, volumes, "AWS_VOL_003", &checks)
-	config.CheckTest(c, "AWS_VOL_004", CheckIfAllVolumesHaveSnapshots)(s, volumes, "AWS_VOL_003", &checks)
-	config.CheckTest(c, "AWS_VOL_005", CheckIfVolumesTypeGP3)(s, volumes, "AWS_VOL_003", &checks)
+	config.CheckTest(c, "AWS_VOL_003", CheckIfAllVolumesHaveSnapshots)(s, volumes, "AWS_VOL_004", &checks)
 
-	config.CheckTest(c, "AWS_BAK_001", CheckIfAllSnapshotsEncrypted)(s, snapshots, "AWS_VOL_003", &checks)
-	config.CheckTest(c, "AWS_BAK_002", CheckIfSnapshotYoungerthan24h)(s, couples, "AWS_VOL_004", &checks)
+	config.CheckTest(c, "AWS_BAK_001", CheckIfAllSnapshotsEncrypted)(s, snapshots, "AWS_BAK_001", &checks)
+	config.CheckTest(c, "AWS_BAK_002", CheckIfSnapshotYoungerthan24h)(s, couples, "AWS_BAK_002", &checks)
 
 	return checks
 }
