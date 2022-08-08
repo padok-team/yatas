@@ -144,6 +144,53 @@ func checkIfRDSPrivateEnabled(s *session.Session, instances []*rds.DBInstance, t
 	*c = append(*c, check)
 }
 
+func CheckIfLoggingEnabled(s *session.Session, instances []*rds.DBInstance, testName string, c *[]types.Check) {
+	logger.Info(fmt.Sprint("Running ", testName))
+	var check types.Check
+	check.Name = "RDS Logging"
+	check.Id = testName
+	check.Description = "Check if RDS logging is enabled"
+	check.Status = "OK"
+	for _, instance := range instances {
+		if instance.EnabledCloudwatchLogsExports != nil {
+			for _, export := range instance.EnabledCloudwatchLogsExports {
+				if *export == "audit" {
+					status := "OK"
+					Message := "RDS logging is enabled on " + *instance.DBInstanceIdentifier
+					check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *instance.DBInstanceArn})
+				}
+			}
+		} else {
+			check.Status = "FAIL"
+			status := "FAIL"
+			Message := "RDS logging is not enabled on " + *instance.DBInstanceIdentifier
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *instance.DBInstanceArn})
+		}
+	}
+	*c = append(*c, check)
+}
+
+func CheckIfDeleteProtectionEnabled(s *session.Session, instances []*rds.DBInstance, testName string, c *[]types.Check) {
+	logger.Info(fmt.Sprint("Running ", testName))
+	var check types.Check
+	check.Name = "RDS Delete Protection"
+	check.Id = testName
+	check.Description = "Check if RDS delete protection is enabled"
+	check.Status = "OK"
+	for _, instance := range instances {
+		if *instance.DeletionProtection {
+			status := "OK"
+			Message := "RDS delete protection is enabled on " + *instance.DBInstanceIdentifier
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *instance.DBInstanceArn})
+		} else {
+			status := "FAIL"
+			Message := "RDS delete protection is not enabled on " + *instance.DBInstanceIdentifier
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *instance.DBInstanceArn})
+		}
+	}
+	*c = append(*c, check)
+}
+
 func RunRDSTests(s *session.Session, c *config.Config) []types.Check {
 	var checks []types.Check
 	instances := GetListRDS(s)
@@ -151,6 +198,8 @@ func RunRDSTests(s *session.Session, c *config.Config) []types.Check {
 	config.CheckTest(c, "AWS_RDS_002", checkIfBackupEnabled)(s, instances, "AWS_RDS_002", &checks)
 	config.CheckTest(c, "AWS_RDS_003", checkIfAutoUpgradeEnabled)(s, instances, "AWS_RDS_003", &checks)
 	config.CheckTest(c, "AWS_RDS_004", checkIfRDSPrivateEnabled)(s, instances, "AWS_RDS_004", &checks)
+	config.CheckTest(c, "AWS_RDS_005", CheckIfLoggingEnabled)(s, instances, "AWS_RDS_005", &checks)
+	config.CheckTest(c, "AWS_RDS_006", CheckIfDeleteProtectionEnabled)(s, instances, "AWS_RDS_006", &checks)
 
 	return checks
 }
