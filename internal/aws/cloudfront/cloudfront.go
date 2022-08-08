@@ -43,9 +43,33 @@ func CheckIfCloudfrontTLS1_2Minimum(s *session.Session, d []*cloudfront.Distribu
 	*c = append(*c, check)
 }
 
+func CheckIfHTTPSOnly(s *session.Session, d []*cloudfront.DistributionSummary, testName string, c *[]types.Check) {
+	logger.Info(fmt.Sprint("Running ", testName))
+	var check types.Check
+	check.Name = "Cloudfront HTTPS Only"
+	check.Id = testName
+	check.Description = "Check if all cloudfront distributions are HTTPS only"
+	check.Status = "OK"
+	for _, cloudfront := range d {
+		if cloudfront.DefaultCacheBehavior != nil && *cloudfront.DefaultCacheBehavior.ViewerProtocolPolicy == "https-only" || *cloudfront.DefaultCacheBehavior.ViewerProtocolPolicy == "redirect-to-https" {
+			check.Status = "OK"
+			status := "OK"
+			Message := "Cloudfront distribution is HTTPS only on " + *cloudfront.Id
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *cloudfront.Id})
+		} else {
+			status := "FAIL"
+			Message := "Cloudfront distribution is not HTTPS only on " + *cloudfront.Id
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *cloudfront.Id})
+		}
+	}
+
+	*c = append(*c, check)
+}
+
 func RunCloudFrontTests(s *session.Session, c *config.Config) []types.Check {
 	var checks []types.Check
 	d := GetAllCloudfront(s)
 	config.CheckTest(c, "AWS_CFT_001", CheckIfCloudfrontTLS1_2Minimum)(s, d, "AWS_CFT_001", &checks)
+	config.CheckTest(c, "AWS_CFT_002", CheckIfHTTPSOnly)(s, d, "AWS_CFT_002", &checks)
 	return checks
 }
