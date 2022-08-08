@@ -113,6 +113,7 @@ plugins:
 - AWS_EC2_001 EC2 Public IP
 - AWS_IAM_001 IAM 2FA
 - AWS_IAM_002 IAM Access Key Age
+- AWS_IAM_003 IAM User Can Elevate Rights
 - AWS_CFT_001 TLS 1.2 Minimum
 - AWS_CFT_002 Cloudfront HTTPS Only
 - AWS_CFT_003 Standard Logging Enabled

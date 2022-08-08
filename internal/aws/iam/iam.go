@@ -86,13 +86,40 @@ func CheckAgeAccessKeyLessThan90Days(s *session.Session, users []*iam.User, test
 	*c = append(*c, check)
 }
 
+func CheckIfUserCanElevateRights(s *session.Session, users []*iam.User, testName string, c *[]types.Check) {
+	logger.Info(fmt.Sprint("Running ", testName))
+	var check types.Check
+	check.Name = "IAM User Can Elevate Rights"
+	check.Id = testName
+	check.Description = "Check if  users can elevate rights"
+	check.Status = "OK"
+	for _, user := range users {
+		elevation := CheckPolicyForAllowInRequiredPermission(GetAllPolicyForUser(s, users[0]), requiredPermissions)
+		if len(elevation) > 0 {
+			check.Status = "FAIL"
+			status := "FAIL"
+			var Message string
+			if len(elevation) > 3 {
+				Message = "User " + *user.UserName + " can elevate rights with " + fmt.Sprint(elevation[len(elevation)-3:]) + " only last 3 policies"
+			} else {
+				Message = "User " + *user.UserName + " can elevate rights with " + fmt.Sprint(elevation)
+			}
+
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *user.UserName})
+		} else {
+			status := "OK"
+			Message := "User " + *user.UserName + " cannot elevate rights"
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *user.UserName})
+		}
+	}
+	*c = append(*c, check)
+}
+
 func RunIAMTests(s *session.Session, c *config.Config) []types.Check {
 	var checks []types.Check
 	users := GetAllUsers(s)
-	fmt.Println("Users: ", users[0])
 	config.CheckTest(c, "AWS_IAM_001", CheckIf2FAActivated)(s, users, "AWS_IAM_001", &checks)
 	config.CheckTest(c, "AWS_IAM_002", CheckAgeAccessKeyLessThan90Days)(s, users, "AWS_IAM_002", &checks)
-	policies := GetPolicyAttachedToUser(s, users[0])
-	fmt.Println(JsonDecodePolicyDocument(GetPolicyDocument(s, policies[2].PolicyArn)))
+	config.CheckTest(c, "AWS_IAM_003", CheckIfUserCanElevateRights)(s, users, "AWS_IAM_003", &checks)
 	return checks
 }

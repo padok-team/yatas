@@ -1,9 +1,9 @@
 package iam
 
 import (
-	"encoding/json"
-	"fmt"
 	"net/url"
+	"regexp"
+	"strings"
 
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/iam"
@@ -59,19 +59,67 @@ func GetPolicyDocument(s *session.Session, policyArn *string) *string {
 	return result.PolicyVersion.Document
 }
 
-func JsonDecodePolicyDocument(policyDocumentJson *string) PolicyDocument {
+func JsonDecodePolicyDocument(policyDocumentJson *string) Policy {
 	// URL Decode the policy document
-	var policyDocument PolicyDocument
-	decodedValue, err := url.QueryUnescape(*policyDocumentJson)
-	if err != nil {
-		panic(err)
-	}
-	// JSON Decode the policy document
-	err = json.Unmarshal([]byte(decodedValue), &policyDocument)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println(policyDocument)
+	var policyDocument Policy
+	decodedValue, _ := url.QueryUnescape(*policyDocumentJson)
+	policyDocument.UnmarshalJSON([]byte(decodedValue))
 	return policyDocument
 
+}
+
+func GetAllPolicyForUser(s *session.Session, user *iam.User) []Policy {
+	var policyList []Policy
+	for _, policy := range GetPolicyAttachedToUser(s, user) {
+		policyList = append(policyList, JsonDecodePolicyDocument(GetPolicyDocument(s, policy.PolicyArn)))
+	}
+	return policyList
+}
+
+func CheckPolicyForAllowInRequiredPermission(policies []Policy, requiredPermission [][]string) [][]string {
+	// Extract all allow statements from policy
+	allowStatements := make([]Statement, 0)
+	for _, policy := range policies {
+		for _, statement := range policy.Statements {
+			if statement.Effect == "Allow" {
+				allowStatements = append(allowStatements, statement)
+			}
+		}
+	}
+	var permissionElevationPossible = [][]string{}
+	// Check if any statement is in requiredPermissions
+	for _, permissions := range requiredPermissions {
+		// Create a map of permissions and false
+		permissionMap := make(map[string]bool)
+		for _, permission := range permissions {
+			permissionMap[permission] = false
+		}
+		for _, permission := range permissions {
+			for _, statement := range allowStatements {
+				for _, actions := range statement.Action {
+					actions = strings.ReplaceAll(actions, "*", ".*")
+					// If regex actions matches permission actions, return true
+					found, err := regexp.MatchString(actions, permission)
+					if err != nil {
+						panic(err)
+					}
+					if found {
+						permissionMap[permission] = true
+					}
+				}
+			}
+		}
+		// If all permissions are true, return true
+		permissionsBool := true
+		for _, permission := range permissionMap {
+			if !permission {
+				permissionsBool = false
+			}
+		}
+		if permissionsBool {
+			permissionElevationPossible = append(permissionElevationPossible, permissions)
+		}
+	}
+
+	return permissionElevationPossible
 }
