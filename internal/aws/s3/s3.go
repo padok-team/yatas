@@ -81,6 +81,70 @@ func CheckIfBucketInOneZone(s *session.Session, buckets []*s3.Bucket, testName s
 	*c = append(*c, check)
 }
 
+func CheckIfBucketObjectVersioningEnabled(s *session.Session, buckets []*s3.Bucket, testName string, c *[]types.Check) {
+	logger.Info(fmt.Sprint("Running ", testName))
+	var check types.Check
+	check.Name = "S3 Bucket object versioning"
+	check.Id = testName
+	check.Description = "Check if S3 buckets are using object versioning"
+	check.Status = "OK"
+	svc := s3.New(s)
+	for _, bucket := range buckets {
+		if !CheckS3Location(s, *bucket.Name, *s.Config.Region) {
+			continue
+		}
+		params := &s3.GetBucketVersioningInput{
+			Bucket: aws.String(*bucket.Name),
+		}
+		resp, err := svc.GetBucketVersioning(params)
+		if err != nil {
+			panic(err)
+		}
+		if (*resp == s3.GetBucketVersioningOutput{}) || (resp.Status != nil && *resp.Status != "Enabled") {
+			check.Status = "FAIL"
+			status := "FAIL"
+			Message := "S3 bucket " + *bucket.Name + " is not using object versioning"
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *bucket.Name})
+		} else {
+			status := "OK"
+			Message := "S3 bucket " + *bucket.Name + " is using object versioning"
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *bucket.Name})
+		}
+	}
+	*c = append(*c, check)
+}
+
+func CheckIfObjectLockConfigurationEnabled(s *session.Session, buckets []*s3.Bucket, testName string, c *[]types.Check) {
+	logger.Info(fmt.Sprint("Running ", testName))
+	var check types.Check
+	check.Name = "S3 Bucket retention policy"
+	check.Id = testName
+	check.Description = "Check if S3 buckets are using retention policy"
+	check.Status = "OK"
+	svc := s3.New(s)
+	for _, bucket := range buckets {
+		if !CheckS3Location(s, *bucket.Name, *s.Config.Region) {
+			continue
+		}
+		params := &s3.GetObjectLockConfigurationInput{
+			Bucket: aws.String(*bucket.Name),
+		}
+		resp, err := svc.GetObjectLockConfiguration(params)
+		if err != nil || (*resp == s3.GetObjectLockConfigurationOutput{}) || (resp.ObjectLockConfiguration != nil && resp.ObjectLockConfiguration.ObjectLockEnabled != nil && *resp.ObjectLockConfiguration.ObjectLockEnabled != "Enabled") {
+			check.Status = "FAIL"
+			status := "FAIL"
+			Message := "S3 bucket " + *bucket.Name + " is not using retention policy"
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *bucket.Name})
+
+		} else {
+			status := "OK"
+			Message := "S3 bucket " + *bucket.Name + " is using retention policy"
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *bucket.Name})
+		}
+	}
+	*c = append(*c, check)
+}
+
 func CheckS3Location(s *session.Session, bucket, region string) bool {
 	logger.Debug("Getting S3 location")
 	svc := s3.New(s)
@@ -115,5 +179,7 @@ func RunS3Test(s *session.Session, c *config.Config) []types.Check {
 	buckets := GetListS3(s)
 	config.CheckTest(c, "AWS_S3_001", checkIfEncryptionEnabled)(s, buckets, "AWS_S3_001", &checks)
 	config.CheckTest(c, "AWS_S3_002", CheckIfBucketInOneZone)(s, buckets, "AWS_S3_002", &checks)
+	config.CheckTest(c, "AWS_S3_003", CheckIfBucketObjectVersioningEnabled)(s, buckets, "AWS_S3_003", &checks)
+	config.CheckTest(c, "AWS_S3_004", CheckIfObjectLockConfigurationEnabled)(s, buckets, "AWS_S3_004", &checks)
 	return checks
 }
