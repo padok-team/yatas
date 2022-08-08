@@ -1,0 +1,33 @@
+package iam
+
+// Extracts all the value below  ### Required Permission(s) and ### Potential Impact and creates an array of objects with the values in golang format
+var requiredPermissions = [][]string{
+	{"iam:CreatePolicyVersion"},
+	{"iam:SetDefaultPolicyVersion"},
+	{"iam:PassRole", "ec2:RunInstances"},
+	{"iam:CreateAccessKey"},
+	{"iam:CreateLoginProfile"},
+	{"iam:UpdateLoginProfile"},
+	{"iam:AttachUserPolicy"},
+	{"iam:AttachGroupPolicy"},
+	{"iam:AttachRolePolicy"},
+	{"iam:PutUserPolicy"},
+	{"iam:PutGroupPolicy"},
+	{"iam:PutRolePolicy"},
+	{"iam:AddUserToGroup"},
+	{"iam:UpdateAssumeRolePolicy", "sts:AssumeRole"},
+	{"iam:PassRole", "lambda:CreateFunction", "lambda:InvokeFunction"},
+	{"iam:PassRole", "lambda:CreateFunction", "lambda:AddPermission"},
+	{"iam:PassRole", "lambda:CreateFunction", "lambda:CreateEventSource"},
+	{"lambda:UpdateFunctionCode"},
+	{"iam:PassRole", "glue:CreateDevEndpoint"},
+	{"glue:UpdateDevEndpoint"},
+	{"iam:PassRole", "cloudformation:CreateStack"},
+	{"iam:PassRole", "datapipeline:CreatePipeline", "datapipeline:PutPipeline"},
+	{"codestar:CreateProjectFromTemplate", "iam:PassRole"},
+	{"codestar:CreateProject", "iam:PassRole"},
+	{"codestar:CreateProject", "codeStar:AssociateTeamMember"},
+	{"lambda:UpdateFunctionConfiguration"},
+	{"sagemaker:CreateNotebookInstance", "sagemaker:CreatePresignedNotebookInstanceUrl", "iam:PassRole"},
+	{"sagemaker:CreatePresignedNotebookInstanceUrl"},
+}

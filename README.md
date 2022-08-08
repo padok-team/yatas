@@ -105,7 +105,7 @@ plugins:
 - AWS_CLD_001 Cloudtrails Encryption
 - AWS_CLD_002 Cloudtrails Global Service Events Activated
 - AWS_CLD_003 Cloudtrails Multi Region
-- AWS_CLD_001 Image Scanning Enabled
+- AWS_CLD_001 ECR Image Scanning Enabled
 - AWS_LMD_001 Lambda Private
 - AWS_LMD_002 Lambda In Security Group
 - AWS_DYN_001 Dynamodb Encryption
@@ -113,6 +113,7 @@ plugins:
 - AWS_EC2_001 EC2 Public IP
 - AWS_IAM_001 IAM 2FA
 - AWS_IAM_002 IAM Access Key Age
+- AWS_IAM_003 IAM User Can Elevate Rights
 - AWS_CFT_001 TLS 1.2 Minimum
 - AWS_CFT_002 Cloudfront HTTPS Only
 - AWS_CFT_003 Standard Logging Enabled
