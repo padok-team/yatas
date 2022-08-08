@@ -120,3 +120,4 @@ plugins:
 - AWS_APG_001 Apigateway Cloudwatch Logs enabled
 - AWS_APG_002 Apigateway Stages protected by ACL
 - AWS_ASG_001 Autoscaling DesiredCapacity MaxCapacity below 80%
+- AWS_LB_001 ELB Access Logs Enabled

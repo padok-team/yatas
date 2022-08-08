@@ -11,6 +11,7 @@ import (
 	"github.com/stangirard/yatas/internal/aws/ecr"
 	"github.com/stangirard/yatas/internal/aws/iam"
 	"github.com/stangirard/yatas/internal/aws/lambda"
+	"github.com/stangirard/yatas/internal/aws/loadbalancers"
 	"github.com/stangirard/yatas/internal/aws/rds"
 	"github.com/stangirard/yatas/internal/aws/s3"
 	"github.com/stangirard/yatas/internal/aws/volumes"
@@ -43,6 +44,7 @@ func initTest(s *session.Session, c *config.Config) []types.Check {
 	checks = append(checks, cloudfront.RunCloudFrontTests(s, c)...)
 	checks = append(checks, apigateway.RunApiGatewayTests(s, c)...)
 	checks = append(checks, autoscaling.RunAutoscalingGroupChecks(s, c)...)
+	checks = append(checks, loadbalancers.RunLoadBalancersTests(s, c)...)
 	logger.Info("AWS checks completed ✅")
 
 	return checks
