@@ -126,6 +126,36 @@ func CheckIfCookieLogginEnabled(s *session.Session, d []*cloudfront.Distribution
 	*c = append(*c, check)
 }
 
+func CheckIfACLUsed(s *session.Session, d []*cloudfront.DistributionSummary, testName string, c *[]types.Check) {
+	logger.Info(fmt.Sprint("Running ", testName))
+	var check types.Check
+	check.Name = "ACL Used"
+	check.Id = testName
+	check.Description = "Check if all cloudfront distributions have an ACL used"
+	check.Status = "OK"
+	svc := cloudfront.New(s)
+	for _, cc := range d {
+		input := &cloudfront.GetDistributionConfigInput{
+			Id: cc.Id,
+		}
+		result, err := svc.GetDistributionConfig(input)
+		if err != nil {
+			panic(err)
+		}
+		if *result.DistributionConfig.WebACLId != "" {
+			check.Status = "OK"
+			status := "OK"
+			Message := "ACL is used on " + *cc.Id
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *cc.Id})
+		} else {
+			status := "FAIL"
+			Message := "ACL is not used on " + *cc.Id
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *cc.Id})
+		}
+	}
+	*c = append(*c, check)
+}
+
 func RunCloudFrontTests(s *session.Session, c *config.Config) []types.Check {
 	var checks []types.Check
 	d := GetAllCloudfront(s)
@@ -133,5 +163,6 @@ func RunCloudFrontTests(s *session.Session, c *config.Config) []types.Check {
 	config.CheckTest(c, "AWS_CFT_002", CheckIfHTTPSOnly)(s, d, "AWS_CFT_002", &checks)
 	config.CheckTest(c, "AWS_CFT_003", CheckIfStandardLogginEnabled)(s, d, "AWS_CFT_003", &checks)
 	config.CheckTest(c, "AWS_CFT_004", CheckIfCookieLogginEnabled)(s, d, "AWS_CFT_004", &checks)
+	config.CheckTest(c, "AWS_CFT_005", CheckIfACLUsed)(s, d, "AWS_CFT_005", &checks)
 	return checks
 }

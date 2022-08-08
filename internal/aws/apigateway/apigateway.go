@@ -70,6 +70,28 @@ func CheckIfStagesCloudwatchLogsExist(s *session.Session, stages []*apigateway.S
 	*c = append(*c, check)
 }
 
+func CheckIfStagesProtectedByAcl(s *session.Session, stages []*apigateway.Stage, testName string, c *[]types.Check) {
+	logger.Info(fmt.Sprint("Running ", testName))
+	var check types.Check
+	check.Name = "Apigateway Stages protected by ACL"
+	check.Id = testName
+	check.Description = "Check if all stages are protected by ACL"
+	check.Status = "OK"
+	for _, stage := range stages {
+		if *stage.WebAclArn != "" {
+			check.Status = "OK"
+			status := "OK"
+			Message := "Stage " + *stage.StageName + " is protected by ACL"
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *stage.StageName})
+		} else {
+			status := "FAIL"
+			Message := "Stage " + *stage.StageName + " is not protected by ACL"
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *stage.StageName})
+		}
+	}
+	*c = append(*c, check)
+}
+
 func RunApiGatewayTests(s *session.Session, c *config.Config) []types.Check {
 	// var checks []types.Check
 	var checks []types.Check
@@ -77,6 +99,7 @@ func RunApiGatewayTests(s *session.Session, c *config.Config) []types.Check {
 	apis := GetApiGateways(s)
 	stages := GetAllStagesApiGateway(s, apis)
 	config.CheckTest(c, "AWS_APG_001", CheckIfStagesCloudwatchLogsExist)(s, stages, "AWS_APG_001", &checks)
+	config.CheckTest(c, "AWS_APG_002", CheckIfStagesProtectedByAcl)(s, stages, "AWS_APG_002", &checks)
 
 	return checks
 }
