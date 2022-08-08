@@ -118,3 +118,4 @@ plugins:
 - AWS_CFT_003 Standard Logging Enabled
 - AWS_CFT_004 Cookie Logging Enabled
 - AWS_APG_001 Apigateway Cloudwatch Logs enabled
+- AWS_ASG_001 Autoscaling DesiredCapacity MaxCapacity below 80%
