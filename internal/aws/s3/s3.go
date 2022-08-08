@@ -49,11 +49,11 @@ func checkIfEncryptionEnabled(s *session.Session, buckets []*s3.Bucket, testName
 			check.Status = "FAIL"
 			status := "FAIL"
 			Message := "S3 encryption is not enabled on " + *bucket.Name
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *bucket.Name})
 		} else {
 			status := "OK"
 			Message := "S3 encryption is enabled on " + *bucket.Name
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *bucket.Name})
 		}
 	}
 	*c = append(*c, check)
@@ -71,11 +71,11 @@ func CheckIfBucketInOneZone(s *session.Session, buckets []*s3.Bucket, testName s
 			check.Status = "FAIL"
 			status := "FAIL"
 			Message := "S3 bucket " + *bucket.Name + " is not in the same zone as the account"
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *bucket.Name})
 		} else {
 			status := "OK"
 			Message := "S3 bucket " + *bucket.Name + " is in the same zone as the account"
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *bucket.Name})
 		}
 	}
 	*c = append(*c, check)
@@ -108,8 +108,6 @@ func CheckS3Location(s *session.Session, bucket, region string) bool {
 		return false
 	}
 }
-
-type testFunc func(*session.Session, []*s3.Bucket, []types.Check)
 
 func RunS3Test(s *session.Session, c *config.Config) []types.Check {
 	var checks []types.Check

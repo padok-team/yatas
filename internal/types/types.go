@@ -1,8 +1,9 @@
 package types
 
 type Result struct {
-	Message string `json:"message"`
-	Status  string `json:"status"`
+	Message    string `json:"message"`
+	Status     string `json:"status"`
+	ResourceID string `json:"resource_arn"`
 }
 
 type Check struct {

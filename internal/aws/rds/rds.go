@@ -40,15 +40,15 @@ func checkIfEncryptionEnabled(s *session.Session, instances []*rds.DBInstance, t
 		if err != nil {
 			panic(err)
 		}
-		if *resp.DBInstances[0].StorageEncrypted == false {
+		if !*resp.DBInstances[0].StorageEncrypted {
 			check.Status = "FAIL"
 			status := "FAIL"
 			Message := "RDS encryption is not enabled on " + *instance.DBInstanceIdentifier
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *instance.DBInstanceArn})
 		} else {
 			status := "OK"
 			Message := "RDS encryption is enabled on " + *instance.DBInstanceIdentifier
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *instance.DBInstanceArn})
 		}
 	}
 	*c = append(*c, check)
@@ -74,11 +74,11 @@ func checkIfBackupEnabled(s *session.Session, instances []*rds.DBInstance, testN
 			check.Status = "FAIL"
 			status := "FAIL"
 			Message := "RDS backup is not enabled on " + *instance.DBInstanceIdentifier
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *instance.DBInstanceArn})
 		} else {
 			status := "OK"
 			Message := "RDS backup is enabled on " + *instance.DBInstanceIdentifier
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *instance.DBInstanceArn})
 		}
 	}
 	*c = append(*c, check)
@@ -100,15 +100,15 @@ func checkIfAutoUpgradeEnabled(s *session.Session, instances []*rds.DBInstance, 
 		if err != nil {
 			panic(err)
 		}
-		if *resp.DBInstances[0].AutoMinorVersionUpgrade == false {
+		if !*resp.DBInstances[0].AutoMinorVersionUpgrade {
 			check.Status = "FAIL"
 			status := "FAIL"
 			Message := "RDS auto upgrade is not enabled on " + *instance.DBInstanceIdentifier
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *instance.DBInstanceArn})
 		} else {
 			status := "OK"
 			Message := "RDS auto upgrade is enabled on " + *instance.DBInstanceIdentifier
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *instance.DBInstanceArn})
 		}
 	}
 	*c = append(*c, check)
@@ -130,15 +130,15 @@ func checkIfRDSPrivateEnabled(s *session.Session, instances []*rds.DBInstance, t
 		if err != nil {
 			panic(err)
 		}
-		if *resp.DBInstances[0].PubliclyAccessible == true {
+		if *resp.DBInstances[0].PubliclyAccessible {
 			check.Status = "FAIL"
 			status := "FAIL"
 			Message := "RDS private is not enabled on " + *instance.DBInstanceIdentifier
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *instance.DBInstanceArn})
 		} else {
 			status := "OK"
 			Message := "RDS private is enabled on " + *instance.DBInstanceIdentifier
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *instance.DBInstanceArn})
 		}
 	}
 	*c = append(*c, check)

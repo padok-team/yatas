@@ -37,7 +37,7 @@ func CheckIfAllVolumesHaveSnapshots(s *session.Session, volumes []*ec2.Volume, t
 			if *snapshot.VolumeId == *volume.VolumeId {
 				status := "OK"
 				Message := "Volume " + *volume.VolumeId + " has snapshot " + *snapshot.SnapshotId
-				check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+				check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *snapshot.SnapshotId})
 				ok = true
 				break
 			}
@@ -46,7 +46,7 @@ func CheckIfAllVolumesHaveSnapshots(s *session.Session, volumes []*ec2.Volume, t
 			check.Status = "FAIL"
 			status := "FAIL"
 			Message := "Volume " + *volume.VolumeId + " has no snapshot"
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *volume.VolumeId})
 		}
 	}
 	*c = append(*c, check)
@@ -60,15 +60,15 @@ func CheckIfAllSnapshotsEncrypted(s *session.Session, snapshots []*ec2.Snapshot,
 	check.Description = "Check if all snapshots are encrypted"
 	check.Status = "OK"
 	for _, snapshot := range snapshots {
-		if *snapshot.Encrypted == false {
+		if !*snapshot.Encrypted {
 			check.Status = "FAIL"
 			status := "FAIL"
 			Message := "Snapshot " + *snapshot.SnapshotId + " is not encrypted"
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *snapshot.SnapshotId})
 		} else {
 			status := "OK"
 			Message := "Snapshot " + *snapshot.SnapshotId + " is encrypted"
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *snapshot.SnapshotId})
 		}
 	}
 	*c = append(*c, check)
@@ -96,11 +96,11 @@ func CheckIfSnapshotYoungerthan24h(s *session.Session, vs couple, testName strin
 			check.Status = "FAIL"
 			status := "FAIL"
 			Message := "Volume " + *volume.VolumeId + " has no snapshot younger than 24h"
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *volume.VolumeId})
 		} else {
 			status := "OK"
 			Message := "Volume " + *volume.VolumeId + " has snapshot younger than 24h"
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *volume.VolumeId})
 		}
 	}
 	*c = append(*c, check)

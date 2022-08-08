@@ -36,11 +36,11 @@ func CheckIfCloudtrailsEncrypted(s *session.Session, cloudtrails []*cloudtrail.T
 			check.Status = "FAIL"
 			status := "FAIL"
 			Message := "Cloudtrail " + *cloudtrail.Name + " is not encrypted"
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *cloudtrail.TrailARN})
 		} else {
 			status := "OK"
 			Message := "Cloudtrail " + *cloudtrail.Name + " is encrypted"
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *cloudtrail.TrailARN})
 		}
 	}
 	*c = append(*c, check)
@@ -54,15 +54,15 @@ func CheckIfCloudtrailsGlobalServiceEventsEnabled(s *session.Session, cloudtrail
 	check.Description = "Check if all cloudtrails have global service events enabled"
 	check.Status = "OK"
 	for _, cloudtrail := range cloudtrails {
-		if *cloudtrail.IncludeGlobalServiceEvents != true {
+		if !*cloudtrail.IncludeGlobalServiceEvents {
 			check.Status = "FAIL"
 			status := "FAIL"
 			Message := "Cloudtrail " + *cloudtrail.Name + " has global service events disabled"
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *cloudtrail.TrailARN})
 		} else {
 			status := "OK"
 			Message := "Cloudtrail " + *cloudtrail.Name + " has global service events enabled"
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *cloudtrail.TrailARN})
 		}
 	}
 	*c = append(*c, check)
@@ -76,15 +76,15 @@ func CheckIfCloudtrailsMultiRegion(s *session.Session, cloudtrails []*cloudtrail
 	check.Description = "Check if all cloudtrails are multi region"
 	check.Status = "OK"
 	for _, cloudtrail := range cloudtrails {
-		if *cloudtrail.IsMultiRegionTrail != true {
+		if !*cloudtrail.IsMultiRegionTrail {
 			check.Status = "FAIL"
 			status := "FAIL"
 			Message := "Cloudtrail " + *cloudtrail.Name + " is not multi region"
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *cloudtrail.TrailARN})
 		} else {
 			status := "OK"
 			Message := "Cloudtrail " + *cloudtrail.Name + " is multi region"
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *cloudtrail.TrailARN})
 		}
 	}
 	*c = append(*c, check)

@@ -31,15 +31,15 @@ func CheckIfImageScanningEnabled(s *session.Session, ecr []*ecr.Repository, test
 	check.Description = "Check if all ECRs have image scanning enabled"
 	check.Status = "OK"
 	for _, ecr := range ecr {
-		if *ecr.ImageScanningConfiguration.ScanOnPush != true {
+		if !*ecr.ImageScanningConfiguration.ScanOnPush {
 			check.Status = "FAIL"
 			status := "FAIL"
 			Message := "ECR " + *ecr.RepositoryName + " has image scanning disabled"
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *ecr.RepositoryArn})
 		} else {
 			status := "OK"
 			Message := "ECR " + *ecr.RepositoryName + " has image scanning enabled"
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *ecr.RepositoryArn})
 		}
 	}
 	*c = append(*c, check)

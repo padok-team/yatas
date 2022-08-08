@@ -46,11 +46,11 @@ func checkCIDR20(s *session.Session, vpcs []*ec2.Vpc, testName string, c *[]type
 			check.Status = "FAIL"
 			status := "FAIL"
 			Message := "VPC CIDR is not /20 or bigger on " + *vpc.VpcId
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *vpc.VpcId})
 		} else {
 			status := "OK"
 			Message := "VPC CIDR is /20 or bigger on " + *vpc.VpcId
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *vpc.VpcId})
 		}
 	}
 	*c = append(*c, check)
@@ -83,11 +83,11 @@ func checkIfVPCFLowLogsEnabled(s *session.Session, vpcs []*ec2.Vpc, testName str
 			check.Status = "FAIL"
 			status := "FAIL"
 			Message := "VPC Flow Logs are not enabled on " + *vpc.VpcId
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *vpc.VpcId})
 		} else {
 			status := "OK"
 			Message := "VPC Flow Logs are enabled on " + *vpc.VpcId
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *vpc.VpcId})
 		}
 	}
 	*c = append(*c, check)
@@ -120,11 +120,11 @@ func checkIfOnlyOneGateway(s *session.Session, vpcs []*ec2.Vpc, testName string,
 			check.Status = "FAIL"
 			status := "FAIL"
 			Message := "VPC has more than one gateway on " + *vpc.VpcId
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *vpc.VpcId})
 		} else {
 			status := "OK"
 			Message := "VPC has only one gateway on " + *vpc.VpcId
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *vpc.VpcId})
 		}
 	}
 	*c = append(*c, check)
@@ -142,11 +142,11 @@ func checkIfOnlyOneVPC(s *session.Session, vpcs []*ec2.Vpc, testName string, c *
 			check.Status = "FAIL"
 			status := "FAIL"
 			Message := "VPC Id:" + *vpc.VpcId
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *vpc.VpcId})
 		} else {
 			status := "OK"
 			Message := "VPC Id:" + *vpc.VpcId
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *vpc.VpcId})
 		}
 	}
 

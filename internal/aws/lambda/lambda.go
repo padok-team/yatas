@@ -35,11 +35,11 @@ func CheckIfLambdaPrivate(s *session.Session, lambdas []*lambda.FunctionConfigur
 			check.Status = "FAIL"
 			status := "FAIL"
 			Message := "Lambda " + *lambda.FunctionName + " is public"
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *lambda.FunctionArn})
 		} else {
 			status := "OK"
 			Message := "Lambda " + *lambda.FunctionName + " is private"
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *lambda.FunctionArn})
 		}
 	}
 	*c = append(*c, check)
@@ -57,11 +57,11 @@ func CheckIfLambdaInSecurityGroup(s *session.Session, lambdas []*lambda.Function
 			check.Status = "FAIL"
 			status := "FAIL"
 			Message := "Lambda " + *lambda.FunctionName + " is not in a security group"
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *lambda.FunctionArn})
 		} else {
 			status := "OK"
 			Message := "Lambda " + *lambda.FunctionName + " is in a security group"
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *lambda.FunctionArn})
 		}
 	}
 	*c = append(*c, check)

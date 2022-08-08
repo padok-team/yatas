@@ -40,11 +40,11 @@ func CheckIfDynamodbEncrypted(s *session.Session, dynamodbs []*string, testName 
 			check.Status = "FAIL"
 			status := "FAIL"
 			Message := "Dynamodb encryption is not enabled on " + *d
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *resp.Table.TableArn})
 		} else {
 			status := "OK"
 			Message := "Dynamodb encryption is enabled on " + *d
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *resp.Table.TableArn})
 		}
 	}
 	*c = append(*c, check)
@@ -70,11 +70,11 @@ func CheckIfDynamodbContinuousBackupsEnabled(s *session.Session, dynamodbs []*st
 			check.Status = "FAIL"
 			status := "FAIL"
 			Message := "Dynamodb continuous backups are not enabled on " + *d
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *d})
 		} else {
 			status := "OK"
 			Message := "Dynamodb continuous backups are enabled on " + *d
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *d})
 		}
 	}
 	*c = append(*c, check)

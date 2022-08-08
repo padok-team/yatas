@@ -4,6 +4,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/stangirard/yatas/internal/aws/cloudtrail"
 	"github.com/stangirard/yatas/internal/aws/dynamodb"
+	"github.com/stangirard/yatas/internal/aws/ec2"
 	"github.com/stangirard/yatas/internal/aws/ecr"
 	"github.com/stangirard/yatas/internal/aws/lambda"
 	"github.com/stangirard/yatas/internal/aws/rds"
@@ -33,6 +34,7 @@ func initTest(s *session.Session, c *config.Config) []types.Check {
 	checks = append(checks, ecr.RunECRTests(s, c)...)
 	checks = append(checks, lambda.RunLambdaTests(s, c)...)
 	checks = append(checks, dynamodb.RunDynamodbTests(s, c)...)
+	checks = append(checks, ec2.RunEC2Tests(s, c)...)
 	logger.Info("AWS checks completed ✅")
 
 	return checks
