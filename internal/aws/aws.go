@@ -2,6 +2,7 @@ package aws
 
 import (
 	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/stangirard/yatas/internal/aws/apigateway"
 	"github.com/stangirard/yatas/internal/aws/cloudfront"
 	"github.com/stangirard/yatas/internal/aws/cloudtrail"
 	"github.com/stangirard/yatas/internal/aws/dynamodb"
@@ -39,6 +40,7 @@ func initTest(s *session.Session, c *config.Config) []types.Check {
 	checks = append(checks, ec2.RunEC2Tests(s, c)...)
 	checks = append(checks, iam.RunIAMTests(s, c)...)
 	checks = append(checks, cloudfront.RunCloudFrontTests(s, c)...)
+	checks = append(checks, apigateway.RunApiGatewayTests(s, c)...)
 	logger.Info("AWS checks completed ✅")
 
 	return checks
