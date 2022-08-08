@@ -81,7 +81,7 @@ plugins:
       - "AWS_VPC_004"
 ```
 
-### AWS - 35 Checks
+### AWS - 39 Checks
 
 - AWS_S3_001 S3 Encryption
 - AWS_S3_002 S3 Bucket in one zone
