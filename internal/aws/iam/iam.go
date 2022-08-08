@@ -89,7 +89,10 @@ func CheckAgeAccessKeyLessThan90Days(s *session.Session, users []*iam.User, test
 func RunIAMTests(s *session.Session, c *config.Config) []types.Check {
 	var checks []types.Check
 	users := GetAllUsers(s)
+	fmt.Println("Users: ", users[0])
 	config.CheckTest(c, "AWS_IAM_001", CheckIf2FAActivated)(s, users, "AWS_IAM_001", &checks)
 	config.CheckTest(c, "AWS_IAM_002", CheckAgeAccessKeyLessThan90Days)(s, users, "AWS_IAM_002", &checks)
+	policies := GetPolicyAttachedToUser(s, users[0])
+	fmt.Println(JsonDecodePolicyDocument(GetPolicyDocument(s, policies[2].PolicyArn)))
 	return checks
 }

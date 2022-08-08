@@ -105,7 +105,7 @@ plugins:
 - AWS_CLD_001 Cloudtrails Encryption
 - AWS_CLD_002 Cloudtrails Global Service Events Activated
 - AWS_CLD_003 Cloudtrails Multi Region
-- AWS_CLD_001 Image Scanning Enabled
+- AWS_CLD_001 ECR Image Scanning Enabled
 - AWS_LMD_001 Lambda Private
 - AWS_LMD_002 Lambda In Security Group
 - AWS_DYN_001 Dynamodb Encryption
