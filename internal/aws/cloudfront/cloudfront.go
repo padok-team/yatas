@@ -66,10 +66,72 @@ func CheckIfHTTPSOnly(s *session.Session, d []*cloudfront.DistributionSummary, t
 	*c = append(*c, check)
 }
 
+func CheckIfStandardLogginEnabled(s *session.Session, d []*cloudfront.DistributionSummary, testName string, c *[]types.Check) {
+	logger.Info(fmt.Sprint("Running ", testName))
+	var check types.Check
+	check.Name = "Standard Logging Enabled"
+	check.Id = testName
+	check.Description = "Check if all cloudfront distributions have standard logging enabled"
+	check.Status = "OK"
+	svc := cloudfront.New(s)
+	for _, cc := range d {
+		input := &cloudfront.GetDistributionConfigInput{
+			Id: cc.Id,
+		}
+		result, err := svc.GetDistributionConfig(input)
+		if err != nil {
+			panic(err)
+		}
+		if result.DistributionConfig.Logging != nil && *result.DistributionConfig.Logging.Enabled {
+			check.Status = "OK"
+			status := "OK"
+			Message := "Standard logging is enabled on " + *cc.Id
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *cc.Id})
+		} else {
+			status := "FAIL"
+			Message := "Standard logging is not enabled on " + *cc.Id
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *cc.Id})
+		}
+	}
+	*c = append(*c, check)
+}
+
+func CheckIfCookieLogginEnabled(s *session.Session, d []*cloudfront.DistributionSummary, testName string, c *[]types.Check) {
+	logger.Info(fmt.Sprint("Running ", testName))
+	var check types.Check
+	check.Name = "Cookie Logging Enabled"
+	check.Id = testName
+	check.Description = "Check if all cloudfront distributions have cookie logging enabled"
+	check.Status = "OK"
+	svc := cloudfront.New(s)
+	for _, cc := range d {
+		input := &cloudfront.GetDistributionConfigInput{
+			Id: cc.Id,
+		}
+		result, err := svc.GetDistributionConfig(input)
+		if err != nil {
+			panic(err)
+		}
+		if result.DistributionConfig.Logging != nil && *result.DistributionConfig.Logging.Enabled && *result.DistributionConfig.Logging.IncludeCookies {
+			check.Status = "OK"
+			status := "OK"
+			Message := "Cookie logging is enabled on " + *cc.Id
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *cc.Id})
+		} else {
+			status := "FAIL"
+			Message := "Cookie logging is not enabled on " + *cc.Id
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *cc.Id})
+		}
+	}
+	*c = append(*c, check)
+}
+
 func RunCloudFrontTests(s *session.Session, c *config.Config) []types.Check {
 	var checks []types.Check
 	d := GetAllCloudfront(s)
 	config.CheckTest(c, "AWS_CFT_001", CheckIfCloudfrontTLS1_2Minimum)(s, d, "AWS_CFT_001", &checks)
 	config.CheckTest(c, "AWS_CFT_002", CheckIfHTTPSOnly)(s, d, "AWS_CFT_002", &checks)
+	config.CheckTest(c, "AWS_CFT_003", CheckIfStandardLogginEnabled)(s, d, "AWS_CFT_003", &checks)
+	config.CheckTest(c, "AWS_CFT_004", CheckIfCookieLogginEnabled)(s, d, "AWS_CFT_004", &checks)
 	return checks
 }
