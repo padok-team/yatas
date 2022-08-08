@@ -6,6 +6,7 @@ import (
 	"github.com/stangirard/yatas/internal/aws/dynamodb"
 	"github.com/stangirard/yatas/internal/aws/ec2"
 	"github.com/stangirard/yatas/internal/aws/ecr"
+	"github.com/stangirard/yatas/internal/aws/iam"
 	"github.com/stangirard/yatas/internal/aws/lambda"
 	"github.com/stangirard/yatas/internal/aws/rds"
 	"github.com/stangirard/yatas/internal/aws/s3"
@@ -35,6 +36,7 @@ func initTest(s *session.Session, c *config.Config) []types.Check {
 	checks = append(checks, lambda.RunLambdaTests(s, c)...)
 	checks = append(checks, dynamodb.RunDynamodbTests(s, c)...)
 	checks = append(checks, ec2.RunEC2Tests(s, c)...)
+	checks = append(checks, iam.RunIAMTests(s, c)...)
 	logger.Info("AWS checks completed ✅")
 
 	return checks
