@@ -42,11 +42,11 @@ func CheckIf2FAActivated(s *session.Session, users []*iam.User, testName string,
 			check.Status = "FAIL"
 			status := "FAIL"
 			Message := "2FA is not activated on " + *user.UserName
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *user.UserName})
 		} else {
 			status := "OK"
 			Message := "2FA is activated on " + *user.UserName
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *user.UserName})
 		}
 	}
 	*c = append(*c, check)
@@ -75,11 +75,11 @@ func CheckAgeAccessKeyLessThan90Days(s *session.Session, users []*iam.User, test
 				check.Status = "FAIL"
 				status := "FAIL"
 				Message := "Access key " + *accessKey.AccessKeyId + " is older than 90 days on " + *user.UserName
-				check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+				check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *user.UserName})
 			} else {
 				status := "OK"
 				Message := "Access key " + *accessKey.AccessKeyId + " is younger than 90 days on " + *user.UserName
-				check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+				check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *user.UserName})
 			}
 		}
 	}
