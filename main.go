@@ -9,10 +9,6 @@ import (
 	"github.com/stangirard/yatas/internal/cmd"
 )
 
-var (
-	printVersion = flag.Bool("version", false, "print version and exit") // Displays the version of the programm
-)
-
 func main() {
 	if err := run(); err != nil {
 		fmt.Println(err)
@@ -20,17 +16,9 @@ func main() {
 	}
 }
 
-//go:embed VERSION
-var version string // Version of the application embeded
-
 // Run YATAS
 func run() error {
 	flag.Parse()
-
-	if *printVersion {
-		fmt.Println(version)
-		return nil
-	}
 
 	if err := cmd.Execute(); err != nil {
 		return err
