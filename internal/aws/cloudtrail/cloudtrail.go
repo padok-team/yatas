@@ -1,32 +1,33 @@
 package cloudtrail
 
 import (
+	"context"
 	"fmt"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/cloudtrail"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/cloudtrail"
+	"github.com/aws/aws-sdk-go-v2/service/cloudtrail/types"
 	"github.com/stangirard/yatas/internal/logger"
-	"github.com/stangirard/yatas/internal/types"
+	"github.com/stangirard/yatas/internal/results"
 	"github.com/stangirard/yatas/internal/yatas"
 )
 
-func GetCloudtrails(s *session.Session) []*cloudtrail.Trail {
-	svc := cloudtrail.New(s)
+func GetCloudtrails(s aws.Config) []types.Trail {
+	svc := cloudtrail.NewFromConfig(s)
 	input := &cloudtrail.DescribeTrailsInput{
 		IncludeShadowTrails: aws.Bool(true),
 	}
-	result, err := svc.DescribeTrails(input)
+	result, err := svc.DescribeTrails(context.TODO(), input)
 	if err != nil {
 		panic(err)
 	}
 	return result.TrailList
 }
 
-func CheckIfCloudtrailsEncrypted(s *session.Session, cloudtrails []*cloudtrail.Trail, testName string, c *[]types.Check) {
+func CheckIfCloudtrailsEncrypted(s aws.Config, cloudtrails []types.Trail, testName string, c *[]results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 
-	var check types.Check
+	var check results.Check
 	check.Name = "Cloudtrails Encryption"
 	check.Id = testName
 	check.Description = "Check if all cloudtrails are encrypted"
@@ -36,19 +37,19 @@ func CheckIfCloudtrailsEncrypted(s *session.Session, cloudtrails []*cloudtrail.T
 			check.Status = "FAIL"
 			status := "FAIL"
 			Message := "Cloudtrail " + *cloudtrail.Name + " is not encrypted"
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *cloudtrail.TrailARN})
+			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *cloudtrail.TrailARN})
 		} else {
 			status := "OK"
 			Message := "Cloudtrail " + *cloudtrail.Name + " is encrypted"
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *cloudtrail.TrailARN})
+			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *cloudtrail.TrailARN})
 		}
 	}
 	*c = append(*c, check)
 }
 
-func CheckIfCloudtrailsGlobalServiceEventsEnabled(s *session.Session, cloudtrails []*cloudtrail.Trail, testName string, c *[]types.Check) {
+func CheckIfCloudtrailsGlobalServiceEventsEnabled(s aws.Config, cloudtrails []types.Trail, testName string, c *[]results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
-	var check types.Check
+	var check results.Check
 	check.Name = "Cloudtrails Global Service Events Activated"
 	check.Id = testName
 	check.Description = "Check if all cloudtrails have global service events enabled"
@@ -58,19 +59,19 @@ func CheckIfCloudtrailsGlobalServiceEventsEnabled(s *session.Session, cloudtrail
 			check.Status = "FAIL"
 			status := "FAIL"
 			Message := "Cloudtrail " + *cloudtrail.Name + " has global service events disabled"
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *cloudtrail.TrailARN})
+			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *cloudtrail.TrailARN})
 		} else {
 			status := "OK"
 			Message := "Cloudtrail " + *cloudtrail.Name + " has global service events enabled"
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *cloudtrail.TrailARN})
+			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *cloudtrail.TrailARN})
 		}
 	}
 	*c = append(*c, check)
 }
 
-func CheckIfCloudtrailsMultiRegion(s *session.Session, cloudtrails []*cloudtrail.Trail, testName string, c *[]types.Check) {
+func CheckIfCloudtrailsMultiRegion(s aws.Config, cloudtrails []types.Trail, testName string, c *[]results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
-	var check types.Check
+	var check results.Check
 	check.Name = "Cloudtrails Multi Region"
 	check.Id = testName
 	check.Description = "Check if all cloudtrails are multi region"
@@ -80,18 +81,18 @@ func CheckIfCloudtrailsMultiRegion(s *session.Session, cloudtrails []*cloudtrail
 			check.Status = "FAIL"
 			status := "FAIL"
 			Message := "Cloudtrail " + *cloudtrail.Name + " is not multi region"
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *cloudtrail.TrailARN})
+			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *cloudtrail.TrailARN})
 		} else {
 			status := "OK"
 			Message := "Cloudtrail " + *cloudtrail.Name + " is multi region"
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *cloudtrail.TrailARN})
+			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *cloudtrail.TrailARN})
 		}
 	}
 	*c = append(*c, check)
 }
 
-func RunCloudtrailTests(s *session.Session, c *yatas.Config) []types.Check {
-	var checks []types.Check
+func RunCloudtrailTests(s aws.Config, c *yatas.Config) []results.Check {
+	var checks []results.Check
 	cloudtrails := GetCloudtrails(s)
 	yatas.CheckTest(c, "AWS_CLD_001", CheckIfCloudtrailsEncrypted)(s, cloudtrails, "AWS_CLD_001", &checks)
 	yatas.CheckTest(c, "AWS_CLD_002", CheckIfCloudtrailsGlobalServiceEventsEnabled)(s, cloudtrails, "AWS_CLD_002", &checks)

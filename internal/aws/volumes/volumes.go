@@ -1,84 +1,86 @@
 package volumes
 
 import (
+	"context"
 	"fmt"
 
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/ec2"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/ec2"
+	"github.com/aws/aws-sdk-go-v2/service/ec2/types"
 	"github.com/stangirard/yatas/internal/logger"
-	"github.com/stangirard/yatas/internal/types"
+	"github.com/stangirard/yatas/internal/results"
 	"github.com/stangirard/yatas/internal/yatas"
 )
 
-func GetVolumes(s *session.Session) []*ec2.Volume {
-	svc := ec2.New(s)
+func GetVolumes(s aws.Config) []types.Volume {
+	svc := ec2.NewFromConfig(s)
 	input := &ec2.DescribeVolumesInput{}
-	result, err := svc.DescribeVolumes(input)
+	result, err := svc.DescribeVolumes(context.TODO(), input)
 	if err != nil {
 		panic(err)
 	}
 	return result.Volumes
 }
 
-func checkIfEncryptionEnabled(s *session.Session, volumes []*ec2.Volume, testName string, c *[]types.Check) {
+func checkIfEncryptionEnabled(s aws.Config, volumes []types.Volume, testName string, c *[]results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
-	var check types.Check
+	var check results.Check
 	check.Name = "EC2 Volumes Encryption"
 	check.Id = testName
 	check.Description = "Check if EC2 encryption is enabled"
 	check.Status = "OK"
-	svc := ec2.New(s)
+	svc := ec2.NewFromConfig(s)
 	for _, volume := range volumes {
 		params := &ec2.DescribeVolumesInput{
-			VolumeIds: []*string{volume.VolumeId},
+			VolumeIds: []string{*volume.VolumeId},
 		}
-		resp, err := svc.DescribeVolumes(params)
+		resp, err := svc.DescribeVolumes(context.TODO(), params)
 		if err != nil {
 			panic(err)
 		}
-		if *resp.Volumes[0].Encrypted == false {
+		if *resp.Volumes[0].Encrypted {
 			check.Status = "FAIL"
 			status := "FAIL"
 			Message := "EC2 encryption is not enabled on " + *volume.VolumeId
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+			check.Results = append(check.Results, results.Result{Status: status, Message: Message})
 		} else {
 			status := "OK"
 			Message := "EC2 encryption is enabled on " + *volume.VolumeId
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+			check.Results = append(check.Results, results.Result{Status: status, Message: Message})
 		}
 	}
 	*c = append(*c, check)
 }
 
-func CheckIfVolumesTypeGP3(s *session.Session, volumes []*ec2.Volume, testName string, c *[]types.Check) {
+func CheckIfVolumesTypeGP3(s aws.Config, volumes []types.Volume, testName string, c *[]results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
-	var check types.Check
+	var check results.Check
 	check.Name = "EC2 Volumes Type"
 	check.Id = testName
 	check.Description = "Check if all volumes are of type gp3"
 	check.Status = "OK"
 	for _, volume := range volumes {
-		if *volume.VolumeType != "gp3" {
+		if volume.VolumeType != "gp3" {
 			check.Status = "FAIL"
 			status := "FAIL"
 			Message := "Volume " + *volume.VolumeId + " is not of type gp3"
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+			check.Results = append(check.Results, results.Result{Status: status, Message: Message})
 		} else {
 			status := "OK"
 			Message := "Volume " + *volume.VolumeId + " is of type gp3"
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message})
+			check.Results = append(check.Results, results.Result{Status: status, Message: Message})
 		}
 	}
 	*c = append(*c, check)
 }
 
 type couple struct {
-	volume   []*ec2.Volume
-	snapshot []*ec2.Snapshot
+	volume   []types.Volume
+	snapshot []types.Snapshot
 }
 
-func RunVolumesTest(s *session.Session, c *yatas.Config) []types.Check {
-	var checks []types.Check
+func RunVolumesTest(s aws.Config, c *yatas.Config) []results.Check {
+	var checks []results.Check
 	logger.Debug("Starting EC2 volumes tests")
 	volumes := GetVolumes(s)
 	snapshots := GetSnapshots(s)

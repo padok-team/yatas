@@ -1,40 +1,42 @@
 package iam
 
 import (
+	"context"
 	"fmt"
 	"time"
 
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/iam"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/iam"
+	"github.com/aws/aws-sdk-go-v2/service/iam/types"
 	"github.com/stangirard/yatas/internal/logger"
-	"github.com/stangirard/yatas/internal/types"
+	"github.com/stangirard/yatas/internal/results"
 	"github.com/stangirard/yatas/internal/yatas"
 )
 
-func GetAllUsers(s *session.Session) []*iam.User {
-	svc := iam.New(s)
+func GetAllUsers(s aws.Config) []types.User {
+	svc := iam.NewFromConfig(s)
 	input := &iam.ListUsersInput{}
-	result, err := svc.ListUsers(input)
+	result, err := svc.ListUsers(context.TODO(), input)
 	if err != nil {
 		panic(err)
 	}
 	return result.Users
 }
 
-func CheckIf2FAActivated(s *session.Session, users []*iam.User, testName string, c *[]types.Check) {
+func CheckIf2FAActivated(s aws.Config, users []types.User, testName string, c *[]results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
-	var check types.Check
+	var check results.Check
 	check.Name = "IAM 2FA"
 	check.Id = testName
 	check.Description = "Check if all users have 2FA activated"
 	check.Status = "OK"
-	svc := iam.New(s)
+	svc := iam.NewFromConfig(s)
 	for _, user := range users {
 		// List MFA devices for the user
 		params := &iam.ListMFADevicesInput{
 			UserName: user.UserName,
 		}
-		resp, err := svc.ListMFADevices(params)
+		resp, err := svc.ListMFADevices(context.TODO(), params)
 		if err != nil {
 			panic(err)
 		}
@@ -42,30 +44,30 @@ func CheckIf2FAActivated(s *session.Session, users []*iam.User, testName string,
 			check.Status = "FAIL"
 			status := "FAIL"
 			Message := "2FA is not activated on " + *user.UserName
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *user.UserName})
+			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *user.UserName})
 		} else {
 			status := "OK"
 			Message := "2FA is activated on " + *user.UserName
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *user.UserName})
+			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *user.UserName})
 		}
 	}
 	*c = append(*c, check)
 }
 
-func CheckAgeAccessKeyLessThan90Days(s *session.Session, users []*iam.User, testName string, c *[]types.Check) {
+func CheckAgeAccessKeyLessThan90Days(s aws.Config, users []types.User, testName string, c *[]results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
-	var check types.Check
+	var check results.Check
 	check.Name = "IAM Access Key Age"
 	check.Id = testName
 	check.Description = "Check if all users have access key less than 90 days"
 	check.Status = "OK"
-	svc := iam.New(s)
+	svc := iam.NewFromConfig(s)
 	for _, user := range users {
 		// List access keys for the user
 		params := &iam.ListAccessKeysInput{
 			UserName: user.UserName,
 		}
-		resp, err := svc.ListAccessKeys(params)
+		resp, err := svc.ListAccessKeys(context.TODO(), params)
 		if err != nil {
 			panic(err)
 		}
@@ -75,20 +77,20 @@ func CheckAgeAccessKeyLessThan90Days(s *session.Session, users []*iam.User, test
 				check.Status = "FAIL"
 				status := "FAIL"
 				Message := "Access key " + *accessKey.AccessKeyId + " is older than 90 days on " + *user.UserName
-				check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *user.UserName})
+				check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *user.UserName})
 			} else {
 				status := "OK"
 				Message := "Access key " + *accessKey.AccessKeyId + " is younger than 90 days on " + *user.UserName
-				check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *user.UserName})
+				check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *user.UserName})
 			}
 		}
 	}
 	*c = append(*c, check)
 }
 
-func CheckIfUserCanElevateRights(s *session.Session, users []*iam.User, testName string, c *[]types.Check) {
+func CheckIfUserCanElevateRights(s aws.Config, users []types.User, testName string, c *[]results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
-	var check types.Check
+	var check results.Check
 	check.Name = "IAM User Can Elevate Rights"
 	check.Id = testName
 	check.Description = "Check if  users can elevate rights"
@@ -105,18 +107,18 @@ func CheckIfUserCanElevateRights(s *session.Session, users []*iam.User, testName
 				Message = "User " + *user.UserName + " can elevate rights with " + fmt.Sprint(elevation)
 			}
 
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *user.UserName})
+			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *user.UserName})
 		} else {
 			status := "OK"
 			Message := "User " + *user.UserName + " cannot elevate rights"
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *user.UserName})
+			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *user.UserName})
 		}
 	}
 	*c = append(*c, check)
 }
 
-func RunIAMTests(s *session.Session, c *yatas.Config) []types.Check {
-	var checks []types.Check
+func RunIAMTests(s aws.Config, c *yatas.Config) []results.Check {
+	var checks []results.Check
 	users := GetAllUsers(s)
 	yatas.CheckTest(c, "AWS_IAM_001", CheckIf2FAActivated)(s, users, "AWS_IAM_001", &checks)
 	yatas.CheckTest(c, "AWS_IAM_002", CheckAgeAccessKeyLessThan90Days)(s, users, "AWS_IAM_002", &checks)

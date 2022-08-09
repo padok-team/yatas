@@ -7,7 +7,7 @@ import (
 	"regexp"
 
 	"github.com/fatih/color"
-	"github.com/stangirard/yatas/internal/types"
+	"github.com/stangirard/yatas/internal/results"
 	"github.com/stangirard/yatas/internal/yatas"
 	"gopkg.in/yaml.v3"
 )
@@ -20,7 +20,7 @@ var status = map[string]string{
 
 var details = flag.Bool("details", false, "print detailed results")
 
-func countResultOkOverall(results []types.Result) (int, int) {
+func countResultOkOverall(results []results.Result) (int, int) {
 	var ok int
 	var all int
 	for _, result := range results {
@@ -32,7 +32,7 @@ func countResultOkOverall(results []types.Result) (int, int) {
 	return ok, all
 }
 
-func IsIgnored(c *yatas.Config, r types.Result, check types.Check) bool {
+func IsIgnored(c *yatas.Config, r results.Result, check results.Check) bool {
 	for _, ignored := range c.Ignore {
 		if ignored.ID == check.Id {
 			for i := range ignored.Values {
@@ -47,14 +47,14 @@ func IsIgnored(c *yatas.Config, r types.Result, check types.Check) bool {
 	return false
 }
 
-func RemoveIgnored(c *yatas.Config, checks []types.Check) []types.Check {
-	var newChecks []types.Check
+func RemoveIgnored(c *yatas.Config, checks []results.Check) []results.Check {
+	var newChecks []results.Check
 	for _, check := range checks {
-		var checktmp types.Check
+		var checktmp results.Check
 		checktmp.Id = check.Id
 		checktmp.Name = check.Name
 		checktmp.Status = "OK"
-		checktmp.Results = []types.Result{}
+		checktmp.Results = []results.Result{}
 		for _, result := range check.Results {
 			if !IsIgnored(c, result, check) {
 				if result.Status == "FAIL" {
@@ -68,7 +68,7 @@ func RemoveIgnored(c *yatas.Config, checks []types.Check) []types.Check {
 	return newChecks
 }
 
-func PrettyPrintChecks(checks []types.Check, c *yatas.Config) {
+func PrettyPrintChecks(checks []results.Check, c *yatas.Config) {
 	flag.Parse()
 	for _, check := range checks {
 		if c.CheckExclude(check.Id) {
@@ -92,8 +92,8 @@ func PrettyPrintChecks(checks []types.Check, c *yatas.Config) {
 	}
 }
 
-func ComparePreviousWithNew(previous []types.Check, new []types.Check) []types.Check {
-	var checks []types.Check
+func ComparePreviousWithNew(previous []results.Check, new []results.Check) []results.Check {
+	var checks []results.Check
 	for _, check := range new {
 		found := false
 		for _, previousCheck := range previous {
@@ -111,12 +111,12 @@ func ComparePreviousWithNew(previous []types.Check, new []types.Check) []types.C
 	return checks
 }
 
-func ReadPreviousResults() []types.Check {
+func ReadPreviousResults() []results.Check {
 	d, err := ioutil.ReadFile("results.yaml")
 	if err != nil {
-		return []types.Check{}
+		return []results.Check{}
 	}
-	var checks []types.Check
+	var checks []results.Check
 	err = yaml.Unmarshal(d, &checks)
 	if err != nil {
 		panic(err)
@@ -124,8 +124,8 @@ func ReadPreviousResults() []types.Check {
 	return checks
 }
 
-func WriteChecksToFile(checks []types.Check, c *yatas.Config) {
-	var checksToWrite []types.Check
+func WriteChecksToFile(checks []results.Check, c *yatas.Config) {
+	var checksToWrite []results.Check
 	for _, check := range checks {
 		if !c.CheckExclude(check.Id) {
 			checksToWrite = append(checksToWrite, check)

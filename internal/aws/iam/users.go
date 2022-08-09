@@ -1,32 +1,34 @@
 package iam
 
 import (
+	"context"
 	"net/url"
 	"regexp"
 	"strings"
 
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/iam"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/iam"
+	"github.com/aws/aws-sdk-go-v2/service/iam/types"
 )
 
-func GetPolicyAttachedToUser(s *session.Session, user *iam.User) []*iam.AttachedPolicy {
-	svc := iam.New(s)
+func GetPolicyAttachedToUser(s aws.Config, user types.User) []types.AttachedPolicy {
+	svc := iam.NewFromConfig(s)
 	input := &iam.ListAttachedUserPoliciesInput{
 		UserName: user.UserName,
 	}
-	result, err := svc.ListAttachedUserPolicies(input)
+	result, err := svc.ListAttachedUserPolicies(context.TODO(), input)
 	if err != nil {
 		panic(err)
 	}
 	return result.AttachedPolicies
 }
 
-func GetAllPolicyVersions(s *session.Session, policyArn *string) []*iam.PolicyVersion {
-	svc := iam.New(s)
+func GetAllPolicyVersions(s aws.Config, policyArn *string) []types.PolicyVersion {
+	svc := iam.NewFromConfig(s)
 	input := &iam.ListPolicyVersionsInput{
 		PolicyArn: policyArn,
 	}
-	result, err := svc.ListPolicyVersions(input)
+	result, err := svc.ListPolicyVersions(context.TODO(), input)
 	if err != nil {
 		panic(err)
 	}
@@ -34,7 +36,7 @@ func GetAllPolicyVersions(s *session.Session, policyArn *string) []*iam.PolicyVe
 	return result.Versions
 }
 
-func SortPolicyVersions(policyVersions []*iam.PolicyVersion) {
+func SortPolicyVersions(policyVersions []types.PolicyVersion) {
 	for i := 0; i < len(policyVersions); i++ {
 		for j := i + 1; j < len(policyVersions); j++ {
 			if policyVersions[i].CreateDate.After(*policyVersions[j].CreateDate) {
@@ -44,15 +46,15 @@ func SortPolicyVersions(policyVersions []*iam.PolicyVersion) {
 	}
 }
 
-func GetPolicyDocument(s *session.Session, policyArn *string) *string {
+func GetPolicyDocument(s aws.Config, policyArn *string) *string {
 	policyVersions := GetAllPolicyVersions(s, policyArn)
 	SortPolicyVersions(policyVersions)
 	input := &iam.GetPolicyVersionInput{
 		PolicyArn: policyArn,
 		VersionId: policyVersions[0].VersionId,
 	}
-	svc := iam.New(s)
-	result, err := svc.GetPolicyVersion(input)
+	svc := iam.NewFromConfig(s)
+	result, err := svc.GetPolicyVersion(context.TODO(), input)
 	if err != nil {
 		panic(err)
 	}
@@ -68,7 +70,7 @@ func JsonDecodePolicyDocument(policyDocumentJson *string) Policy {
 
 }
 
-func GetAllPolicyForUser(s *session.Session, user *iam.User) []Policy {
+func GetAllPolicyForUser(s aws.Config, user types.User) []Policy {
 	var policyList []Policy
 	for _, policy := range GetPolicyAttachedToUser(s, user) {
 		policyList = append(policyList, JsonDecodePolicyDocument(GetPolicyDocument(s, policy.PolicyArn)))

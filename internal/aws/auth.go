@@ -1,13 +1,16 @@
 package aws
 
 import (
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
+	"context"
+
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/config"
+
 	"github.com/stangirard/yatas/internal/logger"
 	"github.com/stangirard/yatas/internal/yatas"
 )
 
-func initAuth(config *yatas.Config) *session.Session {
+func initAuth(config *yatas.Config) aws.Config {
 	// Create a new session that the SDK will use to load
 	// credentials from. With either SSO or credentials
 	s := initSession(config)
@@ -15,53 +18,33 @@ func initAuth(config *yatas.Config) *session.Session {
 
 }
 
-func createSessionWithCredentials(c *yatas.Config) *session.Session {
+func createSessionWithCredentials(c *yatas.Config) aws.Config {
 	// Create a new session that the SDK will use to load
 	// credentials from credentials
-	var s *session.Session
 	if c.AWS.Account.Profile == "" {
-		s = session.Must(session.NewSessionWithOptions(session.Options{
-			Config: aws.Config{
-				Region: aws.String(c.AWS.Account.Region),
-			}}))
+		s, err := config.LoadDefaultConfig(context.TODO(),
+			config.WithRegion(c.AWS.Account.Region),
+		)
+		if err != nil {
+			panic(err)
+		}
+		return s
 	} else {
-		s = session.Must(session.NewSessionWithOptions(session.Options{
-			Config: aws.Config{
-				Region: aws.String(c.AWS.Account.Region),
-			},
-			Profile: c.AWS.Account.Profile,
-		}))
+		s, err := config.LoadDefaultConfig(context.TODO(),
+			config.WithRegion(c.AWS.Account.Region),
+			config.WithSharedConfigProfile(c.AWS.Account.Profile),
+		)
+		if err != nil {
+			panic(err)
+		}
+		return s
 	}
-
-	return s
-}
-
-func createSessionWithSSO(c *yatas.Config) *session.Session {
-	// Create a new session that the SDK will use to load
-	// credentials from the shared credentials file.
-	// Usefull for SSO
-	var s *session.Session
-	if c.AWS.Account.Profile == "" {
-		s = session.Must(session.NewSessionWithOptions(session.Options{
-			SharedConfigState: session.SharedConfigEnable}))
-	} else {
-		s = session.Must(session.NewSessionWithOptions(session.Options{
-			Profile:           c.AWS.Account.Profile,
-			SharedConfigState: session.SharedConfigEnable}))
-
-	}
-	return s
 
 }
 
-func initSession(c *yatas.Config) *session.Session {
+func initSession(c *yatas.Config) aws.Config {
 	// Create a new session that the SDK will use to load
 	// credentials from. With either SSO or credentials
-	if c.AWS.Account.SSO {
-		logger.Debug("Using AWS SSO")
-		return createSessionWithSSO(c)
-	} else {
-		logger.Debug("Using AWS credentials")
-		return createSessionWithCredentials(c)
-	}
+	logger.Debug("Using AWS credentials")
+	return createSessionWithCredentials(c)
 }

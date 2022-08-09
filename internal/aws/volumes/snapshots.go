@@ -1,31 +1,32 @@
 package volumes
 
 import (
+	"context"
 	"fmt"
 	"time"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/ec2"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/ec2"
+	"github.com/aws/aws-sdk-go-v2/service/ec2/types"
 	"github.com/stangirard/yatas/internal/logger"
-	"github.com/stangirard/yatas/internal/types"
+	"github.com/stangirard/yatas/internal/results"
 )
 
-func GetSnapshots(s *session.Session) []*ec2.Snapshot {
-	svc := ec2.New(s)
+func GetSnapshots(s aws.Config) []types.Snapshot {
+	svc := ec2.NewFromConfig(s)
 	input := &ec2.DescribeSnapshotsInput{
-		OwnerIds: []*string{aws.String("self")},
+		OwnerIds: []string{*aws.String("self")},
 	}
-	result, err := svc.DescribeSnapshots(input)
+	result, err := svc.DescribeSnapshots(context.TODO(), input)
 	if err != nil {
 		panic(err)
 	}
 	return result.Snapshots
 }
 
-func CheckIfAllVolumesHaveSnapshots(s *session.Session, volumes []*ec2.Volume, testName string, c *[]types.Check) {
+func CheckIfAllVolumesHaveSnapshots(s aws.Config, volumes []types.Volume, testName string, c *[]results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
-	var check types.Check
+	var check results.Check
 	check.Name = "EC2 Volumes Snapshots"
 	check.Id = testName
 	check.Description = "Check if all volumes have snapshots"
@@ -37,7 +38,7 @@ func CheckIfAllVolumesHaveSnapshots(s *session.Session, volumes []*ec2.Volume, t
 			if *snapshot.VolumeId == *volume.VolumeId {
 				status := "OK"
 				Message := "Volume " + *volume.VolumeId + " has snapshot " + *snapshot.SnapshotId
-				check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *snapshot.SnapshotId})
+				check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *snapshot.SnapshotId})
 				ok = true
 				break
 			}
@@ -46,15 +47,15 @@ func CheckIfAllVolumesHaveSnapshots(s *session.Session, volumes []*ec2.Volume, t
 			check.Status = "FAIL"
 			status := "FAIL"
 			Message := "Volume " + *volume.VolumeId + " has no snapshot"
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *volume.VolumeId})
+			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *volume.VolumeId})
 		}
 	}
 	*c = append(*c, check)
 }
 
-func CheckIfAllSnapshotsEncrypted(s *session.Session, snapshots []*ec2.Snapshot, testName string, c *[]types.Check) {
+func CheckIfAllSnapshotsEncrypted(s aws.Config, snapshots []types.Snapshot, testName string, c *[]results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
-	var check types.Check
+	var check results.Check
 	check.Name = "EC2 Snapshots Encryption"
 	check.Id = testName
 	check.Description = "Check if all snapshots are encrypted"
@@ -64,19 +65,19 @@ func CheckIfAllSnapshotsEncrypted(s *session.Session, snapshots []*ec2.Snapshot,
 			check.Status = "FAIL"
 			status := "FAIL"
 			Message := "Snapshot " + *snapshot.SnapshotId + " is not encrypted"
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *snapshot.SnapshotId})
+			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *snapshot.SnapshotId})
 		} else {
 			status := "OK"
 			Message := "Snapshot " + *snapshot.SnapshotId + " is encrypted"
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *snapshot.SnapshotId})
+			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *snapshot.SnapshotId})
 		}
 	}
 	*c = append(*c, check)
 }
 
-func CheckIfSnapshotYoungerthan24h(s *session.Session, vs couple, testName string, c *[]types.Check) {
+func CheckIfSnapshotYoungerthan24h(s aws.Config, vs couple, testName string, c *[]results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
-	var check types.Check
+	var check results.Check
 	check.Name = "EC2 Snapshots Age"
 	check.Id = testName
 	check.Description = "Check if all snapshots are younger than 24h"
@@ -96,11 +97,11 @@ func CheckIfSnapshotYoungerthan24h(s *session.Session, vs couple, testName strin
 			check.Status = "FAIL"
 			status := "FAIL"
 			Message := "Volume " + *volume.VolumeId + " has no snapshot younger than 24h"
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *volume.VolumeId})
+			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *volume.VolumeId})
 		} else {
 			status := "OK"
 			Message := "Volume " + *volume.VolumeId + " has snapshot younger than 24h"
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *volume.VolumeId})
+			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *volume.VolumeId})
 		}
 	}
 	*c = append(*c, check)

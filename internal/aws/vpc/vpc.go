@@ -1,41 +1,42 @@
 package vpc
 
 import (
+	"context"
 	"fmt"
 	"strconv"
 	"strings"
 
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/aws/aws-sdk-go/service/ec2"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/ec2"
+	"github.com/aws/aws-sdk-go-v2/service/ec2/types"
 	"github.com/stangirard/yatas/internal/logger"
-	"github.com/stangirard/yatas/internal/types"
+	"github.com/stangirard/yatas/internal/results"
 	"github.com/stangirard/yatas/internal/yatas"
 )
 
-func GetListVPC(s *session.Session) []*ec2.Vpc {
-	svc := ec2.New(s)
+func GetListVPC(s aws.Config) []types.Vpc {
+	svc := ec2.NewFromConfig(s)
 	input := &ec2.DescribeVpcsInput{}
-	result, err := svc.DescribeVpcs(input)
+	result, err := svc.DescribeVpcs(context.TODO(), input)
 	if err != nil {
 		panic(err)
 	}
 	return result.Vpcs
 }
 
-func checkCIDR20(s *session.Session, vpcs []*ec2.Vpc, testName string, c *[]types.Check) {
+func checkCIDR20(s aws.Config, vpcs []types.Vpc, testName string, c *[]results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
-	var check types.Check
+	var check results.Check
 	check.Name = "VPC CIDR"
 	check.Id = testName
 	check.Description = "Check if VPC CIDR is /20 or bigger"
 	check.Status = "OK"
-	svc := ec2.New(s)
+	svc := ec2.NewFromConfig(s)
 	for _, vpc := range vpcs {
 		params := &ec2.DescribeVpcsInput{
-			VpcIds: []*string{vpc.VpcId},
+			VpcIds: []string{*vpc.VpcId},
 		}
-		resp, err := svc.DescribeVpcs(params)
+		resp, err := svc.DescribeVpcs(context.TODO(), params)
 		if err != nil {
 			panic(err)
 		}
@@ -46,36 +47,36 @@ func checkCIDR20(s *session.Session, vpcs []*ec2.Vpc, testName string, c *[]type
 			check.Status = "FAIL"
 			status := "FAIL"
 			Message := "VPC CIDR is not /20 or bigger on " + *vpc.VpcId
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *vpc.VpcId})
+			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *vpc.VpcId})
 		} else {
 			status := "OK"
 			Message := "VPC CIDR is /20 or bigger on " + *vpc.VpcId
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *vpc.VpcId})
+			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *vpc.VpcId})
 		}
 	}
 	*c = append(*c, check)
 }
 
-func checkIfVPCFLowLogsEnabled(s *session.Session, vpcs []*ec2.Vpc, testName string, c *[]types.Check) {
+func checkIfVPCFLowLogsEnabled(s aws.Config, vpcs []types.Vpc, testName string, c *[]results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
-	var check types.Check
+	var check results.Check
 	check.Name = "VPC Flow Logs"
 	check.Id = testName
 	check.Description = "Check if VPC Flow Logs are enabled"
 	check.Status = "OK"
-	svc := ec2.New(s)
+	svc := ec2.NewFromConfig(s)
 	for _, vpc := range vpcs {
 		params := &ec2.DescribeFlowLogsInput{
-			Filter: []*ec2.Filter{
+			Filter: []types.Filter{
 				{
 					Name: aws.String("resource-id"),
-					Values: []*string{
-						vpc.VpcId,
+					Values: []string{
+						*vpc.VpcId,
 					},
 				},
 			},
 		}
-		resp, err := svc.DescribeFlowLogs(params)
+		resp, err := svc.DescribeFlowLogs(context.TODO(), params)
 		if err != nil {
 			panic(err)
 		}
@@ -83,36 +84,36 @@ func checkIfVPCFLowLogsEnabled(s *session.Session, vpcs []*ec2.Vpc, testName str
 			check.Status = "FAIL"
 			status := "FAIL"
 			Message := "VPC Flow Logs are not enabled on " + *vpc.VpcId
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *vpc.VpcId})
+			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *vpc.VpcId})
 		} else {
 			status := "OK"
 			Message := "VPC Flow Logs are enabled on " + *vpc.VpcId
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *vpc.VpcId})
+			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *vpc.VpcId})
 		}
 	}
 	*c = append(*c, check)
 }
 
-func checkIfOnlyOneGateway(s *session.Session, vpcs []*ec2.Vpc, testName string, c *[]types.Check) {
+func checkIfOnlyOneGateway(s aws.Config, vpcs []types.Vpc, testName string, c *[]results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
-	var check types.Check
+	var check results.Check
 	check.Name = "VPC Gateway"
 	check.Id = testName
 	check.Description = "Check if VPC has only one gateway"
 	check.Status = "OK"
-	svc := ec2.New(s)
+	svc := ec2.NewFromConfig(s)
 	for _, vpc := range vpcs {
 		params := &ec2.DescribeInternetGatewaysInput{
-			Filters: []*ec2.Filter{
+			Filters: []types.Filter{
 				{
 					Name: aws.String("attachment.vpc-id"),
-					Values: []*string{
-						vpc.VpcId,
+					Values: []string{
+						*vpc.VpcId,
 					},
 				},
 			},
 		}
-		resp, err := svc.DescribeInternetGateways(params)
+		resp, err := svc.DescribeInternetGateways(context.TODO(), params)
 		if err != nil {
 			panic(err)
 		}
@@ -120,19 +121,19 @@ func checkIfOnlyOneGateway(s *session.Session, vpcs []*ec2.Vpc, testName string,
 			check.Status = "FAIL"
 			status := "FAIL"
 			Message := "VPC has more than one gateway on " + *vpc.VpcId
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *vpc.VpcId})
+			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *vpc.VpcId})
 		} else {
 			status := "OK"
 			Message := "VPC has only one gateway on " + *vpc.VpcId
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *vpc.VpcId})
+			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *vpc.VpcId})
 		}
 	}
 	*c = append(*c, check)
 }
 
-func checkIfOnlyOneVPC(s *session.Session, vpcs []*ec2.Vpc, testName string, c *[]types.Check) {
+func checkIfOnlyOneVPC(s aws.Config, vpcs []types.Vpc, testName string, c *[]results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
-	var check types.Check
+	var check results.Check
 	check.Name = "VPC Only One"
 	check.Id = testName
 	check.Description = "Check if VPC has only one VPC"
@@ -142,19 +143,19 @@ func checkIfOnlyOneVPC(s *session.Session, vpcs []*ec2.Vpc, testName string, c *
 			check.Status = "FAIL"
 			status := "FAIL"
 			Message := "VPC Id:" + *vpc.VpcId
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *vpc.VpcId})
+			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *vpc.VpcId})
 		} else {
 			status := "OK"
 			Message := "VPC Id:" + *vpc.VpcId
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *vpc.VpcId})
+			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *vpc.VpcId})
 		}
 	}
 
 	*c = append(*c, check)
 }
 
-func RunVPCTests(s *session.Session, c *yatas.Config) []types.Check {
-	var checks []types.Check
+func RunVPCTests(s aws.Config, c *yatas.Config) []results.Check {
+	var checks []results.Check
 	vpcs := GetListVPC(s)
 	yatas.CheckTest(c, "AWS_VPC_001", checkCIDR20)(s, vpcs, "AWS_VPC_001", &checks)
 	yatas.CheckTest(c, "AWS_VPC_002", checkIfOnlyOneVPC)(s, vpcs, "AWS_VPC_002", &checks)
