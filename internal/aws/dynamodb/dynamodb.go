@@ -36,14 +36,15 @@ func CheckIfDynamodbEncrypted(s *session.Session, dynamodbs []*string, testName 
 		if err != nil {
 			panic(err)
 		}
-		if *resp.Table.SSEDescription.Status != "ENABLED" {
+		if resp.Table != nil && resp.Table.SSEDescription != nil && *resp.Table.SSEDescription.Status == "ENABLED" {
+			status := "OK"
+			Message := "Dynamodb encryption is enabled on " + *d
+			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *resp.Table.TableArn})
+
+		} else {
 			check.Status = "FAIL"
 			status := "FAIL"
 			Message := "Dynamodb encryption is not enabled on " + *d
-			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *resp.Table.TableArn})
-		} else {
-			status := "OK"
-			Message := "Dynamodb encryption is enabled on " + *d
 			check.Results = append(check.Results, types.Result{Status: status, Message: Message, ResourceID: *resp.Table.TableArn})
 		}
 	}
