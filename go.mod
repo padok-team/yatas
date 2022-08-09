@@ -3,7 +3,7 @@ module github.com/stangirard/yatas
 go 1.19
 
 require (
-	github.com/aws/aws-sdk-go v1.44.70
+	github.com/aws/aws-sdk-go v1.44.71
 	github.com/fatih/color v1.13.0
 	github.com/hashicorp/go-hclog v1.2.2
 	github.com/mitchellh/mapstructure v1.5.0
