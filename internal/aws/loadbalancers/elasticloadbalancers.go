@@ -64,12 +64,14 @@ func CheckIfAccessLogsEnabled(wg *sync.WaitGroup, s aws.Config, loadBalancers []
 	wg.Done()
 }
 
-func RunChecks(s aws.Config, c *yatas.Config) []results.Check {
+func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []results.Check) {
+
 	var checks []results.Check
 	loadBalancers := GetElasticLoadBalancers(s)
 	var wg sync.WaitGroup
 
 	go yatas.CheckTest(&wg, c, "AWS_LB_001", CheckIfAccessLogsEnabled)(&wg, s, loadBalancers, "AWS_ELB_001", &checks)
 	wg.Wait()
-	return checks
+
+	queue <- checks
 }

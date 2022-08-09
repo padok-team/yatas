@@ -209,7 +209,8 @@ func CheckS3Location(s aws.Config, bucket, region string) bool {
 	}
 }
 
-func RunChecks(s aws.Config, c *yatas.Config) []results.Check {
+func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []results.Check) {
+
 	var checks []results.Check
 	logger.Debug("Starting S3 tests")
 	buckets := GetListS3(s)
@@ -223,5 +224,5 @@ func RunChecks(s aws.Config, c *yatas.Config) []results.Check {
 	// Wait for all the goroutines to finish
 	wg.Wait()
 
-	return checks
+	queue <- checks
 }

@@ -97,7 +97,8 @@ func CheckIfStagesProtectedByAcl(wg *sync.WaitGroup, s aws.Config, stages []type
 	wg.Done()
 }
 
-func RunChecks(s aws.Config, c *yatas.Config) []results.Check {
+func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []results.Check) {
+
 	// var checks []results.Check
 	var checks []results.Check
 	var wg sync.WaitGroup
@@ -108,5 +109,6 @@ func RunChecks(s aws.Config, c *yatas.Config) []results.Check {
 	go yatas.CheckTest(&wg, c, "AWS_APG_002", CheckIfStagesProtectedByAcl)(&wg, s, stages, "AWS_APG_002", &checks)
 
 	wg.Wait()
-	return checks
+
+	queue <- checks
 }

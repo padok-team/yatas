@@ -46,7 +46,8 @@ func CheckIfDesiredCapacityMaxCapacityBelow80percent(wg *sync.WaitGroup, s aws.C
 	wg.Done()
 }
 
-func RunChecks(s aws.Config, c *yatas.Config) []results.Check {
+func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []results.Check) {
+
 	var checks []results.Check
 	groups := GetAutoscalingGroups(s)
 	var wg sync.WaitGroup
@@ -54,5 +55,6 @@ func RunChecks(s aws.Config, c *yatas.Config) []results.Check {
 	go yatas.CheckTest(&wg, c, "AWS_ASG_001", CheckIfDesiredCapacityMaxCapacityBelow80percent)(&wg, s, groups, "AWS_ASG_001", &checks)
 
 	wg.Wait()
-	return checks
+
+	queue <- checks
 }

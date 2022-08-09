@@ -121,7 +121,8 @@ func CheckIfUserCanElevateRights(wg *sync.WaitGroup, s aws.Config, users []types
 	wg.Done()
 }
 
-func RunChecks(s aws.Config, c *yatas.Config) []results.Check {
+func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []results.Check) {
+
 	var checks []results.Check
 	users := GetAllUsers(s)
 	var wg sync.WaitGroup
@@ -130,5 +131,6 @@ func RunChecks(s aws.Config, c *yatas.Config) []results.Check {
 	go yatas.CheckTest(&wg, c, "AWS_IAM_002", CheckAgeAccessKeyLessThan90Days)(&wg, s, users, "AWS_IAM_002", &checks)
 	go yatas.CheckTest(&wg, c, "AWS_IAM_003", CheckIfUserCanElevateRights)(&wg, s, users, "AWS_IAM_003", &checks)
 	wg.Wait()
-	return checks
+
+	queue <- checks
 }

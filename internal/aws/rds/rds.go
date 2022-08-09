@@ -200,7 +200,8 @@ func CheckIfDeleteProtectionEnabled(wg *sync.WaitGroup, s aws.Config, instances 
 	wg.Done()
 }
 
-func RunChecks(s aws.Config, c *yatas.Config) []results.Check {
+func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []results.Check) {
+
 	var checks []results.Check
 	instances := GetListRDS(s)
 	var wg sync.WaitGroup
@@ -212,5 +213,6 @@ func RunChecks(s aws.Config, c *yatas.Config) []results.Check {
 	go yatas.CheckTest(&wg, c, "AWS_RDS_005", CheckIfLoggingEnabled)(&wg, s, instances, "AWS_RDS_005", &checks)
 	go yatas.CheckTest(&wg, c, "AWS_RDS_006", CheckIfDeleteProtectionEnabled)(&wg, s, instances, "AWS_RDS_006", &checks)
 	wg.Wait()
-	return checks
+
+	queue <- checks
 }

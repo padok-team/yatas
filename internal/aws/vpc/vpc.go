@@ -240,7 +240,8 @@ func CheckIfAtLeast2Subnets(wg *sync.WaitGroup, s aws.Config, vpcs []types.Vpc, 
 	wg.Done()
 }
 
-func RunChecks(s aws.Config, c *yatas.Config) []results.Check {
+func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []results.Check) {
+
 	var checks []results.Check
 	vpcs := GetListVPC(s)
 	var wg sync.WaitGroup
@@ -252,5 +253,6 @@ func RunChecks(s aws.Config, c *yatas.Config) []results.Check {
 	go yatas.CheckTest(&wg, c, "AWS_VPC_005", CheckIfAtLeast2Subnets)(&wg, s, vpcs, "AWS_VPC_005", &checks)
 	go yatas.CheckTest(&wg, c, "AWS_VPC_006", CheckIfSubnetInDifferentZone)(&wg, s, vpcs, "AWS_VPC_006", &checks)
 	wg.Wait()
-	return checks
+
+	queue <- checks
 }

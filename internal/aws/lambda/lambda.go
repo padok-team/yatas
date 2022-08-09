@@ -71,7 +71,8 @@ func CheckIfLambdaInSecurityGroup(wg *sync.WaitGroup, s aws.Config, lambdas []ty
 	wg.Done()
 }
 
-func RunChecks(s aws.Config, c *yatas.Config) []results.Check {
+func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []results.Check) {
+
 	var checks []results.Check
 	lambdas := GetLambdas(s)
 	var wg sync.WaitGroup
@@ -79,5 +80,6 @@ func RunChecks(s aws.Config, c *yatas.Config) []results.Check {
 	go yatas.CheckTest(&wg, c, "AWS_LMD_001", CheckIfLambdaPrivate)(&wg, s, lambdas, "AWS_LMD_001", &checks)
 	go yatas.CheckTest(&wg, c, "AWS_LMD_002", CheckIfLambdaInSecurityGroup)(&wg, s, lambdas, "AWS_LMD_002", &checks)
 	wg.Wait()
-	return checks
+
+	queue <- checks
 }

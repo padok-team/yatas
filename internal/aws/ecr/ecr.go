@@ -48,12 +48,14 @@ func CheckIfImageScanningEnabled(wg *sync.WaitGroup, s aws.Config, ecr []types.R
 	wg.Done()
 }
 
-func RunChecks(s aws.Config, c *yatas.Config) []results.Check {
+func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []results.Check) {
+
 	var checks []results.Check
 	ecr := GetECRs(s)
 	var wg sync.WaitGroup
 
 	go yatas.CheckTest(&wg, c, "AWS_ECR_001", CheckIfImageScanningEnabled)(&wg, s, ecr, "AWS_ECR_001", &checks)
 	wg.Wait()
-	return checks
+
+	queue <- checks
 }

@@ -164,7 +164,8 @@ func CheckIfACLUsed(wg *sync.WaitGroup, s aws.Config, d []types.DistributionSumm
 	wg.Done()
 }
 
-func RunChecks(s aws.Config, c *yatas.Config) []results.Check {
+func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []results.Check) {
+
 	var checks []results.Check
 	d := GetAllCloudfront(s)
 	var wg sync.WaitGroup
@@ -175,5 +176,6 @@ func RunChecks(s aws.Config, c *yatas.Config) []results.Check {
 	go yatas.CheckTest(&wg, c, "AWS_CFT_004", CheckIfCookieLogginEnabled)(&wg, s, d, "AWS_CFT_004", &checks)
 	go yatas.CheckTest(&wg, c, "AWS_CFT_005", CheckIfACLUsed)(&wg, s, d, "AWS_CFT_005", &checks)
 	wg.Wait()
-	return checks
+
+	queue <- checks
 }

@@ -3,6 +3,7 @@ package cmd
 import (
 	"flag"
 	"fmt"
+	"sort"
 
 	"github.com/schollz/progressbar/v3"
 	"github.com/stangirard/yatas/internal/plugins"
@@ -26,13 +27,18 @@ func Execute() error {
 		config.Progress = progressbar.Default(-1)
 	}
 	checks, err := plugins.Execute(&config)
-	checks = report.RemoveIgnored(&config, checks)
 	if err != nil {
 		return err
 	}
+	checks = report.RemoveIgnored(&config, checks)
+
 	if *progress {
 		config.Progress.Finish()
 	}
+	// Sort checks by ID
+	sort.Slice(checks, func(i, j int) bool {
+		return checks[i].Id < checks[j].Id
+	})
 	fmt.Println()
 	if *compare {
 		previous := report.ReadPreviousResults()

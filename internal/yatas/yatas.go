@@ -109,3 +109,8 @@ func CheckTest[A, B, C, D, E any](wg *sync.WaitGroup, config *Config, id string,
 	}
 
 }
+
+func CheckMacroTest[A, B, C, D any](wg *sync.WaitGroup, config *Config, test func(A, B, C, D)) func(A, B, C, D) {
+	wg.Add(1)
+	return test
+}

@@ -82,7 +82,8 @@ type couple struct {
 	snapshot []types.Snapshot
 }
 
-func RunChecks(s aws.Config, c *yatas.Config) []results.Check {
+func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []results.Check) {
+
 	var checks []results.Check
 	logger.Debug("Starting EC2 volumes tests")
 	volumes := GetVolumes(s)
@@ -98,5 +99,6 @@ func RunChecks(s aws.Config, c *yatas.Config) []results.Check {
 	go yatas.CheckTest(&wg, c, "AWS_BAK_002", CheckIfSnapshotYoungerthan24h)(&wg, s, couples, "AWS_BAK_002", &checks)
 
 	wg.Wait()
-	return checks
+
+	queue <- checks
 }

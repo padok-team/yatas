@@ -51,12 +51,14 @@ func CheckIfEC2PublicIP(wg *sync.WaitGroup, s aws.Config, instances []types.Inst
 	wg.Done()
 }
 
-func RunChecks(s aws.Config, c *yatas.Config) []results.Check {
+func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []results.Check) {
+
 	var checks []results.Check
 	instances := GetEC2s(s)
 	var wg sync.WaitGroup
 
 	go yatas.CheckTest(&wg, c, "AWS_EC2_001", CheckIfEC2PublicIP)(&wg, s, instances, "AWS_EC2_001", &checks)
 	wg.Wait()
-	return checks
+
+	queue <- checks
 }
