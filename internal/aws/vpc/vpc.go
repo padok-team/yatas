@@ -154,6 +154,85 @@ func checkIfOnlyOneVPC(s aws.Config, vpcs []types.Vpc, testName string, c *[]res
 	*c = append(*c, check)
 }
 
+func CheckIfSubnetInDifferentZone(s aws.Config, vpcs []types.Vpc, testName string, c *[]results.Check) {
+	logger.Info(fmt.Sprint("Running ", testName))
+	var check results.Check
+	check.Name = "Subnets in different zone"
+	check.Id = testName
+	check.Description = "Check if Subnet are in different zone"
+	check.Status = "OK"
+	svc := ec2.NewFromConfig(s)
+	for _, vpc := range vpcs {
+		params := &ec2.DescribeSubnetsInput{
+			Filters: []types.Filter{
+				{
+					Name: aws.String("vpc-id"),
+					Values: []string{
+						*vpc.VpcId,
+					},
+				},
+			},
+		}
+		resp, err := svc.DescribeSubnets(context.TODO(), params)
+		if err != nil {
+			panic(err)
+		}
+		subnetsAZ := make(map[string]int)
+		for _, subnet := range resp.Subnets {
+			subnetsAZ[*subnet.AvailabilityZone]++
+		}
+		if len(subnetsAZ) > 1 {
+			check.Status = "OK"
+			status := "OK"
+			Message := "Subnets are in different zone on " + *vpc.VpcId
+			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *vpc.VpcId})
+		} else {
+			check.Status = "FAIL"
+			status := "FAIL"
+			Message := "Subnets are in same zone on " + *vpc.VpcId
+			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *vpc.VpcId})
+		}
+	}
+	*c = append(*c, check)
+}
+
+func CheckIfAtLeast2Subnets(s aws.Config, vpcs []types.Vpc, testName string, c *[]results.Check) {
+	logger.Info(fmt.Sprint("Running ", testName))
+	var check results.Check
+	check.Name = "At least 2 subnets"
+	check.Id = testName
+	check.Description = "Check if VPC has at least 2 subnets"
+	check.Status = "OK"
+	svc := ec2.NewFromConfig(s)
+	for _, vpc := range vpcs {
+		params := &ec2.DescribeSubnetsInput{
+			Filters: []types.Filter{
+				{
+					Name: aws.String("vpc-id"),
+					Values: []string{
+						*vpc.VpcId,
+					},
+				},
+			},
+		}
+		resp, err := svc.DescribeSubnets(context.TODO(), params)
+		if err != nil {
+			panic(err)
+		}
+		if len(resp.Subnets) < 2 {
+			check.Status = "FAIL"
+			status := "FAIL"
+			Message := "VPC " + *vpc.VpcId + " has less than 2 subnets"
+			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *vpc.VpcId})
+		} else {
+			status := "OK"
+			Message := "VPC " + *vpc.VpcId + " has at least 2 subnets"
+			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *vpc.VpcId})
+		}
+	}
+	*c = append(*c, check)
+}
+
 func RunVPCTests(s aws.Config, c *yatas.Config) []results.Check {
 	var checks []results.Check
 	vpcs := GetListVPC(s)
@@ -161,5 +240,7 @@ func RunVPCTests(s aws.Config, c *yatas.Config) []results.Check {
 	yatas.CheckTest(c, "AWS_VPC_002", checkIfOnlyOneVPC)(s, vpcs, "AWS_VPC_002", &checks)
 	yatas.CheckTest(c, "AWS_VPC_003", checkIfOnlyOneGateway)(s, vpcs, "AWS_VPC_003", &checks)
 	yatas.CheckTest(c, "AWS_VPC_004", checkIfVPCFLowLogsEnabled)(s, vpcs, "AWS_VPC_004", &checks)
+	yatas.CheckTest(c, "AWS_VPC_005", CheckIfAtLeast2Subnets)(s, vpcs, "AWS_VPC_005", &checks)
+	yatas.CheckTest(c, "AWS_VPC_006", CheckIfSubnetInDifferentZone)(s, vpcs, "AWS_VPC_006", &checks)
 	return checks
 }
