@@ -3,6 +3,7 @@ package ec2
 import (
 	"context"
 	"fmt"
+	"sync"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
@@ -27,7 +28,7 @@ func GetEC2s(s aws.Config) []types.Instance {
 	return instances
 }
 
-func CheckIfEC2PublicIP(s aws.Config, instances []types.Instance, testName string, c *[]results.Check) {
+func CheckIfEC2PublicIP(wg *sync.WaitGroup, s aws.Config, instances []types.Instance, testName string, c *[]results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "EC2 Public IP"
@@ -47,11 +48,15 @@ func CheckIfEC2PublicIP(s aws.Config, instances []types.Instance, testName strin
 		}
 	}
 	*c = append(*c, check)
+	wg.Done()
 }
 
-func RunEC2Tests(s aws.Config, c *yatas.Config) []results.Check {
+func RunChecks(s aws.Config, c *yatas.Config) []results.Check {
 	var checks []results.Check
 	instances := GetEC2s(s)
-	yatas.CheckTest(c, "AWS_EC2_001", CheckIfEC2PublicIP)(s, instances, "AWS_EC2_001", &checks)
+	var wg sync.WaitGroup
+
+	go yatas.CheckTest(&wg, c, "AWS_EC2_001", CheckIfEC2PublicIP)(&wg, s, instances, "AWS_EC2_001", &checks)
+	wg.Wait()
 	return checks
 }

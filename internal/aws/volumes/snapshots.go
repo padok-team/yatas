@@ -3,6 +3,7 @@ package volumes
 import (
 	"context"
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -24,7 +25,7 @@ func GetSnapshots(s aws.Config) []types.Snapshot {
 	return result.Snapshots
 }
 
-func CheckIfAllVolumesHaveSnapshots(s aws.Config, volumes []types.Volume, testName string, c *[]results.Check) {
+func CheckIfAllVolumesHaveSnapshots(wg *sync.WaitGroup, s aws.Config, volumes []types.Volume, testName string, c *[]results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "EC2 Volumes Snapshots"
@@ -51,9 +52,10 @@ func CheckIfAllVolumesHaveSnapshots(s aws.Config, volumes []types.Volume, testNa
 		}
 	}
 	*c = append(*c, check)
+	wg.Done()
 }
 
-func CheckIfAllSnapshotsEncrypted(s aws.Config, snapshots []types.Snapshot, testName string, c *[]results.Check) {
+func CheckIfAllSnapshotsEncrypted(wg *sync.WaitGroup, s aws.Config, snapshots []types.Snapshot, testName string, c *[]results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "EC2 Snapshots Encryption"
@@ -73,9 +75,10 @@ func CheckIfAllSnapshotsEncrypted(s aws.Config, snapshots []types.Snapshot, test
 		}
 	}
 	*c = append(*c, check)
+	wg.Done()
 }
 
-func CheckIfSnapshotYoungerthan24h(s aws.Config, vs couple, testName string, c *[]results.Check) {
+func CheckIfSnapshotYoungerthan24h(wg *sync.WaitGroup, s aws.Config, vs couple, testName string, c *[]results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "EC2 Snapshots Age"
@@ -105,4 +108,5 @@ func CheckIfSnapshotYoungerthan24h(s aws.Config, vs couple, testName string, c *
 		}
 	}
 	*c = append(*c, check)
+	wg.Done()
 }

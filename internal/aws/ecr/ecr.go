@@ -3,6 +3,7 @@ package ecr
 import (
 	"context"
 	"fmt"
+	"sync"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/ecr"
@@ -24,7 +25,7 @@ func GetECRs(s aws.Config) []types.Repository {
 	return result.Repositories
 }
 
-func CheckIfImageScanningEnabled(s aws.Config, ecr []types.Repository, testName string, c *[]results.Check) {
+func CheckIfImageScanningEnabled(wg *sync.WaitGroup, s aws.Config, ecr []types.Repository, testName string, c *[]results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "Image Scanning Enabled"
@@ -44,11 +45,15 @@ func CheckIfImageScanningEnabled(s aws.Config, ecr []types.Repository, testName 
 		}
 	}
 	*c = append(*c, check)
+	wg.Done()
 }
 
-func RunECRTests(s aws.Config, c *yatas.Config) []results.Check {
+func RunChecks(s aws.Config, c *yatas.Config) []results.Check {
 	var checks []results.Check
 	ecr := GetECRs(s)
-	yatas.CheckTest(c, "AWS_ECR_001", CheckIfImageScanningEnabled)(s, ecr, "AWS_ECR_001", &checks)
+	var wg sync.WaitGroup
+
+	go yatas.CheckTest(&wg, c, "AWS_ECR_001", CheckIfImageScanningEnabled)(&wg, s, ecr, "AWS_ECR_001", &checks)
+	wg.Wait()
 	return checks
 }
