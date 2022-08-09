@@ -49,6 +49,6 @@ func CheckIfImageScanningEnabled(s aws.Config, ecr []types.Repository, testName 
 func RunECRTests(s aws.Config, c *yatas.Config) []results.Check {
 	var checks []results.Check
 	ecr := GetECRs(s)
-	yatas.CheckTest(c, "AWS_ECR_001", CheckIfImageScanningEnabled)(s, ecr, "AWS_CLD_001", &checks)
+	yatas.CheckTest(c, "AWS_ECR_001", CheckIfImageScanningEnabled)(s, ecr, "AWS_ECR_001", &checks)
 	return checks
 }

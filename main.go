@@ -7,6 +7,7 @@ import (
 	"os"
 
 	"github.com/stangirard/yatas/internal/cmd"
+	"github.com/stangirard/yatas/internal/report"
 )
 
 func main() {
@@ -16,10 +17,17 @@ func main() {
 	}
 }
 
+var (
+	generateReadme = flag.Bool("readme", false, "generate README.md checks")
+)
+
 // Run YATAS
 func run() error {
 	flag.Parse()
 
+	if *generateReadme {
+		return report.GenerateReadme("results.yaml")
+	}
 	if err := cmd.Execute(); err != nil {
 		return err
 	}

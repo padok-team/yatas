@@ -88,7 +88,7 @@ func RunVolumesTest(s aws.Config, c *yatas.Config) []results.Check {
 
 	yatas.CheckTest(c, "AWS_VOL_001", checkIfEncryptionEnabled)(s, volumes, "AWS_VOL_001", &checks)
 	yatas.CheckTest(c, "AWS_VOL_002", CheckIfVolumesTypeGP3)(s, volumes, "AWS_VOL_002", &checks)
-	yatas.CheckTest(c, "AWS_VOL_003", CheckIfAllVolumesHaveSnapshots)(s, volumes, "AWS_VOL_004", &checks)
+	yatas.CheckTest(c, "AWS_VOL_003", CheckIfAllVolumesHaveSnapshots)(s, volumes, "AWS_VOL_003", &checks)
 
 	yatas.CheckTest(c, "AWS_BAK_001", CheckIfAllSnapshotsEncrypted)(s, snapshots, "AWS_BAK_001", &checks)
 	yatas.CheckTest(c, "AWS_BAK_002", CheckIfSnapshotYoungerthan24h)(s, couples, "AWS_BAK_002", &checks)
