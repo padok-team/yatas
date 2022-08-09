@@ -3,11 +3,11 @@ package aws
 import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
-	"github.com/stangirard/yatas/internal/config"
 	"github.com/stangirard/yatas/internal/logger"
+	"github.com/stangirard/yatas/internal/yatas"
 )
 
-func initAuth(config *config.Config) *session.Session {
+func initAuth(config *yatas.Config) *session.Session {
 	// Create a new session that the SDK will use to load
 	// credentials from. With either SSO or credentials
 	s := initSession(config)
@@ -15,7 +15,7 @@ func initAuth(config *config.Config) *session.Session {
 
 }
 
-func createSessionWithCredentials(c *config.Config) *session.Session {
+func createSessionWithCredentials(c *yatas.Config) *session.Session {
 	// Create a new session that the SDK will use to load
 	// credentials from credentials
 	var s *session.Session
@@ -36,7 +36,7 @@ func createSessionWithCredentials(c *config.Config) *session.Session {
 	return s
 }
 
-func createSessionWithSSO(c *config.Config) *session.Session {
+func createSessionWithSSO(c *yatas.Config) *session.Session {
 	// Create a new session that the SDK will use to load
 	// credentials from the shared credentials file.
 	// Usefull for SSO
@@ -54,7 +54,7 @@ func createSessionWithSSO(c *config.Config) *session.Session {
 
 }
 
-func initSession(c *config.Config) *session.Session {
+func initSession(c *yatas.Config) *session.Session {
 	// Create a new session that the SDK will use to load
 	// credentials from. With either SSO or credentials
 	if c.AWS.Account.SSO {

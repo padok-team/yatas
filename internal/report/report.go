@@ -7,8 +7,8 @@ import (
 	"regexp"
 
 	"github.com/fatih/color"
-	"github.com/stangirard/yatas/internal/config"
 	"github.com/stangirard/yatas/internal/types"
+	"github.com/stangirard/yatas/internal/yatas"
 	"gopkg.in/yaml.v3"
 )
 
@@ -32,7 +32,7 @@ func countResultOkOverall(results []types.Result) (int, int) {
 	return ok, all
 }
 
-func IsIgnored(c *config.Config, r types.Result, check types.Check) bool {
+func IsIgnored(c *yatas.Config, r types.Result, check types.Check) bool {
 	for _, ignored := range c.Ignore {
 		if ignored.ID == check.Id {
 			for i := range ignored.Values {
@@ -47,7 +47,7 @@ func IsIgnored(c *config.Config, r types.Result, check types.Check) bool {
 	return false
 }
 
-func RemoveIgnored(c *config.Config, checks []types.Check) []types.Check {
+func RemoveIgnored(c *yatas.Config, checks []types.Check) []types.Check {
 	var newChecks []types.Check
 	for _, check := range checks {
 		var checktmp types.Check
@@ -68,7 +68,7 @@ func RemoveIgnored(c *config.Config, checks []types.Check) []types.Check {
 	return newChecks
 }
 
-func PrettyPrintChecks(checks []types.Check, c *config.Config) {
+func PrettyPrintChecks(checks []types.Check, c *yatas.Config) {
 	flag.Parse()
 	for _, check := range checks {
 		if c.CheckExclude(check.Id) {
@@ -124,7 +124,7 @@ func ReadPreviousResults() []types.Check {
 	return checks
 }
 
-func WriteChecksToFile(checks []types.Check, c *config.Config) {
+func WriteChecksToFile(checks []types.Check, c *yatas.Config) {
 	var checksToWrite []types.Check
 	for _, check := range checks {
 		if !c.CheckExclude(check.Id) {

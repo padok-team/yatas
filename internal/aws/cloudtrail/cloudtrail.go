@@ -6,9 +6,9 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/cloudtrail"
-	"github.com/stangirard/yatas/internal/config"
 	"github.com/stangirard/yatas/internal/logger"
 	"github.com/stangirard/yatas/internal/types"
+	"github.com/stangirard/yatas/internal/yatas"
 )
 
 func GetCloudtrails(s *session.Session) []*cloudtrail.Trail {
@@ -90,11 +90,11 @@ func CheckIfCloudtrailsMultiRegion(s *session.Session, cloudtrails []*cloudtrail
 	*c = append(*c, check)
 }
 
-func RunCloudtrailTests(s *session.Session, c *config.Config) []types.Check {
+func RunCloudtrailTests(s *session.Session, c *yatas.Config) []types.Check {
 	var checks []types.Check
 	cloudtrails := GetCloudtrails(s)
-	config.CheckTest(c, "AWS_CLD_001", CheckIfCloudtrailsEncrypted)(s, cloudtrails, "AWS_CLD_001", &checks)
-	config.CheckTest(c, "AWS_CLD_002", CheckIfCloudtrailsGlobalServiceEventsEnabled)(s, cloudtrails, "AWS_CLD_002", &checks)
-	config.CheckTest(c, "AWS_CLD_003", CheckIfCloudtrailsMultiRegion)(s, cloudtrails, "AWS_CLD_003", &checks)
+	yatas.CheckTest(c, "AWS_CLD_001", CheckIfCloudtrailsEncrypted)(s, cloudtrails, "AWS_CLD_001", &checks)
+	yatas.CheckTest(c, "AWS_CLD_002", CheckIfCloudtrailsGlobalServiceEventsEnabled)(s, cloudtrails, "AWS_CLD_002", &checks)
+	yatas.CheckTest(c, "AWS_CLD_003", CheckIfCloudtrailsMultiRegion)(s, cloudtrails, "AWS_CLD_003", &checks)
 	return checks
 }

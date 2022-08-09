@@ -5,9 +5,9 @@ import (
 	"fmt"
 
 	"github.com/schollz/progressbar/v3"
-	"github.com/stangirard/yatas/internal/config"
 	"github.com/stangirard/yatas/internal/plugins"
 	"github.com/stangirard/yatas/internal/report"
+	"github.com/stangirard/yatas/internal/yatas"
 )
 
 var (
@@ -17,7 +17,7 @@ var (
 
 func Execute() error {
 
-	config, err := config.ParseConfig(".yatas.yml")
+	config, err := yatas.ParseConfig(".yatas.yml")
 	if err != nil {
 		return err
 	}

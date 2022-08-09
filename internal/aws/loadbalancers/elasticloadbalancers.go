@@ -6,9 +6,9 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/elbv2"
-	"github.com/stangirard/yatas/internal/config"
 	"github.com/stangirard/yatas/internal/logger"
 	"github.com/stangirard/yatas/internal/types"
+	"github.com/stangirard/yatas/internal/yatas"
 )
 
 func GetElasticLoadBalancers(s *session.Session) []*elbv2.LoadBalancer {
@@ -61,9 +61,9 @@ func CheckIfAccessLogsEnabled(s *session.Session, loadBalancers []*elbv2.LoadBal
 	*c = append(*c, check)
 }
 
-func RunLoadBalancersTests(s *session.Session, c *config.Config) []types.Check {
+func RunLoadBalancersTests(s *session.Session, c *yatas.Config) []types.Check {
 	var checks []types.Check
 	loadBalancers := GetElasticLoadBalancers(s)
-	config.CheckTest(c, "AWS_LB_001", CheckIfAccessLogsEnabled)(s, loadBalancers, "AWS_ELB_001", &checks)
+	yatas.CheckTest(c, "AWS_LB_001", CheckIfAccessLogsEnabled)(s, loadBalancers, "AWS_ELB_001", &checks)
 	return checks
 }

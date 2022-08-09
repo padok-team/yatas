@@ -5,9 +5,9 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/autoscaling"
-	"github.com/stangirard/yatas/internal/config"
 	"github.com/stangirard/yatas/internal/logger"
 	"github.com/stangirard/yatas/internal/types"
+	"github.com/stangirard/yatas/internal/yatas"
 )
 
 func GetAutoscalingGroups(s *session.Session) []*autoscaling.Group {
@@ -42,9 +42,9 @@ func CheckIfDesiredCapacityMaxCapacityBelow80percent(s *session.Session, groups 
 	*c = append(*c, check)
 }
 
-func RunAutoscalingGroupChecks(s *session.Session, c *config.Config) []types.Check {
+func RunAutoscalingGroupChecks(s *session.Session, c *yatas.Config) []types.Check {
 	var checks []types.Check
 	groups := GetAutoscalingGroups(s)
-	config.CheckTest(c, "AWS_ASG_001", CheckIfDesiredCapacityMaxCapacityBelow80percent)(s, groups, "AWS_ASG_001", &checks)
+	yatas.CheckTest(c, "AWS_ASG_001", CheckIfDesiredCapacityMaxCapacityBelow80percent)(s, groups, "AWS_ASG_001", &checks)
 	return checks
 }

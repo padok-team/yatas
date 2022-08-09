@@ -6,9 +6,9 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ecr"
-	"github.com/stangirard/yatas/internal/config"
 	"github.com/stangirard/yatas/internal/logger"
 	"github.com/stangirard/yatas/internal/types"
+	"github.com/stangirard/yatas/internal/yatas"
 )
 
 func GetECRs(s *session.Session) []*ecr.Repository {
@@ -45,9 +45,9 @@ func CheckIfImageScanningEnabled(s *session.Session, ecr []*ecr.Repository, test
 	*c = append(*c, check)
 }
 
-func RunECRTests(s *session.Session, c *config.Config) []types.Check {
+func RunECRTests(s *session.Session, c *yatas.Config) []types.Check {
 	var checks []types.Check
 	ecr := GetECRs(s)
-	config.CheckTest(c, "AWS_ECR_001", CheckIfImageScanningEnabled)(s, ecr, "AWS_CLD_001", &checks)
+	yatas.CheckTest(c, "AWS_ECR_001", CheckIfImageScanningEnabled)(s, ecr, "AWS_CLD_001", &checks)
 	return checks
 }

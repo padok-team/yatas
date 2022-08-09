@@ -5,9 +5,9 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
-	"github.com/stangirard/yatas/internal/config"
 	"github.com/stangirard/yatas/internal/logger"
 	"github.com/stangirard/yatas/internal/types"
+	"github.com/stangirard/yatas/internal/yatas"
 )
 
 func GetEC2s(s *session.Session) []*ec2.Instance {
@@ -46,9 +46,9 @@ func CheckIfEC2PublicIP(s *session.Session, instances []*ec2.Instance, testName 
 	*c = append(*c, check)
 }
 
-func RunEC2Tests(s *session.Session, c *config.Config) []types.Check {
+func RunEC2Tests(s *session.Session, c *yatas.Config) []types.Check {
 	var checks []types.Check
 	instances := GetEC2s(s)
-	config.CheckTest(c, "AWS_EC2_001", CheckIfEC2PublicIP)(s, instances, "AWS_EC2_001", &checks)
+	yatas.CheckTest(c, "AWS_EC2_001", CheckIfEC2PublicIP)(s, instances, "AWS_EC2_001", &checks)
 	return checks
 }

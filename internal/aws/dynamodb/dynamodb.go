@@ -5,9 +5,9 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/dynamodb"
-	"github.com/stangirard/yatas/internal/config"
 	"github.com/stangirard/yatas/internal/logger"
 	"github.com/stangirard/yatas/internal/types"
+	"github.com/stangirard/yatas/internal/yatas"
 )
 
 func GetDynamodbs(s *session.Session) []*string {
@@ -80,10 +80,10 @@ func CheckIfDynamodbContinuousBackupsEnabled(s *session.Session, dynamodbs []*st
 	*c = append(*c, check)
 }
 
-func RunDynamodbTests(s *session.Session, c *config.Config) []types.Check {
+func RunDynamodbTests(s *session.Session, c *yatas.Config) []types.Check {
 	var checks []types.Check
 	dynamodbs := GetDynamodbs(s)
-	config.CheckTest(c, "AWS_DYN_001", CheckIfDynamodbEncrypted)(s, dynamodbs, "AWS_DYN_001", &checks)
-	config.CheckTest(c, "AWS_DYN_002", CheckIfDynamodbContinuousBackupsEnabled)(s, dynamodbs, "AWS_DYN_002", &checks)
+	yatas.CheckTest(c, "AWS_DYN_001", CheckIfDynamodbEncrypted)(s, dynamodbs, "AWS_DYN_001", &checks)
+	yatas.CheckTest(c, "AWS_DYN_002", CheckIfDynamodbContinuousBackupsEnabled)(s, dynamodbs, "AWS_DYN_002", &checks)
 	return checks
 }

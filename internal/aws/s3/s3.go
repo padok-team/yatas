@@ -7,9 +7,9 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
-	"github.com/stangirard/yatas/internal/config"
 	"github.com/stangirard/yatas/internal/logger"
 	"github.com/stangirard/yatas/internal/types"
+	"github.com/stangirard/yatas/internal/yatas"
 )
 
 func GetListS3(s *session.Session) []*s3.Bucket {
@@ -173,13 +173,13 @@ func CheckS3Location(s *session.Session, bucket, region string) bool {
 	}
 }
 
-func RunS3Test(s *session.Session, c *config.Config) []types.Check {
+func RunS3Test(s *session.Session, c *yatas.Config) []types.Check {
 	var checks []types.Check
 	logger.Debug("Starting S3 tests")
 	buckets := GetListS3(s)
-	config.CheckTest(c, "AWS_S3_001", checkIfEncryptionEnabled)(s, buckets, "AWS_S3_001", &checks)
-	config.CheckTest(c, "AWS_S3_002", CheckIfBucketInOneZone)(s, buckets, "AWS_S3_002", &checks)
-	config.CheckTest(c, "AWS_S3_003", CheckIfBucketObjectVersioningEnabled)(s, buckets, "AWS_S3_003", &checks)
-	config.CheckTest(c, "AWS_S3_004", CheckIfObjectLockConfigurationEnabled)(s, buckets, "AWS_S3_004", &checks)
+	yatas.CheckTest(c, "AWS_S3_001", checkIfEncryptionEnabled)(s, buckets, "AWS_S3_001", &checks)
+	yatas.CheckTest(c, "AWS_S3_002", CheckIfBucketInOneZone)(s, buckets, "AWS_S3_002", &checks)
+	yatas.CheckTest(c, "AWS_S3_003", CheckIfBucketObjectVersioningEnabled)(s, buckets, "AWS_S3_003", &checks)
+	yatas.CheckTest(c, "AWS_S3_004", CheckIfObjectLockConfigurationEnabled)(s, buckets, "AWS_S3_004", &checks)
 	return checks
 }

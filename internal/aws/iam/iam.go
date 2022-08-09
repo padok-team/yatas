@@ -6,9 +6,9 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/iam"
-	"github.com/stangirard/yatas/internal/config"
 	"github.com/stangirard/yatas/internal/logger"
 	"github.com/stangirard/yatas/internal/types"
+	"github.com/stangirard/yatas/internal/yatas"
 )
 
 func GetAllUsers(s *session.Session) []*iam.User {
@@ -115,11 +115,11 @@ func CheckIfUserCanElevateRights(s *session.Session, users []*iam.User, testName
 	*c = append(*c, check)
 }
 
-func RunIAMTests(s *session.Session, c *config.Config) []types.Check {
+func RunIAMTests(s *session.Session, c *yatas.Config) []types.Check {
 	var checks []types.Check
 	users := GetAllUsers(s)
-	config.CheckTest(c, "AWS_IAM_001", CheckIf2FAActivated)(s, users, "AWS_IAM_001", &checks)
-	config.CheckTest(c, "AWS_IAM_002", CheckAgeAccessKeyLessThan90Days)(s, users, "AWS_IAM_002", &checks)
-	config.CheckTest(c, "AWS_IAM_003", CheckIfUserCanElevateRights)(s, users, "AWS_IAM_003", &checks)
+	yatas.CheckTest(c, "AWS_IAM_001", CheckIf2FAActivated)(s, users, "AWS_IAM_001", &checks)
+	yatas.CheckTest(c, "AWS_IAM_002", CheckAgeAccessKeyLessThan90Days)(s, users, "AWS_IAM_002", &checks)
+	yatas.CheckTest(c, "AWS_IAM_003", CheckIfUserCanElevateRights)(s, users, "AWS_IAM_003", &checks)
 	return checks
 }

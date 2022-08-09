@@ -5,9 +5,9 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/rds"
-	"github.com/stangirard/yatas/internal/config"
 	"github.com/stangirard/yatas/internal/logger"
 	"github.com/stangirard/yatas/internal/types"
+	"github.com/stangirard/yatas/internal/yatas"
 )
 
 func GetListRDS(s *session.Session) []*rds.DBInstance {
@@ -191,15 +191,15 @@ func CheckIfDeleteProtectionEnabled(s *session.Session, instances []*rds.DBInsta
 	*c = append(*c, check)
 }
 
-func RunRDSTests(s *session.Session, c *config.Config) []types.Check {
+func RunRDSTests(s *session.Session, c *yatas.Config) []types.Check {
 	var checks []types.Check
 	instances := GetListRDS(s)
-	config.CheckTest(c, "AWS_RDS_001", checkIfEncryptionEnabled)(s, instances, "AWS_RDS_001", &checks)
-	config.CheckTest(c, "AWS_RDS_002", checkIfBackupEnabled)(s, instances, "AWS_RDS_002", &checks)
-	config.CheckTest(c, "AWS_RDS_003", checkIfAutoUpgradeEnabled)(s, instances, "AWS_RDS_003", &checks)
-	config.CheckTest(c, "AWS_RDS_004", checkIfRDSPrivateEnabled)(s, instances, "AWS_RDS_004", &checks)
-	config.CheckTest(c, "AWS_RDS_005", CheckIfLoggingEnabled)(s, instances, "AWS_RDS_005", &checks)
-	config.CheckTest(c, "AWS_RDS_006", CheckIfDeleteProtectionEnabled)(s, instances, "AWS_RDS_006", &checks)
+	yatas.CheckTest(c, "AWS_RDS_001", checkIfEncryptionEnabled)(s, instances, "AWS_RDS_001", &checks)
+	yatas.CheckTest(c, "AWS_RDS_002", checkIfBackupEnabled)(s, instances, "AWS_RDS_002", &checks)
+	yatas.CheckTest(c, "AWS_RDS_003", checkIfAutoUpgradeEnabled)(s, instances, "AWS_RDS_003", &checks)
+	yatas.CheckTest(c, "AWS_RDS_004", checkIfRDSPrivateEnabled)(s, instances, "AWS_RDS_004", &checks)
+	yatas.CheckTest(c, "AWS_RDS_005", CheckIfLoggingEnabled)(s, instances, "AWS_RDS_005", &checks)
+	yatas.CheckTest(c, "AWS_RDS_006", CheckIfDeleteProtectionEnabled)(s, instances, "AWS_RDS_006", &checks)
 
 	return checks
 }

@@ -5,9 +5,9 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/apigateway"
-	"github.com/stangirard/yatas/internal/config"
 	"github.com/stangirard/yatas/internal/logger"
 	"github.com/stangirard/yatas/internal/types"
+	"github.com/stangirard/yatas/internal/yatas"
 )
 
 func GetApiGateways(s *session.Session) []*apigateway.RestApi {
@@ -92,14 +92,14 @@ func CheckIfStagesProtectedByAcl(s *session.Session, stages []*apigateway.Stage,
 	*c = append(*c, check)
 }
 
-func RunApiGatewayTests(s *session.Session, c *config.Config) []types.Check {
+func RunApiGatewayTests(s *session.Session, c *yatas.Config) []types.Check {
 	// var checks []types.Check
 	var checks []types.Check
 
 	apis := GetApiGateways(s)
 	stages := GetAllStagesApiGateway(s, apis)
-	config.CheckTest(c, "AWS_APG_001", CheckIfStagesCloudwatchLogsExist)(s, stages, "AWS_APG_001", &checks)
-	config.CheckTest(c, "AWS_APG_002", CheckIfStagesProtectedByAcl)(s, stages, "AWS_APG_002", &checks)
+	yatas.CheckTest(c, "AWS_APG_001", CheckIfStagesCloudwatchLogsExist)(s, stages, "AWS_APG_001", &checks)
+	yatas.CheckTest(c, "AWS_APG_002", CheckIfStagesProtectedByAcl)(s, stages, "AWS_APG_002", &checks)
 
 	return checks
 }

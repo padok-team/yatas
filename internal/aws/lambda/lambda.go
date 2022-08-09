@@ -6,9 +6,9 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/lambda"
-	"github.com/stangirard/yatas/internal/config"
 	"github.com/stangirard/yatas/internal/logger"
 	"github.com/stangirard/yatas/internal/types"
+	"github.com/stangirard/yatas/internal/yatas"
 )
 
 func GetLambdas(s *session.Session) []*lambda.FunctionConfiguration {
@@ -67,10 +67,10 @@ func CheckIfLambdaInSecurityGroup(s *session.Session, lambdas []*lambda.Function
 	*c = append(*c, check)
 }
 
-func RunLambdaTests(s *session.Session, c *config.Config) []types.Check {
+func RunLambdaTests(s *session.Session, c *yatas.Config) []types.Check {
 	var checks []types.Check
 	lambdas := GetLambdas(s)
-	config.CheckTest(c, "AWS_LMD_001", CheckIfLambdaPrivate)(s, lambdas, "AWS_LMD_001", &checks)
-	config.CheckTest(c, "AWS_LMD_002", CheckIfLambdaInSecurityGroup)(s, lambdas, "AWS_LMD_002", &checks)
+	yatas.CheckTest(c, "AWS_LMD_001", CheckIfLambdaPrivate)(s, lambdas, "AWS_LMD_001", &checks)
+	yatas.CheckTest(c, "AWS_LMD_002", CheckIfLambdaInSecurityGroup)(s, lambdas, "AWS_LMD_002", &checks)
 	return checks
 }

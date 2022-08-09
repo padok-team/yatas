@@ -5,13 +5,13 @@ import (
 	"regexp"
 
 	"github.com/stangirard/yatas/internal/aws"
-	"github.com/stangirard/yatas/internal/config"
 	"github.com/stangirard/yatas/internal/custom"
 	"github.com/stangirard/yatas/internal/logger"
 	"github.com/stangirard/yatas/internal/types"
+	"github.com/stangirard/yatas/internal/yatas"
 )
 
-func Execute(c *config.Config) ([]types.Check, error) {
+func Execute(c *yatas.Config) ([]types.Check, error) {
 
 	plugins := findPlugins(c)
 
@@ -23,7 +23,7 @@ func Execute(c *config.Config) ([]types.Check, error) {
 	return checks, nil
 }
 
-func runPlugins(c *config.Config, plugins []string) ([]types.Check, error) {
+func runPlugins(c *yatas.Config, plugins []string) ([]types.Check, error) {
 	var checksAll []types.Check
 	for _, plugin := range plugins {
 		logger.Debug(fmt.Sprint("Running plugin: ", plugin))
@@ -49,7 +49,7 @@ func runPlugins(c *config.Config, plugins []string) ([]types.Check, error) {
 	return checksAll, nil
 }
 
-func findPlugins(c *config.Config) []string {
+func findPlugins(c *yatas.Config) []string {
 	var plugins []string
 	for _, plugin := range c.Plugins {
 		if plugin.Enabled {

@@ -16,19 +16,19 @@ import (
 	"github.com/stangirard/yatas/internal/aws/s3"
 	"github.com/stangirard/yatas/internal/aws/volumes"
 	"github.com/stangirard/yatas/internal/aws/vpc"
-	"github.com/stangirard/yatas/internal/config"
 	"github.com/stangirard/yatas/internal/logger"
 	"github.com/stangirard/yatas/internal/types"
+	"github.com/stangirard/yatas/internal/yatas"
 )
 
-func Run(c *config.Config) ([]types.Check, error) {
+func Run(c *yatas.Config) ([]types.Check, error) {
 	s := initAuth(c)
 	logger.Info("Launching AWS checks")
 	checks := initTest(s, c)
 	return checks, nil
 }
 
-func initTest(s *session.Session, c *config.Config) []types.Check {
+func initTest(s *session.Session, c *yatas.Config) []types.Check {
 
 	var checks []types.Check
 	checks = append(checks, s3.RunS3Test(s, c)...)

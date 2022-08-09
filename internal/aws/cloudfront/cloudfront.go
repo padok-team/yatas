@@ -6,9 +6,9 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/cloudfront"
-	"github.com/stangirard/yatas/internal/config"
 	"github.com/stangirard/yatas/internal/logger"
 	"github.com/stangirard/yatas/internal/types"
+	"github.com/stangirard/yatas/internal/yatas"
 )
 
 func GetAllCloudfront(s *session.Session) []*cloudfront.DistributionSummary {
@@ -156,13 +156,13 @@ func CheckIfACLUsed(s *session.Session, d []*cloudfront.DistributionSummary, tes
 	*c = append(*c, check)
 }
 
-func RunCloudFrontTests(s *session.Session, c *config.Config) []types.Check {
+func RunCloudFrontTests(s *session.Session, c *yatas.Config) []types.Check {
 	var checks []types.Check
 	d := GetAllCloudfront(s)
-	config.CheckTest(c, "AWS_CFT_001", CheckIfCloudfrontTLS1_2Minimum)(s, d, "AWS_CFT_001", &checks)
-	config.CheckTest(c, "AWS_CFT_002", CheckIfHTTPSOnly)(s, d, "AWS_CFT_002", &checks)
-	config.CheckTest(c, "AWS_CFT_003", CheckIfStandardLogginEnabled)(s, d, "AWS_CFT_003", &checks)
-	config.CheckTest(c, "AWS_CFT_004", CheckIfCookieLogginEnabled)(s, d, "AWS_CFT_004", &checks)
-	config.CheckTest(c, "AWS_CFT_005", CheckIfACLUsed)(s, d, "AWS_CFT_005", &checks)
+	yatas.CheckTest(c, "AWS_CFT_001", CheckIfCloudfrontTLS1_2Minimum)(s, d, "AWS_CFT_001", &checks)
+	yatas.CheckTest(c, "AWS_CFT_002", CheckIfHTTPSOnly)(s, d, "AWS_CFT_002", &checks)
+	yatas.CheckTest(c, "AWS_CFT_003", CheckIfStandardLogginEnabled)(s, d, "AWS_CFT_003", &checks)
+	yatas.CheckTest(c, "AWS_CFT_004", CheckIfCookieLogginEnabled)(s, d, "AWS_CFT_004", &checks)
+	yatas.CheckTest(c, "AWS_CFT_005", CheckIfACLUsed)(s, d, "AWS_CFT_005", &checks)
 	return checks
 }

@@ -7,11 +7,11 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/stangirard/yatas/internal/config"
 	"github.com/stangirard/yatas/internal/types"
+	"github.com/stangirard/yatas/internal/yatas"
 )
 
-func findPluginWithName(c *config.Config, name string) *config.Plugin {
+func findPluginWithName(c *yatas.Config, name string) *yatas.Plugin {
 	for _, plugin := range c.Plugins {
 		if plugin.Name == name {
 			return &plugin
@@ -20,14 +20,14 @@ func findPluginWithName(c *config.Config, name string) *config.Plugin {
 	return nil
 }
 
-func Run(c *config.Config, name string) ([]types.Check, error) {
+func Run(c *yatas.Config, name string) ([]types.Check, error) {
 	plugin := findPluginWithName(c, name)
 	checks, err := ExecuteCommand(c, plugin)
 	return checks, err
 
 }
 
-func ExecuteCommand(c *config.Config, plugin *config.Plugin) ([]types.Check, error) {
+func ExecuteCommand(c *yatas.Config, plugin *yatas.Plugin) ([]types.Check, error) {
 	checks := []types.Check{}
 	check := types.Check{}
 	check.Name = plugin.Name
