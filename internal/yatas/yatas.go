@@ -98,9 +98,6 @@ func unmarshalYAML(data []byte, config *Config) error {
 }
 
 func CheckTest[A, B, C, D, E any](wg *sync.WaitGroup, config *Config, id string, test func(A, B, C, D, E)) func(A, B, C, D, E) {
-	if config.Progress != nil {
-		config.Progress.Add(1)
-	}
 	if !config.CheckExclude(id) && config.CheckInclude(id) {
 		wg.Add(1)
 		return test

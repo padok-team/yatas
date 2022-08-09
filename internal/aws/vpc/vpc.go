@@ -253,6 +253,8 @@ func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []r
 	go yatas.CheckTest(&wg, c, "AWS_VPC_005", CheckIfAtLeast2Subnets)(&wg, s, vpcs, "AWS_VPC_005", &checks)
 	go yatas.CheckTest(&wg, c, "AWS_VPC_006", CheckIfSubnetInDifferentZone)(&wg, s, vpcs, "AWS_VPC_006", &checks)
 	wg.Wait()
+	if c.Progress != nil {
 
+	}
 	queue <- checks
 }

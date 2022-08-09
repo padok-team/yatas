@@ -24,7 +24,7 @@ func Execute() error {
 	}
 
 	if *progress {
-		config.Progress = progressbar.Default(-1)
+		config.Progress = progressbar.Default(14)
 	}
 	checks, err := plugins.Execute(&config)
 	if err != nil {

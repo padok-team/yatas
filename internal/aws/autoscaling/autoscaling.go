@@ -55,6 +55,8 @@ func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []r
 	go yatas.CheckTest(&wg, c, "AWS_ASG_001", CheckIfDesiredCapacityMaxCapacityBelow80percent)(&wg, s, groups, "AWS_ASG_001", &checks)
 
 	wg.Wait()
+	if c.Progress != nil {
 
+	}
 	queue <- checks
 }

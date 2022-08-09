@@ -213,6 +213,8 @@ func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []r
 	go yatas.CheckTest(&wg, c, "AWS_RDS_005", CheckIfLoggingEnabled)(&wg, s, instances, "AWS_RDS_005", &checks)
 	go yatas.CheckTest(&wg, c, "AWS_RDS_006", CheckIfDeleteProtectionEnabled)(&wg, s, instances, "AWS_RDS_006", &checks)
 	wg.Wait()
+	if c.Progress != nil {
 
+	}
 	queue <- checks
 }

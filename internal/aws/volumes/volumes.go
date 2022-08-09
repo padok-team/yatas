@@ -99,6 +99,8 @@ func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []r
 	go yatas.CheckTest(&wg, c, "AWS_BAK_002", CheckIfSnapshotYoungerthan24h)(&wg, s, couples, "AWS_BAK_002", &checks)
 
 	wg.Wait()
+	if c.Progress != nil {
 
+	}
 	queue <- checks
 }

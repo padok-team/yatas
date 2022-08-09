@@ -52,10 +52,12 @@ func initTest(s aws.Config, c *yatas.Config) []results.Check {
 	go yatas.CheckMacroTest(&wg, c, loadbalancers.RunChecks)(&wg, s, c, queue)
 
 	go func() {
-		// defer wg.Done() <- Never gets called since the 100 `Done()` calls are made above, resulting in the `Wait()` to continue on before this is executed
 		for t := range queue {
 			checks = append(checks, t...)
 			wg.Done() // ** move the `Done()` call here
+			if c.Progress != nil {
+				c.Progress.Add(1)
+			}
 		}
 	}()
 	wg.Wait()
