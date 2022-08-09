@@ -83,19 +83,19 @@ plugins:
 
 ## AWS - 43 Checks
 
-### S3
+### S3 Bucket
 - AWS_S3_001 S3 Encryption
 - AWS_S3_002 S3 Bucket in one zone
 - AWS_S3_003 S3 Bucket object versioning
 - AWS_S3_004 S3 Bucket retention policy
 - AWS_S3_005 S3 Public Access Block
 
-### VOL
+### Volume
 - AWS_VOL_001 EC2 Volumes Encryption
 - AWS_VOL_002 EC2 Volumes Type
 - AWS_VOL_003 EC2 Volumes Snapshots
 
-### BAK
+### Backup
 - AWS_BAK_001 EC2 Snapshots Encryption
 - AWS_BAK_002 EC2 Snapshots Age
 
@@ -115,7 +115,7 @@ plugins:
 - AWS_VPC_005 At least 2 subnets
 - AWS_VPC_006 Subnets in different zone
 
-### CLD
+### CloudTrail
 - AWS_CLD_001 Cloudtrails Encryption
 - AWS_CLD_002 Cloudtrails Global Service Events Activated
 - AWS_CLD_003 Cloudtrails Multi Region
@@ -123,11 +123,11 @@ plugins:
 ### ECR
 - AWS_ECR_001 Image Scanning Enabled
 
-### LMD
+### Lambda
 - AWS_LMD_001 Lambda Private
 - AWS_LMD_002 Lambda In Security Group
 
-### DYN
+### DynamoDB
 - AWS_DYN_001 Dynamodb Encryption
 - AWS_DYN_002 Dynamodb Continuous Backups
 
@@ -139,19 +139,19 @@ plugins:
 - AWS_IAM_002 IAM Access Key Age
 - AWS_IAM_003 IAM User Can Elevate Rights
 
-### CFT
+### Cloudfront
 - AWS_CFT_001 TLS 1.2 Minimum
 - AWS_CFT_002 Cloudfront HTTPS Only
 - AWS_CFT_003 Standard Logging Enabled
 - AWS_CFT_004 Cookie Logging Enabled
 - AWS_CFT_005 ACL Used
 
-### APG
+### APIGateway
 - AWS_APG_001 Apigateway Cloudwatch Logs enabled
 - AWS_APG_002 Apigateway Stages protected by ACL
 
-### ASG
+### AutoScaling
 - AWS_ASG_001 Autoscaling DesiredCapacity MaxCapacity below 80%
 
-### ELB
+### LoadBalancer
 - AWS_ELB_001 ELB Access Logs Enabled
