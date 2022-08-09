@@ -7,6 +7,7 @@ import (
 	"github.com/stangirard/yatas/internal/aws/cloudfront"
 	"github.com/stangirard/yatas/internal/aws/cloudtrail"
 	"github.com/stangirard/yatas/internal/aws/dynamodb"
+	"github.com/stangirard/yatas/internal/aws/ec2"
 	"github.com/stangirard/yatas/internal/aws/ecr"
 	"github.com/stangirard/yatas/internal/aws/iam"
 	"github.com/stangirard/yatas/internal/aws/lambda"
@@ -38,7 +39,7 @@ func initTest(s aws.Config, c *yatas.Config) []results.Check {
 	checks = append(checks, ecr.RunECRTests(s, c)...)
 	checks = append(checks, lambda.RunLambdaTests(s, c)...)
 	checks = append(checks, dynamodb.RunDynamodbTests(s, c)...)
-	// checks = append(checks, ec2.RunEC2Tests(s, c)...)
+	checks = append(checks, ec2.RunEC2Tests(s, c)...)
 	checks = append(checks, iam.RunIAMTests(s, c)...)
 	checks = append(checks, cloudfront.RunCloudFrontTests(s, c)...)
 	checks = append(checks, apigateway.RunApiGatewayTests(s, c)...)
