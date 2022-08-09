@@ -146,6 +146,37 @@ func CheckIfObjectLockConfigurationEnabled(s aws.Config, buckets []types.Bucket,
 	*c = append(*c, check)
 }
 
+func CheckIfS3PublicAccessBlockEnabled(s aws.Config, buckets []types.Bucket, testName string, c *[]results.Check) {
+	logger.Info(fmt.Sprint("Running ", testName))
+	var check results.Check
+	check.Name = "S3 Public Access Block"
+	check.Id = testName
+	check.Description = "Check if S3 buckets are using Public Access Block"
+	check.Status = "OK"
+	svc := s3.NewFromConfig(s)
+	for _, bucket := range buckets {
+		if !CheckS3Location(s, *bucket.Name, s.Region) {
+			continue
+		}
+		params := &s3.GetPublicAccessBlockInput{
+			Bucket: aws.String(*bucket.Name),
+		}
+		resp, err := svc.GetPublicAccessBlock(context.TODO(), params)
+
+		if err != nil || resp.PublicAccessBlockConfiguration == nil || !resp.PublicAccessBlockConfiguration.BlockPublicAcls {
+			check.Status = "FAIL"
+			status := "FAIL"
+			Message := "S3 bucket " + *bucket.Name + " is not using Public Access Block"
+			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *bucket.Name})
+		} else {
+			status := "OK"
+			Message := "S3 bucket " + *bucket.Name + " is using Public Access Block"
+			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *bucket.Name})
+		}
+	}
+	*c = append(*c, check)
+}
+
 func CheckS3Location(s aws.Config, bucket, region string) bool {
 	logger.Debug("Getting S3 location")
 	svc := s3.NewFromConfig(s)
@@ -180,5 +211,6 @@ func RunS3Test(s aws.Config, c *yatas.Config) []results.Check {
 	yatas.CheckTest(c, "AWS_S3_002", CheckIfBucketInOneZone)(s, buckets, "AWS_S3_002", &checks)
 	yatas.CheckTest(c, "AWS_S3_003", CheckIfBucketObjectVersioningEnabled)(s, buckets, "AWS_S3_003", &checks)
 	yatas.CheckTest(c, "AWS_S3_004", CheckIfObjectLockConfigurationEnabled)(s, buckets, "AWS_S3_004", &checks)
+	yatas.CheckTest(c, "AWS_S3_005", CheckIfS3PublicAccessBlockEnabled)(s, buckets, "AWS_S3_005", &checks)
 	return checks
 }
