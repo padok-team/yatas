@@ -3,6 +3,7 @@ package dynamodb
 import (
 	"context"
 	"fmt"
+	"sync"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
@@ -21,7 +22,7 @@ func GetDynamodbs(s aws.Config) []string {
 	return result.TableNames
 }
 
-func CheckIfDynamodbEncrypted(s aws.Config, dynamodbs []string, testName string, c *[]results.Check) {
+func CheckIfDynamodbEncrypted(wg *sync.WaitGroup, s aws.Config, dynamodbs []string, testName string, c *[]results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "Dynamodb Encryption"
@@ -50,9 +51,10 @@ func CheckIfDynamodbEncrypted(s aws.Config, dynamodbs []string, testName string,
 		}
 	}
 	*c = append(*c, check)
+	wg.Done()
 }
 
-func CheckIfDynamodbContinuousBackupsEnabled(s aws.Config, dynamodbs []string, testName string, c *[]results.Check) {
+func CheckIfDynamodbContinuousBackupsEnabled(wg *sync.WaitGroup, s aws.Config, dynamodbs []string, testName string, c *[]results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "Dynamodb Continuous Backups"
@@ -80,12 +82,20 @@ func CheckIfDynamodbContinuousBackupsEnabled(s aws.Config, dynamodbs []string, t
 		}
 	}
 	*c = append(*c, check)
+	wg.Done()
 }
 
-func RunDynamodbTests(s aws.Config, c *yatas.Config) []results.Check {
+func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []results.Check) {
+
 	var checks []results.Check
 	dynamodbs := GetDynamodbs(s)
-	yatas.CheckTest(c, "AWS_DYN_001", CheckIfDynamodbEncrypted)(s, dynamodbs, "AWS_DYN_001", &checks)
-	yatas.CheckTest(c, "AWS_DYN_002", CheckIfDynamodbContinuousBackupsEnabled)(s, dynamodbs, "AWS_DYN_002", &checks)
-	return checks
+	var wg sync.WaitGroup
+
+	go yatas.CheckTest(&wg, c, "AWS_DYN_001", CheckIfDynamodbEncrypted)(&wg, s, dynamodbs, "AWS_DYN_001", &checks)
+	go yatas.CheckTest(&wg, c, "AWS_DYN_002", CheckIfDynamodbContinuousBackupsEnabled)(&wg, s, dynamodbs, "AWS_DYN_002", &checks)
+	wg.Wait()
+	if c.Progress != nil {
+
+	}
+	queue <- checks
 }

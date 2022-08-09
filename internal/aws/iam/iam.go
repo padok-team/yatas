@@ -3,6 +3,7 @@ package iam
 import (
 	"context"
 	"fmt"
+	"sync"
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -23,7 +24,7 @@ func GetAllUsers(s aws.Config) []types.User {
 	return result.Users
 }
 
-func CheckIf2FAActivated(s aws.Config, users []types.User, testName string, c *[]results.Check) {
+func CheckIf2FAActivated(wg *sync.WaitGroup, s aws.Config, users []types.User, testName string, c *[]results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "IAM 2FA"
@@ -52,9 +53,10 @@ func CheckIf2FAActivated(s aws.Config, users []types.User, testName string, c *[
 		}
 	}
 	*c = append(*c, check)
+	wg.Done()
 }
 
-func CheckAgeAccessKeyLessThan90Days(s aws.Config, users []types.User, testName string, c *[]results.Check) {
+func CheckAgeAccessKeyLessThan90Days(wg *sync.WaitGroup, s aws.Config, users []types.User, testName string, c *[]results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "IAM Access Key Age"
@@ -86,9 +88,10 @@ func CheckAgeAccessKeyLessThan90Days(s aws.Config, users []types.User, testName 
 		}
 	}
 	*c = append(*c, check)
+	wg.Done()
 }
 
-func CheckIfUserCanElevateRights(s aws.Config, users []types.User, testName string, c *[]results.Check) {
+func CheckIfUserCanElevateRights(wg *sync.WaitGroup, s aws.Config, users []types.User, testName string, c *[]results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "IAM User Can Elevate Rights"
@@ -115,13 +118,21 @@ func CheckIfUserCanElevateRights(s aws.Config, users []types.User, testName stri
 		}
 	}
 	*c = append(*c, check)
+	wg.Done()
 }
 
-func RunIAMTests(s aws.Config, c *yatas.Config) []results.Check {
+func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []results.Check) {
+
 	var checks []results.Check
 	users := GetAllUsers(s)
-	yatas.CheckTest(c, "AWS_IAM_001", CheckIf2FAActivated)(s, users, "AWS_IAM_001", &checks)
-	yatas.CheckTest(c, "AWS_IAM_002", CheckAgeAccessKeyLessThan90Days)(s, users, "AWS_IAM_002", &checks)
-	yatas.CheckTest(c, "AWS_IAM_003", CheckIfUserCanElevateRights)(s, users, "AWS_IAM_003", &checks)
-	return checks
+	var wg sync.WaitGroup
+
+	go yatas.CheckTest(&wg, c, "AWS_IAM_001", CheckIf2FAActivated)(&wg, s, users, "AWS_IAM_001", &checks)
+	go yatas.CheckTest(&wg, c, "AWS_IAM_002", CheckAgeAccessKeyLessThan90Days)(&wg, s, users, "AWS_IAM_002", &checks)
+	go yatas.CheckTest(&wg, c, "AWS_IAM_003", CheckIfUserCanElevateRights)(&wg, s, users, "AWS_IAM_003", &checks)
+	wg.Wait()
+	if c.Progress != nil {
+
+	}
+	queue <- checks
 }

@@ -1,6 +1,8 @@
 package aws
 
 import (
+	"sync"
+
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/stangirard/yatas/internal/aws/apigateway"
 	"github.com/stangirard/yatas/internal/aws/autoscaling"
@@ -31,20 +33,35 @@ func Run(c *yatas.Config) ([]results.Check, error) {
 func initTest(s aws.Config, c *yatas.Config) []results.Check {
 
 	var checks []results.Check
-	checks = append(checks, s3.RunS3Test(s, c)...)
-	checks = append(checks, volumes.RunVolumesTest(s, c)...)
-	checks = append(checks, rds.RunRDSTests(s, c)...)
-	checks = append(checks, vpc.RunVPCTests(s, c)...)
-	checks = append(checks, cloudtrail.RunCloudtrailTests(s, c)...)
-	checks = append(checks, ecr.RunECRTests(s, c)...)
-	checks = append(checks, lambda.RunLambdaTests(s, c)...)
-	checks = append(checks, dynamodb.RunDynamodbTests(s, c)...)
-	checks = append(checks, ec2.RunEC2Tests(s, c)...)
-	checks = append(checks, iam.RunIAMTests(s, c)...)
-	checks = append(checks, cloudfront.RunCloudFrontTests(s, c)...)
-	checks = append(checks, apigateway.RunApiGatewayTests(s, c)...)
-	checks = append(checks, autoscaling.RunAutoscalingGroupChecks(s, c)...)
-	checks = append(checks, loadbalancers.RunLoadBalancersTests(s, c)...)
+	var wg sync.WaitGroup
+
+	queue := make(chan []results.Check, 1)
+	go yatas.CheckMacroTest(&wg, c, s3.RunChecks)(&wg, s, c, queue)
+	go yatas.CheckMacroTest(&wg, c, volumes.RunChecks)(&wg, s, c, queue)
+	go yatas.CheckMacroTest(&wg, c, rds.RunChecks)(&wg, s, c, queue)
+	go yatas.CheckMacroTest(&wg, c, vpc.RunChecks)(&wg, s, c, queue)
+	go yatas.CheckMacroTest(&wg, c, cloudtrail.RunChecks)(&wg, s, c, queue)
+	go yatas.CheckMacroTest(&wg, c, ecr.RunChecks)(&wg, s, c, queue)
+	go yatas.CheckMacroTest(&wg, c, lambda.RunChecks)(&wg, s, c, queue)
+	go yatas.CheckMacroTest(&wg, c, dynamodb.RunChecks)(&wg, s, c, queue)
+	go yatas.CheckMacroTest(&wg, c, ec2.RunChecks)(&wg, s, c, queue)
+	go yatas.CheckMacroTest(&wg, c, iam.RunChecks)(&wg, s, c, queue)
+	go yatas.CheckMacroTest(&wg, c, cloudfront.RunChecks)(&wg, s, c, queue)
+	go yatas.CheckMacroTest(&wg, c, apigateway.RunChecks)(&wg, s, c, queue)
+	go yatas.CheckMacroTest(&wg, c, autoscaling.RunChecks)(&wg, s, c, queue)
+	go yatas.CheckMacroTest(&wg, c, loadbalancers.RunChecks)(&wg, s, c, queue)
+
+	go func() {
+		for t := range queue {
+			checks = append(checks, t...)
+			wg.Done() // ** move the `Done()` call here
+			if c.Progress != nil {
+				c.Progress.Add(1)
+			}
+		}
+	}()
+	wg.Wait()
+
 	logger.Info("AWS checks completed ✅")
 
 	return checks

@@ -3,6 +3,7 @@ package apigateway
 import (
 	"context"
 	"fmt"
+	"sync"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/apigateway"
@@ -22,7 +23,7 @@ func GetApiGateways(s aws.Config) []types.RestApi {
 	return result.Items
 }
 
-func GetAllResourcesApiGateway(s aws.Config, apiId string) []types.Resource {
+func GetAllResourcesApiGateway(wg *sync.WaitGroup, s aws.Config, apiId string) []types.Resource {
 	svc := apigateway.NewFromConfig(s)
 	input := &apigateway.GetResourcesInput{
 		RestApiId: &apiId,
@@ -50,7 +51,7 @@ func GetAllStagesApiGateway(s aws.Config, apis []types.RestApi) []types.Stage {
 	return stages
 }
 
-func CheckIfStagesCloudwatchLogsExist(s aws.Config, stages []types.Stage, testName string, c *[]results.Check) {
+func CheckIfStagesCloudwatchLogsExist(wg *sync.WaitGroup, s aws.Config, stages []types.Stage, testName string, c *[]results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "Apigateway Cloudwatch Logs enabled"
@@ -70,9 +71,10 @@ func CheckIfStagesCloudwatchLogsExist(s aws.Config, stages []types.Stage, testNa
 		}
 	}
 	*c = append(*c, check)
+	wg.Done()
 }
 
-func CheckIfStagesProtectedByAcl(s aws.Config, stages []types.Stage, testName string, c *[]results.Check) {
+func CheckIfStagesProtectedByAcl(wg *sync.WaitGroup, s aws.Config, stages []types.Stage, testName string, c *[]results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "Apigateway Stages protected by ACL"
@@ -92,16 +94,23 @@ func CheckIfStagesProtectedByAcl(s aws.Config, stages []types.Stage, testName st
 		}
 	}
 	*c = append(*c, check)
+	wg.Done()
 }
 
-func RunApiGatewayTests(s aws.Config, c *yatas.Config) []results.Check {
+func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []results.Check) {
+
 	// var checks []results.Check
 	var checks []results.Check
+	var wg sync.WaitGroup
 
 	apis := GetApiGateways(s)
 	stages := GetAllStagesApiGateway(s, apis)
-	yatas.CheckTest(c, "AWS_APG_001", CheckIfStagesCloudwatchLogsExist)(s, stages, "AWS_APG_001", &checks)
-	yatas.CheckTest(c, "AWS_APG_002", CheckIfStagesProtectedByAcl)(s, stages, "AWS_APG_002", &checks)
+	go yatas.CheckTest(&wg, c, "AWS_APG_001", CheckIfStagesCloudwatchLogsExist)(&wg, s, stages, "AWS_APG_001", &checks)
+	go yatas.CheckTest(&wg, c, "AWS_APG_002", CheckIfStagesProtectedByAcl)(&wg, s, stages, "AWS_APG_002", &checks)
 
-	return checks
+	wg.Wait()
+	if c.Progress != nil {
+
+	}
+	queue <- checks
 }

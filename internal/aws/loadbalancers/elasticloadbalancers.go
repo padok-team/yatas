@@ -3,6 +3,7 @@ package loadbalancers
 import (
 	"context"
 	"fmt"
+	"sync"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/elasticloadbalancingv2"
@@ -24,7 +25,7 @@ func GetElasticLoadBalancers(s aws.Config) []types.LoadBalancer {
 	return result.LoadBalancers
 }
 
-func CheckIfAccessLogsEnabled(s aws.Config, loadBalancers []types.LoadBalancer, testName string, c *[]results.Check) {
+func CheckIfAccessLogsEnabled(wg *sync.WaitGroup, s aws.Config, loadBalancers []types.LoadBalancer, testName string, c *[]results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "ELB Access Logs Enabled"
@@ -60,11 +61,19 @@ func CheckIfAccessLogsEnabled(s aws.Config, loadBalancers []types.LoadBalancer, 
 	}
 
 	*c = append(*c, check)
+	wg.Done()
 }
 
-func RunLoadBalancersTests(s aws.Config, c *yatas.Config) []results.Check {
+func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []results.Check) {
+
 	var checks []results.Check
 	loadBalancers := GetElasticLoadBalancers(s)
-	yatas.CheckTest(c, "AWS_LB_001", CheckIfAccessLogsEnabled)(s, loadBalancers, "AWS_ELB_001", &checks)
-	return checks
+	var wg sync.WaitGroup
+
+	go yatas.CheckTest(&wg, c, "AWS_LB_001", CheckIfAccessLogsEnabled)(&wg, s, loadBalancers, "AWS_ELB_001", &checks)
+	wg.Wait()
+	if c.Progress != nil {
+
+	}
+	queue <- checks
 }

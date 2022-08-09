@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/ec2"
@@ -24,7 +25,7 @@ func GetListVPC(s aws.Config) []types.Vpc {
 	return result.Vpcs
 }
 
-func checkCIDR20(s aws.Config, vpcs []types.Vpc, testName string, c *[]results.Check) {
+func checkCIDR20(wg *sync.WaitGroup, s aws.Config, vpcs []types.Vpc, testName string, c *[]results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "VPC CIDR"
@@ -55,9 +56,10 @@ func checkCIDR20(s aws.Config, vpcs []types.Vpc, testName string, c *[]results.C
 		}
 	}
 	*c = append(*c, check)
+	wg.Done()
 }
 
-func checkIfVPCFLowLogsEnabled(s aws.Config, vpcs []types.Vpc, testName string, c *[]results.Check) {
+func checkIfVPCFLowLogsEnabled(wg *sync.WaitGroup, s aws.Config, vpcs []types.Vpc, testName string, c *[]results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "VPC Flow Logs"
@@ -92,9 +94,10 @@ func checkIfVPCFLowLogsEnabled(s aws.Config, vpcs []types.Vpc, testName string, 
 		}
 	}
 	*c = append(*c, check)
+	wg.Done()
 }
 
-func checkIfOnlyOneGateway(s aws.Config, vpcs []types.Vpc, testName string, c *[]results.Check) {
+func checkIfOnlyOneGateway(wg *sync.WaitGroup, s aws.Config, vpcs []types.Vpc, testName string, c *[]results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "VPC Gateway"
@@ -129,9 +132,10 @@ func checkIfOnlyOneGateway(s aws.Config, vpcs []types.Vpc, testName string, c *[
 		}
 	}
 	*c = append(*c, check)
+	wg.Done()
 }
 
-func checkIfOnlyOneVPC(s aws.Config, vpcs []types.Vpc, testName string, c *[]results.Check) {
+func checkIfOnlyOneVPC(wg *sync.WaitGroup, s aws.Config, vpcs []types.Vpc, testName string, c *[]results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "VPC Only One"
@@ -152,9 +156,10 @@ func checkIfOnlyOneVPC(s aws.Config, vpcs []types.Vpc, testName string, c *[]res
 	}
 
 	*c = append(*c, check)
+	wg.Done()
 }
 
-func CheckIfSubnetInDifferentZone(s aws.Config, vpcs []types.Vpc, testName string, c *[]results.Check) {
+func CheckIfSubnetInDifferentZone(wg *sync.WaitGroup, s aws.Config, vpcs []types.Vpc, testName string, c *[]results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "Subnets in different zone"
@@ -194,9 +199,10 @@ func CheckIfSubnetInDifferentZone(s aws.Config, vpcs []types.Vpc, testName strin
 		}
 	}
 	*c = append(*c, check)
+	wg.Done()
 }
 
-func CheckIfAtLeast2Subnets(s aws.Config, vpcs []types.Vpc, testName string, c *[]results.Check) {
+func CheckIfAtLeast2Subnets(wg *sync.WaitGroup, s aws.Config, vpcs []types.Vpc, testName string, c *[]results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "At least 2 subnets"
@@ -231,16 +237,24 @@ func CheckIfAtLeast2Subnets(s aws.Config, vpcs []types.Vpc, testName string, c *
 		}
 	}
 	*c = append(*c, check)
+	wg.Done()
 }
 
-func RunVPCTests(s aws.Config, c *yatas.Config) []results.Check {
+func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []results.Check) {
+
 	var checks []results.Check
 	vpcs := GetListVPC(s)
-	yatas.CheckTest(c, "AWS_VPC_001", checkCIDR20)(s, vpcs, "AWS_VPC_001", &checks)
-	yatas.CheckTest(c, "AWS_VPC_002", checkIfOnlyOneVPC)(s, vpcs, "AWS_VPC_002", &checks)
-	yatas.CheckTest(c, "AWS_VPC_003", checkIfOnlyOneGateway)(s, vpcs, "AWS_VPC_003", &checks)
-	yatas.CheckTest(c, "AWS_VPC_004", checkIfVPCFLowLogsEnabled)(s, vpcs, "AWS_VPC_004", &checks)
-	yatas.CheckTest(c, "AWS_VPC_005", CheckIfAtLeast2Subnets)(s, vpcs, "AWS_VPC_005", &checks)
-	yatas.CheckTest(c, "AWS_VPC_006", CheckIfSubnetInDifferentZone)(s, vpcs, "AWS_VPC_006", &checks)
-	return checks
+	var wg sync.WaitGroup
+
+	go yatas.CheckTest(&wg, c, "AWS_VPC_001", checkCIDR20)(&wg, s, vpcs, "AWS_VPC_001", &checks)
+	go yatas.CheckTest(&wg, c, "AWS_VPC_002", checkIfOnlyOneVPC)(&wg, s, vpcs, "AWS_VPC_002", &checks)
+	go yatas.CheckTest(&wg, c, "AWS_VPC_003", checkIfOnlyOneGateway)(&wg, s, vpcs, "AWS_VPC_003", &checks)
+	go yatas.CheckTest(&wg, c, "AWS_VPC_004", checkIfVPCFLowLogsEnabled)(&wg, s, vpcs, "AWS_VPC_004", &checks)
+	go yatas.CheckTest(&wg, c, "AWS_VPC_005", CheckIfAtLeast2Subnets)(&wg, s, vpcs, "AWS_VPC_005", &checks)
+	go yatas.CheckTest(&wg, c, "AWS_VPC_006", CheckIfSubnetInDifferentZone)(&wg, s, vpcs, "AWS_VPC_006", &checks)
+	wg.Wait()
+	if c.Progress != nil {
+
+	}
+	queue <- checks
 }

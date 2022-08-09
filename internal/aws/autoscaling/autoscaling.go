@@ -3,6 +3,7 @@ package autoscaling
 import (
 	"context"
 	"fmt"
+	"sync"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/autoscaling"
@@ -22,7 +23,7 @@ func GetAutoscalingGroups(s aws.Config) []types.AutoScalingGroup {
 	return result.AutoScalingGroups
 }
 
-func CheckIfDesiredCapacityMaxCapacityBelow80percent(s aws.Config, groups []types.AutoScalingGroup, testName string, c *[]results.Check) {
+func CheckIfDesiredCapacityMaxCapacityBelow80percent(wg *sync.WaitGroup, s aws.Config, groups []types.AutoScalingGroup, testName string, c *[]results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "Autoscaling DesiredCapacity MaxCapacity below 80%"
@@ -42,11 +43,20 @@ func CheckIfDesiredCapacityMaxCapacityBelow80percent(s aws.Config, groups []type
 		}
 	}
 	*c = append(*c, check)
+	wg.Done()
 }
 
-func RunAutoscalingGroupChecks(s aws.Config, c *yatas.Config) []results.Check {
+func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []results.Check) {
+
 	var checks []results.Check
 	groups := GetAutoscalingGroups(s)
-	yatas.CheckTest(c, "AWS_ASG_001", CheckIfDesiredCapacityMaxCapacityBelow80percent)(s, groups, "AWS_ASG_001", &checks)
-	return checks
+	var wg sync.WaitGroup
+
+	go yatas.CheckTest(&wg, c, "AWS_ASG_001", CheckIfDesiredCapacityMaxCapacityBelow80percent)(&wg, s, groups, "AWS_ASG_001", &checks)
+
+	wg.Wait()
+	if c.Progress != nil {
+
+	}
+	queue <- checks
 }

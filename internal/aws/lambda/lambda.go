@@ -3,6 +3,7 @@ package lambda
 import (
 	"context"
 	"fmt"
+	"sync"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/lambda"
@@ -24,7 +25,7 @@ func GetLambdas(s aws.Config) []types.FunctionConfiguration {
 	return result.Functions
 }
 
-func CheckIfLambdaPrivate(s aws.Config, lambdas []types.FunctionConfiguration, testName string, c *[]results.Check) {
+func CheckIfLambdaPrivate(wg *sync.WaitGroup, s aws.Config, lambdas []types.FunctionConfiguration, testName string, c *[]results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "Lambda Private"
@@ -44,9 +45,10 @@ func CheckIfLambdaPrivate(s aws.Config, lambdas []types.FunctionConfiguration, t
 		}
 	}
 	*c = append(*c, check)
+	wg.Done()
 }
 
-func CheckIfLambdaInSecurityGroup(s aws.Config, lambdas []types.FunctionConfiguration, testName string, c *[]results.Check) {
+func CheckIfLambdaInSecurityGroup(wg *sync.WaitGroup, s aws.Config, lambdas []types.FunctionConfiguration, testName string, c *[]results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "Lambda In Security Group"
@@ -66,12 +68,20 @@ func CheckIfLambdaInSecurityGroup(s aws.Config, lambdas []types.FunctionConfigur
 		}
 	}
 	*c = append(*c, check)
+	wg.Done()
 }
 
-func RunLambdaTests(s aws.Config, c *yatas.Config) []results.Check {
+func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []results.Check) {
+
 	var checks []results.Check
 	lambdas := GetLambdas(s)
-	yatas.CheckTest(c, "AWS_LMD_001", CheckIfLambdaPrivate)(s, lambdas, "AWS_LMD_001", &checks)
-	yatas.CheckTest(c, "AWS_LMD_002", CheckIfLambdaInSecurityGroup)(s, lambdas, "AWS_LMD_002", &checks)
-	return checks
+	var wg sync.WaitGroup
+
+	go yatas.CheckTest(&wg, c, "AWS_LMD_001", CheckIfLambdaPrivate)(&wg, s, lambdas, "AWS_LMD_001", &checks)
+	go yatas.CheckTest(&wg, c, "AWS_LMD_002", CheckIfLambdaInSecurityGroup)(&wg, s, lambdas, "AWS_LMD_002", &checks)
+	wg.Wait()
+	if c.Progress != nil {
+
+	}
+	queue <- checks
 }
