@@ -6,13 +6,13 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/apigateway"
-	typeAPI "github.com/aws/aws-sdk-go-v2/service/apigateway/types"
+	"github.com/aws/aws-sdk-go-v2/service/apigateway/types"
 	"github.com/stangirard/yatas/internal/logger"
 	"github.com/stangirard/yatas/internal/results"
 	"github.com/stangirard/yatas/internal/yatas"
 )
 
-func GetApiGateways(s aws.Config) []typeAPI.RestApi {
+func GetApiGateways(s aws.Config) []types.RestApi {
 	svc := apigateway.NewFromConfig(s)
 	input := &apigateway.GetRestApisInput{}
 	result, err := svc.GetRestApis(context.TODO(), input)
@@ -22,7 +22,7 @@ func GetApiGateways(s aws.Config) []typeAPI.RestApi {
 	return result.Items
 }
 
-func GetAllResourcesApiGateway(s aws.Config, apiId string) []typeAPI.Resource {
+func GetAllResourcesApiGateway(s aws.Config, apiId string) []types.Resource {
 	svc := apigateway.NewFromConfig(s)
 	input := &apigateway.GetResourcesInput{
 		RestApiId: &apiId,
@@ -34,8 +34,8 @@ func GetAllResourcesApiGateway(s aws.Config, apiId string) []typeAPI.Resource {
 	return result.Items
 }
 
-func GetAllStagesApiGateway(s aws.Config, apis []typeAPI.RestApi) []typeAPI.Stage {
-	var stages []typeAPI.Stage
+func GetAllStagesApiGateway(s aws.Config, apis []types.RestApi) []types.Stage {
+	var stages []types.Stage
 	for _, api := range apis {
 		svc := apigateway.NewFromConfig(s)
 		input := &apigateway.GetStagesInput{
@@ -50,7 +50,7 @@ func GetAllStagesApiGateway(s aws.Config, apis []typeAPI.RestApi) []typeAPI.Stag
 	return stages
 }
 
-func CheckIfStagesCloudwatchLogsExist(s aws.Config, stages []typeAPI.Stage, testName string, c *[]results.Check) {
+func CheckIfStagesCloudwatchLogsExist(s aws.Config, stages []types.Stage, testName string, c *[]results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "Apigateway Cloudwatch Logs enabled"
@@ -72,7 +72,7 @@ func CheckIfStagesCloudwatchLogsExist(s aws.Config, stages []typeAPI.Stage, test
 	*c = append(*c, check)
 }
 
-func CheckIfStagesProtectedByAcl(s aws.Config, stages []typeAPI.Stage, testName string, c *[]results.Check) {
+func CheckIfStagesProtectedByAcl(s aws.Config, stages []types.Stage, testName string, c *[]results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "Apigateway Stages protected by ACL"

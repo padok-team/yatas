@@ -42,9 +42,40 @@ func createSessionWithCredentials(c *yatas.Config) aws.Config {
 
 }
 
+func createSessionWithSSO(c *yatas.Config) aws.Config {
+	// Create a new session that the SDK will use to load
+	// credentials from the shared credentials file.
+	// Usefull for SSO
+	if c.AWS.Account.Profile == "" {
+		s, err := config.LoadDefaultConfig(context.Background(),
+			config.WithRegion(c.AWS.Account.Region),
+		)
+		if err != nil {
+			panic(err)
+		}
+		return s
+	} else {
+		s, err := config.LoadDefaultConfig(context.Background(),
+			config.WithRegion(c.AWS.Account.Region),
+			config.WithSharedConfigProfile(c.AWS.Account.Profile),
+		)
+		if err != nil {
+			panic(err)
+		}
+		return s
+
+	}
+
+}
+
 func initSession(c *yatas.Config) aws.Config {
 	// Create a new session that the SDK will use to load
 	// credentials from. With either SSO or credentials
-	logger.Debug("Using AWS credentials")
-	return createSessionWithCredentials(c)
+	if c.AWS.Account.SSO {
+		logger.Debug("Using AWS SSO")
+		return createSessionWithSSO(c)
+	} else {
+		logger.Debug("Using AWS credentials")
+		return createSessionWithCredentials(c)
+	}
 }
