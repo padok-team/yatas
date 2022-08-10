@@ -109,8 +109,6 @@ func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []r
 	go yatas.CheckTest(&wg, c, "AWS_APG_002", CheckIfStagesProtectedByAcl)(&wg, s, stages, "AWS_APG_002", &checks)
 
 	wg.Wait()
-	if c.Progress != nil {
 
-	}
 	queue <- checks
 }
