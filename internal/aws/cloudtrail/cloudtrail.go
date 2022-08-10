@@ -25,7 +25,7 @@ func GetCloudtrails(s aws.Config) []types.Trail {
 	return result.TrailList
 }
 
-func CheckIfCloudtrailsEncrypted(wg *sync.WaitGroup, s aws.Config, cloudtrails []types.Trail, testName string, c *[]results.Check) {
+func CheckIfCloudtrailsEncrypted(wg *sync.WaitGroup, s aws.Config, cloudtrails []types.Trail, testName string, c *[]*results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 
 	var check results.Check
@@ -45,11 +45,11 @@ func CheckIfCloudtrailsEncrypted(wg *sync.WaitGroup, s aws.Config, cloudtrails [
 			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *cloudtrail.TrailARN})
 		}
 	}
-	*c = append(*c, check)
+	*c = append(*c, &check)
 	wg.Done()
 }
 
-func CheckIfCloudtrailsGlobalServiceEventsEnabled(wg *sync.WaitGroup, s aws.Config, cloudtrails []types.Trail, testName string, c *[]results.Check) {
+func CheckIfCloudtrailsGlobalServiceEventsEnabled(wg *sync.WaitGroup, s aws.Config, cloudtrails []types.Trail, testName string, c *[]*results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "Cloudtrails Global Service Events Activated"
@@ -68,11 +68,11 @@ func CheckIfCloudtrailsGlobalServiceEventsEnabled(wg *sync.WaitGroup, s aws.Conf
 			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *cloudtrail.TrailARN})
 		}
 	}
-	*c = append(*c, check)
+	*c = append(*c, &check)
 	wg.Done()
 }
 
-func CheckIfCloudtrailsMultiRegion(wg *sync.WaitGroup, s aws.Config, cloudtrails []types.Trail, testName string, c *[]results.Check) {
+func CheckIfCloudtrailsMultiRegion(wg *sync.WaitGroup, s aws.Config, cloudtrails []types.Trail, testName string, c *[]*results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "Cloudtrails Multi Region"
@@ -91,13 +91,13 @@ func CheckIfCloudtrailsMultiRegion(wg *sync.WaitGroup, s aws.Config, cloudtrails
 			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *cloudtrail.TrailARN})
 		}
 	}
-	*c = append(*c, check)
+	*c = append(*c, &check)
 	wg.Done()
 }
 
-func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []results.Check) {
+func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []*results.Check) {
 
-	var checks []results.Check
+	var checks []*results.Check
 	cloudtrails := GetCloudtrails(s)
 	var wg sync.WaitGroup
 
@@ -105,8 +105,6 @@ func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []r
 	go yatas.CheckTest(&wg, c, "AWS_CLD_002", CheckIfCloudtrailsGlobalServiceEventsEnabled)(&wg, s, cloudtrails, "AWS_CLD_002", &checks)
 	go yatas.CheckTest(&wg, c, "AWS_CLD_003", CheckIfCloudtrailsMultiRegion)(&wg, s, cloudtrails, "AWS_CLD_003", &checks)
 	wg.Wait()
-	if c.Progress != nil {
 
-	}
 	queue <- checks
 }

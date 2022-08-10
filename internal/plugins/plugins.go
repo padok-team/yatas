@@ -11,7 +11,7 @@ import (
 	"github.com/stangirard/yatas/internal/yatas"
 )
 
-func Execute(c *yatas.Config) ([]results.Check, error) {
+func Execute(c *yatas.Config) ([]*results.Check, error) {
 
 	plugins := findPlugins(c)
 
@@ -23,8 +23,8 @@ func Execute(c *yatas.Config) ([]results.Check, error) {
 	return checks, nil
 }
 
-func runPlugins(c *yatas.Config, plugins []string) ([]results.Check, error) {
-	var checksAll []results.Check
+func runPlugins(c *yatas.Config, plugins []string) ([]*results.Check, error) {
+	var checksAll []*results.Check
 	for _, plugin := range plugins {
 		logger.Debug(fmt.Sprint("Running plugin: ", plugin))
 		var commandPat = regexp.MustCompile(`custom.*`)

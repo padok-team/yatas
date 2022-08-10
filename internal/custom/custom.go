@@ -20,15 +20,15 @@ func findPluginWithName(c *yatas.Config, name string) *yatas.Plugin {
 	return nil
 }
 
-func Run(c *yatas.Config, name string) ([]results.Check, error) {
+func Run(c *yatas.Config, name string) ([]*results.Check, error) {
 	plugin := findPluginWithName(c, name)
 	checks, err := ExecuteCommand(c, plugin)
 	return checks, err
 
 }
 
-func ExecuteCommand(c *yatas.Config, plugin *yatas.Plugin) ([]results.Check, error) {
-	checks := []results.Check{}
+func ExecuteCommand(c *yatas.Config, plugin *yatas.Plugin) ([]*results.Check, error) {
+	checks := []*results.Check{}
 	check := results.Check{}
 	check.Name = plugin.Name
 	check.Description = plugin.Description
@@ -51,7 +51,7 @@ func ExecuteCommand(c *yatas.Config, plugin *yatas.Plugin) ([]results.Check, err
 		result.Status = "FAIL"
 	}
 	check.Results = append(check.Results, result)
-	checks = append(checks, check)
+	checks = append(checks, &check)
 	return checks, nil
 
 }

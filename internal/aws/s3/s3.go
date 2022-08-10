@@ -28,7 +28,7 @@ func GetListS3(s aws.Config) []types.Bucket {
 	return resp.Buckets
 }
 
-func checkIfEncryptionEnabled(wg *sync.WaitGroup, s aws.Config, buckets []types.Bucket, testName string, c *[]results.Check) {
+func checkIfEncryptionEnabled(wg *sync.WaitGroup, s aws.Config, buckets []types.Bucket, testName string, c *[]*results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "S3 Encryption"
@@ -58,11 +58,11 @@ func checkIfEncryptionEnabled(wg *sync.WaitGroup, s aws.Config, buckets []types.
 			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *bucket.Name})
 		}
 	}
-	*c = append(*c, check)
+	*c = append(*c, &check)
 	wg.Done()
 }
 
-func CheckIfBucketInOneZone(wg *sync.WaitGroup, s aws.Config, buckets []types.Bucket, testName string, c *[]results.Check) {
+func CheckIfBucketInOneZone(wg *sync.WaitGroup, s aws.Config, buckets []types.Bucket, testName string, c *[]*results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "S3 Bucket in one zone"
@@ -81,11 +81,11 @@ func CheckIfBucketInOneZone(wg *sync.WaitGroup, s aws.Config, buckets []types.Bu
 			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *bucket.Name})
 		}
 	}
-	*c = append(*c, check)
+	*c = append(*c, &check)
 	wg.Done()
 }
 
-func CheckIfBucketObjectVersioningEnabled(wg *sync.WaitGroup, s aws.Config, buckets []types.Bucket, testName string, c *[]results.Check) {
+func CheckIfBucketObjectVersioningEnabled(wg *sync.WaitGroup, s aws.Config, buckets []types.Bucket, testName string, c *[]*results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "S3 Bucket object versioning"
@@ -115,11 +115,11 @@ func CheckIfBucketObjectVersioningEnabled(wg *sync.WaitGroup, s aws.Config, buck
 			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *bucket.Name})
 		}
 	}
-	*c = append(*c, check)
+	*c = append(*c, &check)
 	wg.Done()
 }
 
-func CheckIfObjectLockConfigurationEnabled(wg *sync.WaitGroup, s aws.Config, buckets []types.Bucket, testName string, c *[]results.Check) {
+func CheckIfObjectLockConfigurationEnabled(wg *sync.WaitGroup, s aws.Config, buckets []types.Bucket, testName string, c *[]*results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "S3 Bucket retention policy"
@@ -147,11 +147,11 @@ func CheckIfObjectLockConfigurationEnabled(wg *sync.WaitGroup, s aws.Config, buc
 			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *bucket.Name})
 		}
 	}
-	*c = append(*c, check)
+	*c = append(*c, &check)
 	wg.Done()
 }
 
-func CheckIfS3PublicAccessBlockEnabled(wg *sync.WaitGroup, s aws.Config, buckets []types.Bucket, testName string, c *[]results.Check) {
+func CheckIfS3PublicAccessBlockEnabled(wg *sync.WaitGroup, s aws.Config, buckets []types.Bucket, testName string, c *[]*results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "S3 Public Access Block"
@@ -179,7 +179,7 @@ func CheckIfS3PublicAccessBlockEnabled(wg *sync.WaitGroup, s aws.Config, buckets
 			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *bucket.Name})
 		}
 	}
-	*c = append(*c, check)
+	*c = append(*c, &check)
 	wg.Done()
 }
 
@@ -209,9 +209,9 @@ func CheckS3Location(s aws.Config, bucket, region string) bool {
 	}
 }
 
-func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []results.Check) {
+func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []*results.Check) {
 
-	var checks []results.Check
+	var checks []*results.Check
 	logger.Debug("Starting S3 tests")
 	buckets := GetListS3(s)
 	// Create a wait group to wait for all the goroutines to finish

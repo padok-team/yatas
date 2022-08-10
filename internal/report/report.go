@@ -47,8 +47,8 @@ func IsIgnored(c *yatas.Config, r results.Result, check results.Check) bool {
 	return false
 }
 
-func RemoveIgnored(c *yatas.Config, checks []results.Check) []results.Check {
-	var newChecks []results.Check
+func RemoveIgnored(c *yatas.Config, checks []*results.Check) []*results.Check {
+	var newChecks []*results.Check
 	for _, check := range checks {
 		var checktmp results.Check
 		checktmp.Id = check.Id
@@ -56,19 +56,19 @@ func RemoveIgnored(c *yatas.Config, checks []results.Check) []results.Check {
 		checktmp.Status = "OK"
 		checktmp.Results = []results.Result{}
 		for _, result := range check.Results {
-			if !IsIgnored(c, result, check) {
+			if !IsIgnored(c, result, *check) {
 				if result.Status == "FAIL" {
 					checktmp.Status = "FAIL"
 				}
 				checktmp.Results = append(checktmp.Results, result)
 			}
 		}
-		newChecks = append(newChecks, checktmp)
+		newChecks = append(newChecks, &checktmp)
 	}
 	return newChecks
 }
 
-func PrettyPrintChecks(checks []results.Check, c *yatas.Config) {
+func PrettyPrintChecks(checks []*results.Check, c *yatas.Config) {
 	flag.Parse()
 	for _, check := range checks {
 		if c.CheckExclude(check.Id) {
@@ -92,8 +92,8 @@ func PrettyPrintChecks(checks []results.Check, c *yatas.Config) {
 	}
 }
 
-func ComparePreviousWithNew(previous []results.Check, new []results.Check) []results.Check {
-	var checks []results.Check
+func ComparePreviousWithNew(previous []*results.Check, new []*results.Check) []*results.Check {
+	var checks []*results.Check
 	for _, check := range new {
 		found := false
 		for _, previousCheck := range previous {
@@ -111,12 +111,12 @@ func ComparePreviousWithNew(previous []results.Check, new []results.Check) []res
 	return checks
 }
 
-func ReadPreviousResults() []results.Check {
+func ReadPreviousResults() []*results.Check {
 	d, err := ioutil.ReadFile("results.yaml")
 	if err != nil {
-		return []results.Check{}
+		return []*results.Check{}
 	}
-	var checks []results.Check
+	var checks []*results.Check
 	err = yaml.Unmarshal(d, &checks)
 	if err != nil {
 		panic(err)
@@ -124,14 +124,14 @@ func ReadPreviousResults() []results.Check {
 	return checks
 }
 
-func WriteChecksToFile(checks []results.Check, c *yatas.Config) {
-	var checksToWrite []results.Check
+func WriteChecksToFile(checks []*results.Check, c *yatas.Config) {
+	var checksToWrite []*results.Check
 	for _, check := range checks {
 		if !c.CheckExclude(check.Id) {
 			checksToWrite = append(checksToWrite, check)
 		}
 	}
-	d, err := yaml.Marshal(checks)
+	d, err := yaml.Marshal(checksToWrite)
 	if err != nil {
 		panic(err)
 	}

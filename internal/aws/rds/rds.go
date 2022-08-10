@@ -27,7 +27,7 @@ func GetListRDS(s aws.Config) []types.DBInstance {
 	return resp.DBInstances
 }
 
-func checkIfEncryptionEnabled(wg *sync.WaitGroup, s aws.Config, instances []types.DBInstance, testName string, c *[]results.Check) {
+func checkIfEncryptionEnabled(wg *sync.WaitGroup, s aws.Config, instances []types.DBInstance, testName string, c *[]*results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "RDS Encryption"
@@ -54,11 +54,11 @@ func checkIfEncryptionEnabled(wg *sync.WaitGroup, s aws.Config, instances []type
 			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *instance.DBInstanceArn})
 		}
 	}
-	*c = append(*c, check)
+	*c = append(*c, &check)
 	wg.Done()
 }
 
-func checkIfBackupEnabled(wg *sync.WaitGroup, s aws.Config, instances []types.DBInstance, testName string, c *[]results.Check) {
+func checkIfBackupEnabled(wg *sync.WaitGroup, s aws.Config, instances []types.DBInstance, testName string, c *[]*results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "RDS Backup"
@@ -85,11 +85,11 @@ func checkIfBackupEnabled(wg *sync.WaitGroup, s aws.Config, instances []types.DB
 			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *instance.DBInstanceArn})
 		}
 	}
-	*c = append(*c, check)
+	*c = append(*c, &check)
 	wg.Done()
 }
 
-func checkIfAutoUpgradeEnabled(wg *sync.WaitGroup, s aws.Config, instances []types.DBInstance, testName string, c *[]results.Check) {
+func checkIfAutoUpgradeEnabled(wg *sync.WaitGroup, s aws.Config, instances []types.DBInstance, testName string, c *[]*results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "RDS Minor Auto Upgrade"
@@ -116,11 +116,11 @@ func checkIfAutoUpgradeEnabled(wg *sync.WaitGroup, s aws.Config, instances []typ
 			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *instance.DBInstanceArn})
 		}
 	}
-	*c = append(*c, check)
+	*c = append(*c, &check)
 	wg.Done()
 }
 
-func checkIfRDSPrivateEnabled(wg *sync.WaitGroup, s aws.Config, instances []types.DBInstance, testName string, c *[]results.Check) {
+func checkIfRDSPrivateEnabled(wg *sync.WaitGroup, s aws.Config, instances []types.DBInstance, testName string, c *[]*results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "RDS Private"
@@ -147,11 +147,11 @@ func checkIfRDSPrivateEnabled(wg *sync.WaitGroup, s aws.Config, instances []type
 			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *instance.DBInstanceArn})
 		}
 	}
-	*c = append(*c, check)
+	*c = append(*c, &check)
 	wg.Done()
 }
 
-func CheckIfLoggingEnabled(wg *sync.WaitGroup, s aws.Config, instances []types.DBInstance, testName string, c *[]results.Check) {
+func CheckIfLoggingEnabled(wg *sync.WaitGroup, s aws.Config, instances []types.DBInstance, testName string, c *[]*results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "RDS Logging"
@@ -174,11 +174,11 @@ func CheckIfLoggingEnabled(wg *sync.WaitGroup, s aws.Config, instances []types.D
 			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *instance.DBInstanceArn})
 		}
 	}
-	*c = append(*c, check)
+	*c = append(*c, &check)
 	wg.Done()
 }
 
-func CheckIfDeleteProtectionEnabled(wg *sync.WaitGroup, s aws.Config, instances []types.DBInstance, testName string, c *[]results.Check) {
+func CheckIfDeleteProtectionEnabled(wg *sync.WaitGroup, s aws.Config, instances []types.DBInstance, testName string, c *[]*results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "RDS Delete Protection"
@@ -196,13 +196,13 @@ func CheckIfDeleteProtectionEnabled(wg *sync.WaitGroup, s aws.Config, instances 
 			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *instance.DBInstanceArn})
 		}
 	}
-	*c = append(*c, check)
+	*c = append(*c, &check)
 	wg.Done()
 }
 
-func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []results.Check) {
+func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []*results.Check) {
 
-	var checks []results.Check
+	var checks []*results.Check
 	instances := GetListRDS(s)
 	var wg sync.WaitGroup
 
@@ -213,8 +213,6 @@ func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []r
 	go yatas.CheckTest(&wg, c, "AWS_RDS_005", CheckIfLoggingEnabled)(&wg, s, instances, "AWS_RDS_005", &checks)
 	go yatas.CheckTest(&wg, c, "AWS_RDS_006", CheckIfDeleteProtectionEnabled)(&wg, s, instances, "AWS_RDS_006", &checks)
 	wg.Wait()
-	if c.Progress != nil {
 
-	}
 	queue <- checks
 }

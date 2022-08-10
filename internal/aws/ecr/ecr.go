@@ -25,7 +25,7 @@ func GetECRs(s aws.Config) []types.Repository {
 	return result.Repositories
 }
 
-func CheckIfImageScanningEnabled(wg *sync.WaitGroup, s aws.Config, ecr []types.Repository, testName string, c *[]results.Check) {
+func CheckIfImageScanningEnabled(wg *sync.WaitGroup, s aws.Config, ecr []types.Repository, testName string, c *[]*results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "Image Scanning Enabled"
@@ -44,20 +44,18 @@ func CheckIfImageScanningEnabled(wg *sync.WaitGroup, s aws.Config, ecr []types.R
 			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *ecr.RepositoryArn})
 		}
 	}
-	*c = append(*c, check)
+	*c = append(*c, &check)
 	wg.Done()
 }
 
-func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []results.Check) {
+func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []*results.Check) {
 
-	var checks []results.Check
+	var checks []*results.Check
 	ecr := GetECRs(s)
 	var wg sync.WaitGroup
 
 	go yatas.CheckTest(&wg, c, "AWS_ECR_001", CheckIfImageScanningEnabled)(&wg, s, ecr, "AWS_ECR_001", &checks)
 	wg.Wait()
-	if c.Progress != nil {
 
-	}
 	queue <- checks
 }

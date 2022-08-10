@@ -9,8 +9,8 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func parseReportYaml(filename string) ([]results.Check, error) {
-	var report []results.Check
+func parseReportYaml(filename string) ([]*results.Check, error) {
+	var report []*results.Check
 	data, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return report, err

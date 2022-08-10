@@ -23,7 +23,7 @@ func GetVolumes(s aws.Config) []types.Volume {
 	return result.Volumes
 }
 
-func checkIfEncryptionEnabled(wg *sync.WaitGroup, s aws.Config, volumes []types.Volume, testName string, c *[]results.Check) {
+func checkIfEncryptionEnabled(wg *sync.WaitGroup, s aws.Config, volumes []types.Volume, testName string, c *[]*results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "EC2 Volumes Encryption"
@@ -50,11 +50,11 @@ func checkIfEncryptionEnabled(wg *sync.WaitGroup, s aws.Config, volumes []types.
 			check.Results = append(check.Results, results.Result{Status: status, Message: Message})
 		}
 	}
-	*c = append(*c, check)
+	*c = append(*c, &check)
 	wg.Done()
 }
 
-func CheckIfVolumesTypeGP3(wg *sync.WaitGroup, s aws.Config, volumes []types.Volume, testName string, c *[]results.Check) {
+func CheckIfVolumesTypeGP3(wg *sync.WaitGroup, s aws.Config, volumes []types.Volume, testName string, c *[]*results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "EC2 Volumes Type"
@@ -73,7 +73,7 @@ func CheckIfVolumesTypeGP3(wg *sync.WaitGroup, s aws.Config, volumes []types.Vol
 			check.Results = append(check.Results, results.Result{Status: status, Message: Message})
 		}
 	}
-	*c = append(*c, check)
+	*c = append(*c, &check)
 	wg.Done()
 }
 
@@ -82,9 +82,9 @@ type couple struct {
 	snapshot []types.Snapshot
 }
 
-func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []results.Check) {
+func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []*results.Check) {
 
-	var checks []results.Check
+	var checks []*results.Check
 	logger.Debug("Starting EC2 volumes tests")
 	volumes := GetVolumes(s)
 	snapshots := GetSnapshots(s)
@@ -99,8 +99,6 @@ func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []r
 	go yatas.CheckTest(&wg, c, "AWS_BAK_002", CheckIfSnapshotYoungerthan24h)(&wg, s, couples, "AWS_BAK_002", &checks)
 
 	wg.Wait()
-	if c.Progress != nil {
 
-	}
 	queue <- checks
 }

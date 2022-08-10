@@ -23,19 +23,19 @@ import (
 	"github.com/stangirard/yatas/internal/yatas"
 )
 
-func Run(c *yatas.Config) ([]results.Check, error) {
+func Run(c *yatas.Config) ([]*results.Check, error) {
 	s := initAuth(c)
 	logger.Info("Launching AWS checks")
 	checks := initTest(s, c)
 	return checks, nil
 }
 
-func initTest(s aws.Config, c *yatas.Config) []results.Check {
+func initTest(s aws.Config, c *yatas.Config) []*results.Check {
 
-	var checks []results.Check
+	var checks []*results.Check
 	var wg sync.WaitGroup
 
-	queue := make(chan []results.Check, 1)
+	queue := make(chan []*results.Check, 1)
 	go yatas.CheckMacroTest(&wg, c, s3.RunChecks)(&wg, s, c, queue)
 	go yatas.CheckMacroTest(&wg, c, volumes.RunChecks)(&wg, s, c, queue)
 	go yatas.CheckMacroTest(&wg, c, rds.RunChecks)(&wg, s, c, queue)

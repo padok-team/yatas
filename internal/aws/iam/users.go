@@ -5,10 +5,12 @@ import (
 	"net/url"
 	"regexp"
 	"strings"
+	"sync"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/iam"
 	"github.com/aws/aws-sdk-go-v2/service/iam/types"
+	"github.com/stangirard/yatas/internal/logger"
 )
 
 func GetPolicyAttachedToUser(s aws.Config, user types.User) []types.AttachedPolicy {
@@ -47,6 +49,7 @@ func SortPolicyVersions(policyVersions []types.PolicyVersion) {
 }
 
 func GetPolicyDocument(s aws.Config, policyArn *string) *string {
+	logger.Debug("Getting policy document")
 	policyVersions := GetAllPolicyVersions(s, policyArn)
 	SortPolicyVersions(policyVersions)
 	input := &iam.GetPolicyVersionInput{
@@ -58,28 +61,50 @@ func GetPolicyDocument(s aws.Config, policyArn *string) *string {
 	if err != nil {
 		panic(err)
 	}
+	logger.Debug("Got policy document")
 	return result.PolicyVersion.Document
 }
 
 func JsonDecodePolicyDocument(policyDocumentJson *string) Policy {
 	// URL Decode the policy document
+	logger.Debug("Decoding policy document")
 	var policyDocument Policy
 	decodedValue, _ := url.QueryUnescape(*policyDocumentJson)
 	policyDocument.UnmarshalJSON([]byte(decodedValue))
+	logger.Debug("Decoded policy document")
+
 	return policyDocument
 
 }
 
 func GetAllPolicyForUser(s aws.Config, user types.User) []Policy {
 	var policyList []Policy
+	queue := make(chan Policy)
+	wg := sync.WaitGroup{}
 	for _, policy := range GetPolicyAttachedToUser(s, user) {
-		policyList = append(policyList, JsonDecodePolicyDocument(GetPolicyDocument(s, policy.PolicyArn)))
+		go newFunction(&wg, queue, s, policy)
 	}
+	go func() {
+		for policy := range queue {
+			policyList = append(policyList, policy)
+			wg.Done()
+		}
+	}()
+	wg.Wait()
 	return policyList
 }
 
-func CheckPolicyForAllowInRequiredPermission(policies []Policy, requiredPermission [][]string) [][]string {
+func newFunction(wg *sync.WaitGroup, queue chan Policy, s aws.Config, policy types.AttachedPolicy) {
+	wg.Add(1)
+	policyTMP := JsonDecodePolicyDocument(GetPolicyDocument(s, policy.PolicyArn))
+	logger.Debug("Got policy")
+
+	queue <- policyTMP
+}
+
+func CheckPolicyForAllowInRequiredPermission(wg *sync.WaitGroup, queue chan map[string][][]string, user string, policies []Policy, requiredPermission [][]string) {
 	// Extract all allow statements from policy
+	wg.Add(1)
 	allowStatements := make([]Statement, 0)
 	for _, policy := range policies {
 		for _, statement := range policy.Statements {
@@ -122,6 +147,5 @@ func CheckPolicyForAllowInRequiredPermission(policies []Policy, requiredPermissi
 			permissionElevationPossible = append(permissionElevationPossible, permissions)
 		}
 	}
-
-	return permissionElevationPossible
+	queue <- map[string][][]string{user: permissionElevationPossible}
 }

@@ -51,7 +51,7 @@ func GetAllStagesApiGateway(s aws.Config, apis []types.RestApi) []types.Stage {
 	return stages
 }
 
-func CheckIfStagesCloudwatchLogsExist(wg *sync.WaitGroup, s aws.Config, stages []types.Stage, testName string, c *[]results.Check) {
+func CheckIfStagesCloudwatchLogsExist(wg *sync.WaitGroup, s aws.Config, stages []types.Stage, testName string, c *[]*results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "Apigateway Cloudwatch Logs enabled"
@@ -70,11 +70,11 @@ func CheckIfStagesCloudwatchLogsExist(wg *sync.WaitGroup, s aws.Config, stages [
 			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *stage.StageName})
 		}
 	}
-	*c = append(*c, check)
+	*c = append(*c, &check)
 	wg.Done()
 }
 
-func CheckIfStagesProtectedByAcl(wg *sync.WaitGroup, s aws.Config, stages []types.Stage, testName string, c *[]results.Check) {
+func CheckIfStagesProtectedByAcl(wg *sync.WaitGroup, s aws.Config, stages []types.Stage, testName string, c *[]*results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "Apigateway Stages protected by ACL"
@@ -93,14 +93,14 @@ func CheckIfStagesProtectedByAcl(wg *sync.WaitGroup, s aws.Config, stages []type
 			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *stage.StageName})
 		}
 	}
-	*c = append(*c, check)
+	*c = append(*c, &check)
 	wg.Done()
 }
 
-func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []results.Check) {
+func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []*results.Check) {
 
-	// var checks []results.Check
-	var checks []results.Check
+	// var checks []*results.Check
+	var checks []*results.Check
 	var wg sync.WaitGroup
 
 	apis := GetApiGateways(s)
@@ -109,8 +109,6 @@ func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []r
 	go yatas.CheckTest(&wg, c, "AWS_APG_002", CheckIfStagesProtectedByAcl)(&wg, s, stages, "AWS_APG_002", &checks)
 
 	wg.Wait()
-	if c.Progress != nil {
 
-	}
 	queue <- checks
 }

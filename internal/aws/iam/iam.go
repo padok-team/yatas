@@ -24,7 +24,7 @@ func GetAllUsers(s aws.Config) []types.User {
 	return result.Users
 }
 
-func CheckIf2FAActivated(wg *sync.WaitGroup, s aws.Config, users []types.User, testName string, c *[]results.Check) {
+func CheckIf2FAActivated(wg *sync.WaitGroup, s aws.Config, users []types.User, testName string, c *[]*results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "IAM 2FA"
@@ -52,11 +52,11 @@ func CheckIf2FAActivated(wg *sync.WaitGroup, s aws.Config, users []types.User, t
 			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *user.UserName})
 		}
 	}
-	*c = append(*c, check)
+	*c = append(*c, &check)
 	wg.Done()
 }
 
-func CheckAgeAccessKeyLessThan90Days(wg *sync.WaitGroup, s aws.Config, users []types.User, testName string, c *[]results.Check) {
+func CheckAgeAccessKeyLessThan90Days(wg *sync.WaitGroup, s aws.Config, users []types.User, testName string, c *[]*results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "IAM Access Key Age"
@@ -87,43 +87,55 @@ func CheckAgeAccessKeyLessThan90Days(wg *sync.WaitGroup, s aws.Config, users []t
 			}
 		}
 	}
-	*c = append(*c, check)
+	*c = append(*c, &check)
 	wg.Done()
 }
 
-func CheckIfUserCanElevateRights(wg *sync.WaitGroup, s aws.Config, users []types.User, testName string, c *[]results.Check) {
+func CheckIfUserCanElevateRights(wg *sync.WaitGroup, s aws.Config, users []types.User, testName string, c *[]*results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "IAM User Can Elevate Rights"
 	check.Id = testName
 	check.Description = "Check if  users can elevate rights"
 	check.Status = "OK"
+	queueElevation := make(chan map[string][][]string)
+	var wgElevation sync.WaitGroup
 	for _, user := range users {
-		elevation := CheckPolicyForAllowInRequiredPermission(GetAllPolicyForUser(s, users[0]), requiredPermissions)
-		if len(elevation) > 0 {
-			check.Status = "FAIL"
-			status := "FAIL"
-			var Message string
-			if len(elevation) > 3 {
-				Message = "User " + *user.UserName + " can elevate rights with " + fmt.Sprint(elevation[len(elevation)-3:]) + " only last 3 policies"
-			} else {
-				Message = "User " + *user.UserName + " can elevate rights with " + fmt.Sprint(elevation)
-			}
+		go CheckPolicyForAllowInRequiredPermission(&wgElevation, queueElevation, *user.UserName, GetAllPolicyForUser(s, user), requiredPermissions)
 
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *user.UserName})
-		} else {
-			status := "OK"
-			Message := "User " + *user.UserName + " cannot elevate rights"
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *user.UserName})
-		}
 	}
-	*c = append(*c, check)
+	go func() {
+		for elevation := range queueElevation {
+			for user, policies := range elevation {
+				if len(policies) > 0 {
+					check.Status = "FAIL"
+					status := "FAIL"
+					var Message string
+					if len(elevation) > 3 {
+						Message = "User " + user + " can elevate rights with " + fmt.Sprint(policies[len(elevation)-3:]) + " only last 3 policies"
+					} else {
+						Message = "User " + user + " can elevate rights with " + fmt.Sprint(elevation) + " policies"
+					}
+					check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: user})
+				} else {
+					status := "OK"
+					Message := "User " + user + " cannot elevate rights"
+					check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: user})
+				}
+			}
+			wgElevation.Done()
+		}
+	}()
+
+	wgElevation.Wait()
+
+	*c = append(*c, &check)
 	wg.Done()
 }
 
-func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []results.Check) {
+func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []*results.Check) {
 
-	var checks []results.Check
+	var checks []*results.Check
 	users := GetAllUsers(s)
 	var wg sync.WaitGroup
 
@@ -131,8 +143,6 @@ func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []r
 	go yatas.CheckTest(&wg, c, "AWS_IAM_002", CheckAgeAccessKeyLessThan90Days)(&wg, s, users, "AWS_IAM_002", &checks)
 	go yatas.CheckTest(&wg, c, "AWS_IAM_003", CheckIfUserCanElevateRights)(&wg, s, users, "AWS_IAM_003", &checks)
 	wg.Wait()
-	if c.Progress != nil {
 
-	}
 	queue <- checks
 }
