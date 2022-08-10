@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/aws/aws-sdk-go-v2 v1.16.10
-	github.com/aws/aws-sdk-go-v2/config v1.15.16
+	github.com/aws/aws-sdk-go-v2/config v1.15.17
 	github.com/aws/aws-sdk-go-v2/service/apigateway v1.15.12
 	github.com/aws/aws-sdk-go-v2/service/autoscaling v1.23.8
 	github.com/aws/aws-sdk-go-v2/service/cloudfront v1.18.6
@@ -27,19 +27,19 @@ require (
 
 require (
 	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.4.3 // indirect
-	github.com/aws/aws-sdk-go-v2/credentials v1.12.11 // indirect
-	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.12.10 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/configsources v1.1.16 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.4.10 // indirect
-	github.com/aws/aws-sdk-go-v2/internal/ini v1.3.17 // indirect
+	github.com/aws/aws-sdk-go-v2/credentials v1.12.12 // indirect
+	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.12.11 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/configsources v1.1.17 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.4.11 // indirect
+	github.com/aws/aws-sdk-go-v2/internal/ini v1.3.18 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/v4a v1.0.7 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.9.3 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/checksum v1.1.11 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/endpoint-discovery v1.7.10 // indirect
-	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.9.10 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.9.11 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.13.10 // indirect
-	github.com/aws/aws-sdk-go-v2/service/sso v1.11.14 // indirect
-	github.com/aws/aws-sdk-go-v2/service/sts v1.16.11 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sso v1.11.15 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sts v1.16.12 // indirect
 	github.com/aws/smithy-go v1.12.1 // indirect
 	github.com/jmespath/go-jmespath v0.4.0 // indirect
 	github.com/mattn/go-colorable v0.1.12 // indirect
