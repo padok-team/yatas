@@ -91,6 +91,11 @@ func CheckAgeAccessKeyLessThan90Days(wg *sync.WaitGroup, s aws.Config, users []t
 	wg.Done()
 }
 
+type UserPolicies struct {
+	UserName string
+	Policies []Policy
+}
+
 func CheckIfUserCanElevateRights(wg *sync.WaitGroup, s aws.Config, users []types.User, testName string, c *[]results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
@@ -98,23 +103,38 @@ func CheckIfUserCanElevateRights(wg *sync.WaitGroup, s aws.Config, users []types
 	check.Id = testName
 	check.Description = "Check if  users can elevate rights"
 	check.Status = "OK"
+	var wgPolicyForUser sync.WaitGroup
+	queue := make(chan UserPolicies, len(users))
+
 	for _, user := range users {
-		elevation := CheckPolicyForAllowInRequiredPermission(GetAllPolicyForUser(s, user), requiredPermissions)
+		go GetAllPolicyForUser(&wgPolicyForUser, queue, s, user)
+	}
+	var userPolicies []UserPolicies
+	go func() {
+		for user := range queue {
+			userPolicies = append(userPolicies, user)
+			wgPolicyForUser.Done()
+		}
+
+	}()
+	wgPolicyForUser.Wait()
+	for _, userPol := range userPolicies {
+		elevation := CheckPolicyForAllowInRequiredPermission(userPol.Policies, requiredPermissions)
 		if len(elevation) > 0 {
 			check.Status = "FAIL"
 			status := "FAIL"
 			var Message string
 			if len(elevation) > 3 {
-				Message = "User " + *user.UserName + " can elevate rights with " + fmt.Sprint(elevation[len(elevation)-3:]) + " only last 3 policies"
+				Message = "User " + userPol.UserName + " can elevate rights with " + fmt.Sprint(elevation[len(elevation)-3:]) + " only last 3 policies"
 			} else {
-				Message = "User " + *user.UserName + " can elevate rights with " + fmt.Sprint(elevation)
+				Message = "User " + userPol.UserName + " can elevate rights with " + fmt.Sprint(elevation)
 			}
 
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *user.UserName})
+			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: userPol.UserName})
 		} else {
 			status := "OK"
-			Message := "User " + *user.UserName + " cannot elevate rights"
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *user.UserName})
+			Message := "User " + userPol.UserName + " cannot elevate rights"
+			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: userPol.UserName})
 		}
 	}
 	*c = append(*c, check)

@@ -71,7 +71,8 @@ func JsonDecodePolicyDocument(policyDocumentJson *string) Policy {
 
 }
 
-func GetAllPolicyForUser(s aws.Config, user types.User) []Policy {
+func GetAllPolicyForUser(wg *sync.WaitGroup, queueCheck chan UserPolicies, s aws.Config, user types.User) {
+	wg.Add(1)
 	var policyList []Policy
 	var wgpolicy sync.WaitGroup
 	queue := make(chan *string, 100)
@@ -88,7 +89,7 @@ func GetAllPolicyForUser(s aws.Config, user types.User) []Policy {
 		}
 	}()
 	wgpolicy.Wait()
-	return policyList
+	queueCheck <- UserPolicies{*user.UserName, policyList}
 }
 
 func CheckPolicyForAllowInRequiredPermission(policies []Policy, requiredPermission [][]string) [][]string {
