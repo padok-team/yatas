@@ -99,7 +99,7 @@ func CheckIfUserCanElevateRights(wg *sync.WaitGroup, s aws.Config, users []types
 	check.Description = "Check if  users can elevate rights"
 	check.Status = "OK"
 	for _, user := range users {
-		elevation := CheckPolicyForAllowInRequiredPermission(GetAllPolicyForUser(s, users[0]), requiredPermissions)
+		elevation := CheckPolicyForAllowInRequiredPermission(GetAllPolicyForUser(s, user), requiredPermissions)
 		if len(elevation) > 0 {
 			check.Status = "FAIL"
 			status := "FAIL"

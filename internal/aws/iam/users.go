@@ -5,6 +5,7 @@ import (
 	"net/url"
 	"regexp"
 	"strings"
+	"sync"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/iam"
@@ -46,7 +47,7 @@ func SortPolicyVersions(policyVersions []types.PolicyVersion) {
 	}
 }
 
-func GetPolicyDocument(s aws.Config, policyArn *string) *string {
+func GetPolicyDocument(wg *sync.WaitGroup, queue chan *string, s aws.Config, policyArn *string) {
 	policyVersions := GetAllPolicyVersions(s, policyArn)
 	SortPolicyVersions(policyVersions)
 	input := &iam.GetPolicyVersionInput{
@@ -58,7 +59,7 @@ func GetPolicyDocument(s aws.Config, policyArn *string) *string {
 	if err != nil {
 		panic(err)
 	}
-	return result.PolicyVersion.Document
+	queue <- result.PolicyVersion.Document
 }
 
 func JsonDecodePolicyDocument(policyDocumentJson *string) Policy {
@@ -72,9 +73,21 @@ func JsonDecodePolicyDocument(policyDocumentJson *string) Policy {
 
 func GetAllPolicyForUser(s aws.Config, user types.User) []Policy {
 	var policyList []Policy
-	for _, policy := range GetPolicyAttachedToUser(s, user) {
-		policyList = append(policyList, JsonDecodePolicyDocument(GetPolicyDocument(s, policy.PolicyArn)))
+	var wgpolicy sync.WaitGroup
+	queue := make(chan *string, 100)
+	policies := GetPolicyAttachedToUser(s, user)
+	wgpolicy.Add(len(policies))
+	for _, policy := range policies {
+		go GetPolicyDocument(&wgpolicy, queue, s, policy.PolicyArn)
+
 	}
+	go func() {
+		for t := range queue {
+			policyList = append(policyList, JsonDecodePolicyDocument(t))
+			wgpolicy.Done()
+		}
+	}()
+	wgpolicy.Wait()
 	return policyList
 }
 
