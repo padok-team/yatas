@@ -28,7 +28,7 @@ func GetListS3(s aws.Config) []types.Bucket {
 	return resp.Buckets
 }
 
-func checkIfEncryptionEnabled(wg *sync.WaitGroup, s aws.Config, buckets []types.Bucket, testName string, c *[]results.Check) {
+func checkIfEncryptionEnabled(wg *sync.WaitGroup, s aws.Config, buckets []types.Bucket, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "S3 Encryption"
@@ -58,11 +58,10 @@ func checkIfEncryptionEnabled(wg *sync.WaitGroup, s aws.Config, buckets []types.
 			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *bucket.Name})
 		}
 	}
-	*c = append(*c, check)
-	wg.Done()
+	queueToAdd <- check
 }
 
-func CheckIfBucketInOneZone(wg *sync.WaitGroup, s aws.Config, buckets []types.Bucket, testName string, c *[]results.Check) {
+func CheckIfBucketInOneZone(wg *sync.WaitGroup, s aws.Config, buckets []types.Bucket, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "S3 Bucket in one zone"
@@ -81,11 +80,10 @@ func CheckIfBucketInOneZone(wg *sync.WaitGroup, s aws.Config, buckets []types.Bu
 			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *bucket.Name})
 		}
 	}
-	*c = append(*c, check)
-	wg.Done()
+	queueToAdd <- check
 }
 
-func CheckIfBucketObjectVersioningEnabled(wg *sync.WaitGroup, s aws.Config, buckets []types.Bucket, testName string, c *[]results.Check) {
+func CheckIfBucketObjectVersioningEnabled(wg *sync.WaitGroup, s aws.Config, buckets []types.Bucket, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "S3 Bucket object versioning"
@@ -115,11 +113,10 @@ func CheckIfBucketObjectVersioningEnabled(wg *sync.WaitGroup, s aws.Config, buck
 			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *bucket.Name})
 		}
 	}
-	*c = append(*c, check)
-	wg.Done()
+	queueToAdd <- check
 }
 
-func CheckIfObjectLockConfigurationEnabled(wg *sync.WaitGroup, s aws.Config, buckets []types.Bucket, testName string, c *[]results.Check) {
+func CheckIfObjectLockConfigurationEnabled(wg *sync.WaitGroup, s aws.Config, buckets []types.Bucket, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "S3 Bucket retention policy"
@@ -147,11 +144,10 @@ func CheckIfObjectLockConfigurationEnabled(wg *sync.WaitGroup, s aws.Config, buc
 			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *bucket.Name})
 		}
 	}
-	*c = append(*c, check)
-	wg.Done()
+	queueToAdd <- check
 }
 
-func CheckIfS3PublicAccessBlockEnabled(wg *sync.WaitGroup, s aws.Config, buckets []types.Bucket, testName string, c *[]results.Check) {
+func CheckIfS3PublicAccessBlockEnabled(wg *sync.WaitGroup, s aws.Config, buckets []types.Bucket, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "S3 Public Access Block"
@@ -179,8 +175,7 @@ func CheckIfS3PublicAccessBlockEnabled(wg *sync.WaitGroup, s aws.Config, buckets
 			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *bucket.Name})
 		}
 	}
-	*c = append(*c, check)
-	wg.Done()
+	queueToAdd <- check
 }
 
 func CheckS3Location(s aws.Config, bucket, region string) bool {
@@ -216,12 +211,22 @@ func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []r
 	buckets := GetListS3(s)
 	// Create a wait group to wait for all the goroutines to finish
 	var wg sync.WaitGroup
-	go yatas.CheckTest(&wg, c, "AWS_S3_001", checkIfEncryptionEnabled)(&wg, s, buckets, "AWS_S3_001", &checks)
-	go yatas.CheckTest(&wg, c, "AWS_S3_002", CheckIfBucketInOneZone)(&wg, s, buckets, "AWS_S3_002", &checks)
-	go yatas.CheckTest(&wg, c, "AWS_S3_003", CheckIfBucketObjectVersioningEnabled)(&wg, s, buckets, "AWS_S3_003", &checks)
-	go yatas.CheckTest(&wg, c, "AWS_S3_004", CheckIfObjectLockConfigurationEnabled)(&wg, s, buckets, "AWS_S3_004", &checks)
-	go yatas.CheckTest(&wg, c, "AWS_S3_005", CheckIfS3PublicAccessBlockEnabled)(&wg, s, buckets, "AWS_S3_005", &checks)
+	queueResults := make(chan results.Check, 10)
+
+	go yatas.CheckTest(&wg, c, "AWS_S3_001", checkIfEncryptionEnabled)(&wg, s, buckets, "AWS_S3_001", queueResults)
+	go yatas.CheckTest(&wg, c, "AWS_S3_002", CheckIfBucketInOneZone)(&wg, s, buckets, "AWS_S3_002", queueResults)
+	go yatas.CheckTest(&wg, c, "AWS_S3_003", CheckIfBucketObjectVersioningEnabled)(&wg, s, buckets, "AWS_S3_003", queueResults)
+	go yatas.CheckTest(&wg, c, "AWS_S3_004", CheckIfObjectLockConfigurationEnabled)(&wg, s, buckets, "AWS_S3_004", queueResults)
+	go yatas.CheckTest(&wg, c, "AWS_S3_005", CheckIfS3PublicAccessBlockEnabled)(&wg, s, buckets, "AWS_S3_005", queueResults)
 	// Wait for all the goroutines to finish
+
+	go func() {
+		for t := range queueResults {
+			checks = append(checks, t)
+			wg.Done()
+		}
+	}()
+
 	wg.Wait()
 
 	queue <- checks

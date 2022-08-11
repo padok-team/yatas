@@ -23,7 +23,7 @@ func GetVolumes(s aws.Config) []types.Volume {
 	return result.Volumes
 }
 
-func checkIfEncryptionEnabled(wg *sync.WaitGroup, s aws.Config, volumes []types.Volume, testName string, c *[]results.Check) {
+func checkIfEncryptionEnabled(wg *sync.WaitGroup, s aws.Config, volumes []types.Volume, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "EC2 Volumes Encryption"
@@ -50,11 +50,10 @@ func checkIfEncryptionEnabled(wg *sync.WaitGroup, s aws.Config, volumes []types.
 			check.Results = append(check.Results, results.Result{Status: status, Message: Message})
 		}
 	}
-	*c = append(*c, check)
-	wg.Done()
+	queueToAdd <- check
 }
 
-func CheckIfVolumesTypeGP3(wg *sync.WaitGroup, s aws.Config, volumes []types.Volume, testName string, c *[]results.Check) {
+func CheckIfVolumesTypeGP3(wg *sync.WaitGroup, s aws.Config, volumes []types.Volume, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "EC2 Volumes Type"
@@ -73,8 +72,7 @@ func CheckIfVolumesTypeGP3(wg *sync.WaitGroup, s aws.Config, volumes []types.Vol
 			check.Results = append(check.Results, results.Result{Status: status, Message: Message})
 		}
 	}
-	*c = append(*c, check)
-	wg.Done()
+	queueToAdd <- check
 }
 
 type couple struct {
@@ -90,13 +88,21 @@ func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []r
 	snapshots := GetSnapshots(s)
 	couples := couple{volumes, snapshots}
 	var wg sync.WaitGroup
+	queueResults := make(chan results.Check, 10)
 
-	go yatas.CheckTest(&wg, c, "AWS_VOL_001", checkIfEncryptionEnabled)(&wg, s, volumes, "AWS_VOL_001", &checks)
-	go yatas.CheckTest(&wg, c, "AWS_VOL_002", CheckIfVolumesTypeGP3)(&wg, s, volumes, "AWS_VOL_002", &checks)
-	go yatas.CheckTest(&wg, c, "AWS_VOL_003", CheckIfAllVolumesHaveSnapshots)(&wg, s, volumes, "AWS_VOL_003", &checks)
+	go yatas.CheckTest(&wg, c, "AWS_VOL_001", checkIfEncryptionEnabled)(&wg, s, volumes, "AWS_VOL_001", queueResults)
+	go yatas.CheckTest(&wg, c, "AWS_VOL_002", CheckIfVolumesTypeGP3)(&wg, s, volumes, "AWS_VOL_002", queueResults)
+	go yatas.CheckTest(&wg, c, "AWS_VOL_003", CheckIfAllVolumesHaveSnapshots)(&wg, s, volumes, "AWS_VOL_003", queueResults)
 
-	go yatas.CheckTest(&wg, c, "AWS_BAK_001", CheckIfAllSnapshotsEncrypted)(&wg, s, snapshots, "AWS_BAK_001", &checks)
-	go yatas.CheckTest(&wg, c, "AWS_BAK_002", CheckIfSnapshotYoungerthan24h)(&wg, s, couples, "AWS_BAK_002", &checks)
+	go yatas.CheckTest(&wg, c, "AWS_BAK_001", CheckIfAllSnapshotsEncrypted)(&wg, s, snapshots, "AWS_BAK_001", queueResults)
+	go yatas.CheckTest(&wg, c, "AWS_BAK_002", CheckIfSnapshotYoungerthan24h)(&wg, s, couples, "AWS_BAK_002", queueResults)
+
+	go func() {
+		for t := range queueResults {
+			checks = append(checks, t)
+			wg.Done()
+		}
+	}()
 
 	wg.Wait()
 
