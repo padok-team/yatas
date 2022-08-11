@@ -22,7 +22,7 @@ func GetDynamodbs(s aws.Config) []string {
 	return result.TableNames
 }
 
-func CheckIfDynamodbEncrypted(wg *sync.WaitGroup, s aws.Config, dynamodbs []string, testName string, c *[]results.Check) {
+func CheckIfDynamodbEncrypted(wg *sync.WaitGroup, s aws.Config, dynamodbs []string, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "Dynamodb Encryption"
@@ -50,11 +50,10 @@ func CheckIfDynamodbEncrypted(wg *sync.WaitGroup, s aws.Config, dynamodbs []stri
 			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *resp.Table.TableArn})
 		}
 	}
-	*c = append(*c, check)
-	wg.Done()
+	queueToAdd <- check
 }
 
-func CheckIfDynamodbContinuousBackupsEnabled(wg *sync.WaitGroup, s aws.Config, dynamodbs []string, testName string, c *[]results.Check) {
+func CheckIfDynamodbContinuousBackupsEnabled(wg *sync.WaitGroup, s aws.Config, dynamodbs []string, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "Dynamodb Continuous Backups"
@@ -81,8 +80,7 @@ func CheckIfDynamodbContinuousBackupsEnabled(wg *sync.WaitGroup, s aws.Config, d
 			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: d})
 		}
 	}
-	*c = append(*c, check)
-	wg.Done()
+	queueToAdd <- check
 }
 
 func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []results.Check) {
@@ -90,9 +88,17 @@ func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []r
 	var checks []results.Check
 	dynamodbs := GetDynamodbs(s)
 	var wg sync.WaitGroup
+	queueResults := make(chan results.Check, 10)
+	go yatas.CheckTest(&wg, c, "AWS_DYN_001", CheckIfDynamodbEncrypted)(&wg, s, dynamodbs, "AWS_DYN_001", queueResults)
+	go yatas.CheckTest(&wg, c, "AWS_DYN_002", CheckIfDynamodbContinuousBackupsEnabled)(&wg, s, dynamodbs, "AWS_DYN_002", queueResults)
 
-	go yatas.CheckTest(&wg, c, "AWS_DYN_001", CheckIfDynamodbEncrypted)(&wg, s, dynamodbs, "AWS_DYN_001", &checks)
-	go yatas.CheckTest(&wg, c, "AWS_DYN_002", CheckIfDynamodbContinuousBackupsEnabled)(&wg, s, dynamodbs, "AWS_DYN_002", &checks)
+	go func() {
+		for t := range queueResults {
+			checks = append(checks, t)
+			wg.Done()
+		}
+	}()
+
 	wg.Wait()
 
 	queue <- checks

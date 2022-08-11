@@ -25,7 +25,7 @@ func GetListVPC(s aws.Config) []types.Vpc {
 	return result.Vpcs
 }
 
-func checkCIDR20(wg *sync.WaitGroup, s aws.Config, vpcs []types.Vpc, testName string, c *[]results.Check) {
+func checkCIDR20(wg *sync.WaitGroup, s aws.Config, vpcs []types.Vpc, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "VPC CIDR"
@@ -55,11 +55,10 @@ func checkCIDR20(wg *sync.WaitGroup, s aws.Config, vpcs []types.Vpc, testName st
 			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *vpc.VpcId})
 		}
 	}
-	*c = append(*c, check)
-	wg.Done()
+	queueToAdd <- check
 }
 
-func checkIfVPCFLowLogsEnabled(wg *sync.WaitGroup, s aws.Config, vpcs []types.Vpc, testName string, c *[]results.Check) {
+func checkIfVPCFLowLogsEnabled(wg *sync.WaitGroup, s aws.Config, vpcs []types.Vpc, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "VPC Flow Logs"
@@ -93,11 +92,10 @@ func checkIfVPCFLowLogsEnabled(wg *sync.WaitGroup, s aws.Config, vpcs []types.Vp
 			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *vpc.VpcId})
 		}
 	}
-	*c = append(*c, check)
-	wg.Done()
+	queueToAdd <- check
 }
 
-func checkIfOnlyOneGateway(wg *sync.WaitGroup, s aws.Config, vpcs []types.Vpc, testName string, c *[]results.Check) {
+func checkIfOnlyOneGateway(wg *sync.WaitGroup, s aws.Config, vpcs []types.Vpc, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "VPC Gateway"
@@ -131,11 +129,10 @@ func checkIfOnlyOneGateway(wg *sync.WaitGroup, s aws.Config, vpcs []types.Vpc, t
 			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *vpc.VpcId})
 		}
 	}
-	*c = append(*c, check)
-	wg.Done()
+	queueToAdd <- check
 }
 
-func checkIfOnlyOneVPC(wg *sync.WaitGroup, s aws.Config, vpcs []types.Vpc, testName string, c *[]results.Check) {
+func checkIfOnlyOneVPC(wg *sync.WaitGroup, s aws.Config, vpcs []types.Vpc, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "VPC Only One"
@@ -155,11 +152,10 @@ func checkIfOnlyOneVPC(wg *sync.WaitGroup, s aws.Config, vpcs []types.Vpc, testN
 		}
 	}
 
-	*c = append(*c, check)
-	wg.Done()
+	queueToAdd <- check
 }
 
-func CheckIfSubnetInDifferentZone(wg *sync.WaitGroup, s aws.Config, vpcs []types.Vpc, testName string, c *[]results.Check) {
+func CheckIfSubnetInDifferentZone(wg *sync.WaitGroup, s aws.Config, vpcs []types.Vpc, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "Subnets in different zone"
@@ -198,11 +194,10 @@ func CheckIfSubnetInDifferentZone(wg *sync.WaitGroup, s aws.Config, vpcs []types
 			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *vpc.VpcId})
 		}
 	}
-	*c = append(*c, check)
-	wg.Done()
+	queueToAdd <- check
 }
 
-func CheckIfAtLeast2Subnets(wg *sync.WaitGroup, s aws.Config, vpcs []types.Vpc, testName string, c *[]results.Check) {
+func CheckIfAtLeast2Subnets(wg *sync.WaitGroup, s aws.Config, vpcs []types.Vpc, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "At least 2 subnets"
@@ -236,8 +231,7 @@ func CheckIfAtLeast2Subnets(wg *sync.WaitGroup, s aws.Config, vpcs []types.Vpc, 
 			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *vpc.VpcId})
 		}
 	}
-	*c = append(*c, check)
-	wg.Done()
+	queueToAdd <- check
 }
 
 func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []results.Check) {
@@ -245,13 +239,21 @@ func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []r
 	var checks []results.Check
 	vpcs := GetListVPC(s)
 	var wg sync.WaitGroup
+	queueResults := make(chan results.Check, 10)
 
-	go yatas.CheckTest(&wg, c, "AWS_VPC_001", checkCIDR20)(&wg, s, vpcs, "AWS_VPC_001", &checks)
-	go yatas.CheckTest(&wg, c, "AWS_VPC_002", checkIfOnlyOneVPC)(&wg, s, vpcs, "AWS_VPC_002", &checks)
-	go yatas.CheckTest(&wg, c, "AWS_VPC_003", checkIfOnlyOneGateway)(&wg, s, vpcs, "AWS_VPC_003", &checks)
-	go yatas.CheckTest(&wg, c, "AWS_VPC_004", checkIfVPCFLowLogsEnabled)(&wg, s, vpcs, "AWS_VPC_004", &checks)
-	go yatas.CheckTest(&wg, c, "AWS_VPC_005", CheckIfAtLeast2Subnets)(&wg, s, vpcs, "AWS_VPC_005", &checks)
-	go yatas.CheckTest(&wg, c, "AWS_VPC_006", CheckIfSubnetInDifferentZone)(&wg, s, vpcs, "AWS_VPC_006", &checks)
+	go yatas.CheckTest(&wg, c, "AWS_VPC_001", checkCIDR20)(&wg, s, vpcs, "AWS_VPC_001", queueResults)
+	go yatas.CheckTest(&wg, c, "AWS_VPC_002", checkIfOnlyOneVPC)(&wg, s, vpcs, "AWS_VPC_002", queueResults)
+	go yatas.CheckTest(&wg, c, "AWS_VPC_003", checkIfOnlyOneGateway)(&wg, s, vpcs, "AWS_VPC_003", queueResults)
+	go yatas.CheckTest(&wg, c, "AWS_VPC_004", checkIfVPCFLowLogsEnabled)(&wg, s, vpcs, "AWS_VPC_004", queueResults)
+	go yatas.CheckTest(&wg, c, "AWS_VPC_005", CheckIfAtLeast2Subnets)(&wg, s, vpcs, "AWS_VPC_005", queueResults)
+	go yatas.CheckTest(&wg, c, "AWS_VPC_006", CheckIfSubnetInDifferentZone)(&wg, s, vpcs, "AWS_VPC_006", queueResults)
+	go func() {
+		for t := range queueResults {
+			checks = append(checks, t)
+			wg.Done()
+		}
+	}()
+
 	wg.Wait()
 
 	queue <- checks

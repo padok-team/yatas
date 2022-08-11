@@ -28,7 +28,7 @@ func GetEC2s(s aws.Config) []types.Instance {
 	return instances
 }
 
-func CheckIfEC2PublicIP(wg *sync.WaitGroup, s aws.Config, instances []types.Instance, testName string, c *[]results.Check) {
+func CheckIfEC2PublicIP(wg *sync.WaitGroup, s aws.Config, instances []types.Instance, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "EC2 Public IP"
@@ -47,8 +47,7 @@ func CheckIfEC2PublicIP(wg *sync.WaitGroup, s aws.Config, instances []types.Inst
 			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *instance.InstanceId})
 		}
 	}
-	*c = append(*c, check)
-	wg.Done()
+	queueToAdd <- check
 }
 
 func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []results.Check) {
@@ -56,8 +55,16 @@ func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []r
 	var checks []results.Check
 	instances := GetEC2s(s)
 	var wg sync.WaitGroup
+	queueResults := make(chan results.Check, 10)
+	go yatas.CheckTest(&wg, c, "AWS_EC2_001", CheckIfEC2PublicIP)(&wg, s, instances, "AWS_EC2_001", queueResults)
 
-	go yatas.CheckTest(&wg, c, "AWS_EC2_001", CheckIfEC2PublicIP)(&wg, s, instances, "AWS_EC2_001", &checks)
+	go func() {
+		for t := range queueResults {
+			checks = append(checks, t)
+			wg.Done()
+		}
+	}()
+
 	wg.Wait()
 
 	queue <- checks

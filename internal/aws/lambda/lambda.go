@@ -25,7 +25,7 @@ func GetLambdas(s aws.Config) []types.FunctionConfiguration {
 	return result.Functions
 }
 
-func CheckIfLambdaPrivate(wg *sync.WaitGroup, s aws.Config, lambdas []types.FunctionConfiguration, testName string, c *[]results.Check) {
+func CheckIfLambdaPrivate(wg *sync.WaitGroup, s aws.Config, lambdas []types.FunctionConfiguration, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "Lambda Private"
@@ -44,11 +44,10 @@ func CheckIfLambdaPrivate(wg *sync.WaitGroup, s aws.Config, lambdas []types.Func
 			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *lambda.FunctionArn})
 		}
 	}
-	*c = append(*c, check)
-	wg.Done()
+	queueToAdd <- check
 }
 
-func CheckIfLambdaInSecurityGroup(wg *sync.WaitGroup, s aws.Config, lambdas []types.FunctionConfiguration, testName string, c *[]results.Check) {
+func CheckIfLambdaInSecurityGroup(wg *sync.WaitGroup, s aws.Config, lambdas []types.FunctionConfiguration, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "Lambda In Security Group"
@@ -67,8 +66,7 @@ func CheckIfLambdaInSecurityGroup(wg *sync.WaitGroup, s aws.Config, lambdas []ty
 			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *lambda.FunctionArn})
 		}
 	}
-	*c = append(*c, check)
-	wg.Done()
+	queueToAdd <- check
 }
 
 func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []results.Check) {
@@ -76,9 +74,17 @@ func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []r
 	var checks []results.Check
 	lambdas := GetLambdas(s)
 	var wg sync.WaitGroup
+	queueResults := make(chan results.Check, 10)
 
-	go yatas.CheckTest(&wg, c, "AWS_LMD_001", CheckIfLambdaPrivate)(&wg, s, lambdas, "AWS_LMD_001", &checks)
-	go yatas.CheckTest(&wg, c, "AWS_LMD_002", CheckIfLambdaInSecurityGroup)(&wg, s, lambdas, "AWS_LMD_002", &checks)
+	go yatas.CheckTest(&wg, c, "AWS_LMD_001", CheckIfLambdaPrivate)(&wg, s, lambdas, "AWS_LMD_001", queueResults)
+	go yatas.CheckTest(&wg, c, "AWS_LMD_002", CheckIfLambdaInSecurityGroup)(&wg, s, lambdas, "AWS_LMD_002", queueResults)
+	go func() {
+		for t := range queueResults {
+			checks = append(checks, t)
+			wg.Done()
+		}
+	}()
+
 	wg.Wait()
 
 	queue <- checks

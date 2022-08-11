@@ -24,7 +24,7 @@ func GetAllUsers(s aws.Config) []types.User {
 	return result.Users
 }
 
-func CheckIf2FAActivated(wg *sync.WaitGroup, s aws.Config, users []types.User, testName string, c *[]results.Check) {
+func CheckIf2FAActivated(wg *sync.WaitGroup, s aws.Config, users []types.User, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "IAM 2FA"
@@ -52,11 +52,10 @@ func CheckIf2FAActivated(wg *sync.WaitGroup, s aws.Config, users []types.User, t
 			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *user.UserName})
 		}
 	}
-	*c = append(*c, check)
-	wg.Done()
+	queueToAdd <- check
 }
 
-func CheckAgeAccessKeyLessThan90Days(wg *sync.WaitGroup, s aws.Config, users []types.User, testName string, c *[]results.Check) {
+func CheckAgeAccessKeyLessThan90Days(wg *sync.WaitGroup, s aws.Config, users []types.User, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "IAM Access Key Age"
@@ -87,8 +86,7 @@ func CheckAgeAccessKeyLessThan90Days(wg *sync.WaitGroup, s aws.Config, users []t
 			}
 		}
 	}
-	*c = append(*c, check)
-	wg.Done()
+	queueToAdd <- check
 }
 
 type UserPolicies struct {
@@ -96,7 +94,7 @@ type UserPolicies struct {
 	Policies []Policy
 }
 
-func CheckIfUserCanElevateRights(wg *sync.WaitGroup, s aws.Config, users []types.User, testName string, c *[]results.Check) {
+func CheckIfUserCanElevateRights(wg *sync.WaitGroup, s aws.Config, users []types.User, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "IAM User Can Elevate Rights"
@@ -137,8 +135,7 @@ func CheckIfUserCanElevateRights(wg *sync.WaitGroup, s aws.Config, users []types
 			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: userPol.UserName})
 		}
 	}
-	*c = append(*c, check)
-	wg.Done()
+	queueToAdd <- check
 }
 
 func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []results.Check) {
@@ -146,10 +143,18 @@ func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []r
 	var checks []results.Check
 	users := GetAllUsers(s)
 	var wg sync.WaitGroup
+	queueResults := make(chan results.Check, 10)
 
-	go yatas.CheckTest(&wg, c, "AWS_IAM_001", CheckIf2FAActivated)(&wg, s, users, "AWS_IAM_001", &checks)
-	go yatas.CheckTest(&wg, c, "AWS_IAM_002", CheckAgeAccessKeyLessThan90Days)(&wg, s, users, "AWS_IAM_002", &checks)
-	go yatas.CheckTest(&wg, c, "AWS_IAM_003", CheckIfUserCanElevateRights)(&wg, s, users, "AWS_IAM_003", &checks)
+	go yatas.CheckTest(&wg, c, "AWS_IAM_001", CheckIf2FAActivated)(&wg, s, users, "AWS_IAM_001", queueResults)
+	go yatas.CheckTest(&wg, c, "AWS_IAM_002", CheckAgeAccessKeyLessThan90Days)(&wg, s, users, "AWS_IAM_002", queueResults)
+	go yatas.CheckTest(&wg, c, "AWS_IAM_003", CheckIfUserCanElevateRights)(&wg, s, users, "AWS_IAM_003", queueResults)
+	go func() {
+		for t := range queueResults {
+			checks = append(checks, t)
+			wg.Done()
+		}
+	}()
+
 	wg.Wait()
 
 	queue <- checks

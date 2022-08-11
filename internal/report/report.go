@@ -90,6 +90,7 @@ func PrettyPrintChecks(checks []results.Check, c *yatas.Config) {
 		}
 
 	}
+	fmt.Printf("Ran %d checks\n", len(checks))
 }
 
 func ComparePreviousWithNew(previous []results.Check, new []results.Check) []results.Check {
@@ -117,7 +118,7 @@ func ReadPreviousResults() []results.Check {
 		return []results.Check{}
 	}
 	var checks []results.Check
-	err = yaml.Unmarshal(d, &checks)
+	err = yaml.Unmarshal(d, checks)
 	if err != nil {
 		panic(err)
 	}
