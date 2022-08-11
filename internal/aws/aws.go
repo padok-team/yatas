@@ -23,18 +23,18 @@ import (
 	"github.com/stangirard/yatas/internal/yatas"
 )
 
-func Run(c *yatas.Config) ([]results.Check, error) {
+func Run(c *yatas.Config) ([]results.Tests, error) {
 	logger.Info("Launching AWS checks")
 	var wg sync.WaitGroup
-	var queue = make(chan []results.Check, 10)
-	var checks []results.Check
+	var queue = make(chan results.Tests, 10)
+	var checks []results.Tests
 	wg.Add(len(c.AWS))
 	for _, account := range c.AWS {
 		go RunTestsForAccount(account, c, queue)
 	}
 	go func() {
 		for t := range queue {
-			checks = append(checks, t...)
+			checks = append(checks, t)
 			wg.Done()
 		}
 	}()
@@ -43,15 +43,16 @@ func Run(c *yatas.Config) ([]results.Check, error) {
 	return checks, nil
 }
 
-func RunTestsForAccount(account yatas.AWS_Account, c *yatas.Config, queue chan []results.Check) {
+func RunTestsForAccount(account yatas.AWS_Account, c *yatas.Config, queue chan results.Tests) {
 	s := initAuth(account)
 	checks := initTest(s, c, account)
 	queue <- checks
 }
 
-func initTest(s aws.Config, c *yatas.Config, a yatas.AWS_Account) []results.Check {
+func initTest(s aws.Config, c *yatas.Config, a yatas.AWS_Account) results.Tests {
 
-	var checks []results.Check
+	var checks results.Tests
+	checks.Account = a.Name
 	var wg sync.WaitGroup
 	queue := make(chan []results.Check)
 	go yatas.CheckMacroTest(&wg, c, s3.RunChecks)(&wg, s, c, queue)
@@ -71,7 +72,8 @@ func initTest(s aws.Config, c *yatas.Config, a yatas.AWS_Account) []results.Chec
 
 	go func() {
 		for t := range queue {
-			checks = append(checks, t...)
+
+			checks.Checks = append(checks.Checks, t...)
 			wg.Done()
 			if c.Progress != nil {
 				c.Progress.Add(1)

@@ -20,8 +20,7 @@ ignore:
 
 
 aws:
-  enabled: true
-  account:
+  - name: "TODO"
     profile: ""
     sso: false
     region: "eu-west-3"

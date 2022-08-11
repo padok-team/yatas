@@ -30,6 +30,8 @@ yatas ## --details
 Flags:
 - `--details`: Show details of the issues found.
 - `--compare`: Compare the results of the previous run with the current run and show the differences.
+- `--ci`: Exit code 1 if there are issues found, 0 otherwise.
+- `--resume`: Only shows the number of tests passing and failing.
 
 ## Plugins
 

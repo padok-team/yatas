@@ -36,8 +36,14 @@ func Execute() error {
 	}
 	// Sort checks by ID
 	sort.Slice(checks, func(i, j int) bool {
-		return checks[i].Id < checks[j].Id
+		return checks[i].Account < checks[j].Account
 	})
+	for _, check := range checks {
+		sort.Slice(check.Checks, func(i, j int) bool {
+			return check.Checks[i].Id < check.Checks[j].Id
+		})
+	}
+
 	if *compare {
 		previous := report.ReadPreviousResults()
 		if err != nil {
