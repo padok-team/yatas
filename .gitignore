@@ -29,3 +29,4 @@ coverage.txt
 package-lock.json
 node_modules/*
 results.yaml
+.vscode/*

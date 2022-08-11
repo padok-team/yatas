@@ -3,5 +3,7 @@
   "extends": [
     "config:base",
     ":automergePatch"
-  ]
+  ],
+  "platformAutomerge": true,
+  "automergeType": "branch"
 }
