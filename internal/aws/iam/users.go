@@ -72,7 +72,6 @@ func JsonDecodePolicyDocument(policyDocumentJson *string) Policy {
 }
 
 func GetAllPolicyForUser(wg *sync.WaitGroup, queueCheck chan UserPolicies, s aws.Config, user types.User) {
-	wg.Add(1)
 	var policyList []Policy
 	var wgpolicy sync.WaitGroup
 	queue := make(chan *string, 100)

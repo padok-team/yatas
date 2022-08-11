@@ -103,7 +103,7 @@ func CheckIfUserCanElevateRights(wg *sync.WaitGroup, s aws.Config, users []types
 	check.Status = "OK"
 	var wgPolicyForUser sync.WaitGroup
 	queue := make(chan UserPolicies, len(users))
-
+	wgPolicyForUser.Add(len(users))
 	for _, user := range users {
 		go GetAllPolicyForUser(&wgPolicyForUser, queue, s, user)
 	}
