@@ -15,7 +15,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/elasticloadbalancingv2 v1.18.11
 	github.com/aws/aws-sdk-go-v2/service/iam v1.18.12
 	github.com/aws/aws-sdk-go-v2/service/lambda v1.23.7
-	github.com/aws/aws-sdk-go-v2/service/rds v1.23.3
+	github.com/aws/aws-sdk-go-v2/service/rds v1.23.4
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.27.3
 	github.com/fatih/color v1.13.0
 	github.com/hashicorp/go-hclog v1.2.2
