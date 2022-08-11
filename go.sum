@@ -53,6 +53,8 @@ github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.13.10 h1:UgSWeKA4gfXcw
 github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.13.10/go.mod h1:YcAvf5JyP5nVPgUVc4+f7FXMjsFVcTUwaY3ROZiRgP0=
 github.com/aws/aws-sdk-go-v2/service/lambda v1.23.6 h1:SMjnZMwG0JwsCm7U2FIoU4aPn6Tq6xaHFTu0EU6Lfwg=
 github.com/aws/aws-sdk-go-v2/service/lambda v1.23.6/go.mod h1:iva1fAsnjNgyNXUA3DvAkrGpVy38rHszKNJT/BfvGug=
+github.com/aws/aws-sdk-go-v2/service/lambda v1.23.7 h1:/ryelAsZBbLaRPDwdJ06gKn1VgWIERD1svDvBEIpEpM=
+github.com/aws/aws-sdk-go-v2/service/lambda v1.23.7/go.mod h1:1cVboP+9+noFiBxmwGlFO/ZTqzSBb1S+gVHh6MJxkgk=
 github.com/aws/aws-sdk-go-v2/service/rds v1.23.3 h1:thxclMb+r5yp/YmViCnjxjLiUHBrI3UF0bCVJqlJuxE=
 github.com/aws/aws-sdk-go-v2/service/rds v1.23.3/go.mod h1:ODtIY/gL9yCAM8Glk99ta6JzHLydcnJ7wb+/Y4PGiug=
 github.com/aws/aws-sdk-go-v2/service/s3 v1.27.3 h1:dvaSSQV1KQ65D3kEcaqhlocMk37KEjRhPK+yGMnnWbM=
