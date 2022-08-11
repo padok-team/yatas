@@ -53,7 +53,7 @@ func initTest(s aws.Config, c *yatas.Config) []results.Check {
 	go func() {
 		for t := range queue {
 			checks = append(checks, t...)
-			wg.Done() // ** move the `Done()` call here
+			wg.Done()
 			if c.Progress != nil {
 				c.Progress.Add(1)
 			}

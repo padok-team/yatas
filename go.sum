@@ -35,8 +35,6 @@ github.com/aws/aws-sdk-go-v2/service/ecr v1.17.11 h1:ZoJ2XNmOSudzJ0lg8sRWIXDMk8d
 github.com/aws/aws-sdk-go-v2/service/ecr v1.17.11/go.mod h1:enlxgLCns6xEWBKuIzs2/6F8WbKjK9dp1k6x7Wd3YP8=
 github.com/aws/aws-sdk-go-v2/service/elasticloadbalancingv2 v1.18.11 h1:bi/vsCHD4VN5eCvvb10dTmf6kZ8g31EPRQyl4TQ4h2A=
 github.com/aws/aws-sdk-go-v2/service/elasticloadbalancingv2 v1.18.11/go.mod h1:p9XQf4gKSDe8KA+YtT/gvfa41mplICDymbVVojoBt/k=
-github.com/aws/aws-sdk-go-v2/service/iam v1.18.11 h1:pJOidS2KyJ7RZh5hJ3zH+sbmRIGlc+Vs922VZkueN/M=
-github.com/aws/aws-sdk-go-v2/service/iam v1.18.11/go.mod h1:UTKtpWCLraAoP/uvyIdsU0eZ7LrRciGDnwEdsQY+SYc=
 github.com/aws/aws-sdk-go-v2/service/iam v1.18.12 h1:CnafHX5PHNu3V9BZi48TIq1nBOnQvceo5aH5yd+3XWk=
 github.com/aws/aws-sdk-go-v2/service/iam v1.18.12/go.mod h1:5ZJ/UcR/GULdbjEy2MRUjvPAWF0zCykLql9HI4E/8ew=
 github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.9.3/go.mod h1:gkb2qADY+OHaGLKNTYxMaQNacfeyQpZ4csDTQMeFmcw=
@@ -51,12 +49,8 @@ github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.9.11 h1:GkYtp4gi4
 github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.9.11/go.mod h1:OEofCUKF7Hri4ShOCokF6k6hGq9PCB2sywt/9rLSXjY=
 github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.13.10 h1:UgSWeKA4gfXcwGCU4RJoCNrn75ncR11IMrMI9Y5XubY=
 github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.13.10/go.mod h1:YcAvf5JyP5nVPgUVc4+f7FXMjsFVcTUwaY3ROZiRgP0=
-github.com/aws/aws-sdk-go-v2/service/lambda v1.23.6 h1:SMjnZMwG0JwsCm7U2FIoU4aPn6Tq6xaHFTu0EU6Lfwg=
-github.com/aws/aws-sdk-go-v2/service/lambda v1.23.6/go.mod h1:iva1fAsnjNgyNXUA3DvAkrGpVy38rHszKNJT/BfvGug=
 github.com/aws/aws-sdk-go-v2/service/lambda v1.23.7 h1:/ryelAsZBbLaRPDwdJ06gKn1VgWIERD1svDvBEIpEpM=
 github.com/aws/aws-sdk-go-v2/service/lambda v1.23.7/go.mod h1:1cVboP+9+noFiBxmwGlFO/ZTqzSBb1S+gVHh6MJxkgk=
-github.com/aws/aws-sdk-go-v2/service/rds v1.23.3 h1:thxclMb+r5yp/YmViCnjxjLiUHBrI3UF0bCVJqlJuxE=
-github.com/aws/aws-sdk-go-v2/service/rds v1.23.3/go.mod h1:ODtIY/gL9yCAM8Glk99ta6JzHLydcnJ7wb+/Y4PGiug=
 github.com/aws/aws-sdk-go-v2/service/rds v1.23.4 h1:Ro/Y1s1F7GazS9HN7C2KOG7JxIIggWe5CujJjeEcYrg=
 github.com/aws/aws-sdk-go-v2/service/rds v1.23.4/go.mod h1:sLgZkBFmQMjhoMmvSKefk1BaV9ezy1rIvguu+mBSx0w=
 github.com/aws/aws-sdk-go-v2/service/s3 v1.27.3 h1:dvaSSQV1KQ65D3kEcaqhlocMk37KEjRhPK+yGMnnWbM=

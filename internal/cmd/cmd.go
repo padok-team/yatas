@@ -2,7 +2,7 @@ package cmd
 
 import (
 	"flag"
-	"fmt"
+	"os"
 	"sort"
 
 	"github.com/schollz/progressbar/v3"
@@ -14,6 +14,7 @@ import (
 var (
 	compare  = flag.Bool("compare", false, "compare with previous report")
 	progress = flag.Bool("progress", true, "show progress bar")
+	ci       = flag.Bool("ci", false, "run in CI with exit code")
 )
 
 func Execute() error {
@@ -39,7 +40,6 @@ func Execute() error {
 	sort.Slice(checks, func(i, j int) bool {
 		return checks[i].Id < checks[j].Id
 	})
-	fmt.Println()
 	if *compare {
 		previous := report.ReadPreviousResults()
 		if err != nil {
@@ -52,6 +52,9 @@ func Execute() error {
 		report.PrettyPrintChecks(checks, &config)
 		report.WriteChecksToFile(checks, &config)
 
+	}
+	if *ci {
+		os.Exit(report.ExitCode(checks))
 	}
 
 	return nil

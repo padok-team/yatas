@@ -90,7 +90,6 @@ func PrettyPrintChecks(checks []results.Check, c *yatas.Config) {
 		}
 
 	}
-	fmt.Printf("Ran %d checks\n", len(checks))
 }
 
 func ComparePreviousWithNew(previous []results.Check, new []results.Check) []results.Check {
@@ -143,4 +142,14 @@ func WriteChecksToFile(checks []results.Check, c *yatas.Config) {
 		panic(err)
 	}
 
+}
+
+func ExitCode(checks []results.Check) int {
+	var exitCode int
+	for _, check := range checks {
+		if check.Status == "FAIL" {
+			exitCode = 1
+		}
+	}
+	return exitCode
 }
