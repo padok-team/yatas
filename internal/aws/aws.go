@@ -24,13 +24,32 @@ import (
 )
 
 func Run(c *yatas.Config) ([]results.Check, error) {
-	s := initAuth(c)
 	logger.Info("Launching AWS checks")
-	checks := initTest(s, c)
+	var wg sync.WaitGroup
+	var queue = make(chan []results.Check, 10)
+	var checks []results.Check
+	wg.Add(len(c.AWS))
+	for _, account := range c.AWS {
+		go RunTestsForAccount(account, c, queue)
+	}
+	go func() {
+		for t := range queue {
+			checks = append(checks, t...)
+			wg.Done()
+		}
+	}()
+	wg.Wait()
+
 	return checks, nil
 }
 
-func initTest(s aws.Config, c *yatas.Config) []results.Check {
+func RunTestsForAccount(account yatas.AWS_Account, c *yatas.Config, queue chan []results.Check) {
+	s := initAuth(account)
+	checks := initTest(s, c, account)
+	queue <- checks
+}
+
+func initTest(s aws.Config, c *yatas.Config, a yatas.AWS_Account) []results.Check {
 
 	var checks []results.Check
 	var wg sync.WaitGroup

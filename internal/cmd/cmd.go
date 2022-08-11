@@ -12,20 +12,18 @@ import (
 )
 
 var (
-	compare  = flag.Bool("compare", false, "compare with previous report")
-	progress = flag.Bool("progress", true, "show progress bar")
-	ci       = flag.Bool("ci", false, "run in CI with exit code")
+	compare      = flag.Bool("compare", false, "compare with previous report")
+	progressflag = flag.Bool("progress", false, "show progress bar")
+	ci           = flag.Bool("ci", false, "run in CI with exit code")
 )
 
 func Execute() error {
-
 	config, err := yatas.ParseConfig(".yatas.yml")
 	if err != nil {
 		return err
 	}
-
-	if *progress {
-		config.Progress = progressbar.Default(14)
+	if !*progressflag {
+		config.Progress = progressbar.Default(14 * int64(len(config.AWS)))
 	}
 	checks, err := plugins.Execute(&config)
 	if err != nil {
@@ -33,7 +31,7 @@ func Execute() error {
 	}
 	checks = report.RemoveIgnored(&config, checks)
 
-	if *progress {
+	if !*progressflag {
 		config.Progress.Finish()
 	}
 	// Sort checks by ID

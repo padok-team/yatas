@@ -2,9 +2,9 @@ package results
 
 type T Check
 type Result struct {
-	Message    string `json:"message"`
-	Status     string `json:"status"`
-	ResourceID string `json:"resource_arn"`
+	Message    string `yaml:"message"`
+	Status     string `yaml:"status"`
+	ResourceID string `yaml:"resource_arn"`
 }
 
 type Check struct {
@@ -16,6 +16,6 @@ type Check struct {
 }
 
 type Tests struct {
-	Category string  `yaml:"category"`
-	Checks   []Check `yaml:"checks"`
+	Account string  `yaml:"account"`
+	Checks  []Check `yaml:"checks"`
 }

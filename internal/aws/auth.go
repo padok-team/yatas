@@ -10,20 +10,20 @@ import (
 	"github.com/stangirard/yatas/internal/yatas"
 )
 
-func initAuth(config *yatas.Config) aws.Config {
+func initAuth(a yatas.AWS_Account) aws.Config {
 	// Create a new session that the SDK will use to load
 	// credentials from. With either SSO or credentials
-	s := initSession(config)
+	s := initSession(a)
 	return s
 
 }
 
-func createSessionWithCredentials(c *yatas.Config) aws.Config {
+func createSessionWithCredentials(c yatas.AWS_Account) aws.Config {
 	// Create a new session that the SDK will use to load
 	// credentials from credentials
-	if c.AWS.Account.Profile == "" {
+	if c.Profile == "" {
 		s, err := config.LoadDefaultConfig(context.TODO(),
-			config.WithRegion(c.AWS.Account.Region),
+			config.WithRegion(c.Region),
 		)
 		if err != nil {
 			panic(err)
@@ -31,8 +31,8 @@ func createSessionWithCredentials(c *yatas.Config) aws.Config {
 		return s
 	} else {
 		s, err := config.LoadDefaultConfig(context.TODO(),
-			config.WithRegion(c.AWS.Account.Region),
-			config.WithSharedConfigProfile(c.AWS.Account.Profile),
+			config.WithRegion(c.Region),
+			config.WithSharedConfigProfile(c.Profile),
 		)
 		if err != nil {
 			panic(err)
@@ -42,13 +42,13 @@ func createSessionWithCredentials(c *yatas.Config) aws.Config {
 
 }
 
-func createSessionWithSSO(c *yatas.Config) aws.Config {
+func createSessionWithSSO(c yatas.AWS_Account) aws.Config {
 	// Create a new session that the SDK will use to load
 	// credentials from the shared credentials file.
 	// Usefull for SSO
-	if c.AWS.Account.Profile == "" {
+	if c.Profile == "" {
 		s, err := config.LoadDefaultConfig(context.Background(),
-			config.WithRegion(c.AWS.Account.Region),
+			config.WithRegion(c.Region),
 		)
 		if err != nil {
 			panic(err)
@@ -56,8 +56,8 @@ func createSessionWithSSO(c *yatas.Config) aws.Config {
 		return s
 	} else {
 		s, err := config.LoadDefaultConfig(context.Background(),
-			config.WithRegion(c.AWS.Account.Region),
-			config.WithSharedConfigProfile(c.AWS.Account.Profile),
+			config.WithRegion(c.Region),
+			config.WithSharedConfigProfile(c.Profile),
 		)
 		if err != nil {
 			panic(err)
@@ -68,10 +68,10 @@ func createSessionWithSSO(c *yatas.Config) aws.Config {
 
 }
 
-func initSession(c *yatas.Config) aws.Config {
+func initSession(c yatas.AWS_Account) aws.Config {
 	// Create a new session that the SDK will use to load
 	// credentials from. With either SSO or credentials
-	if c.AWS.Account.SSO {
+	if c.SSO {
 		logger.Debug("Using AWS SSO")
 		return createSessionWithSSO(c)
 	} else {

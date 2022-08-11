@@ -117,7 +117,7 @@ func ReadPreviousResults() []results.Check {
 		return []results.Check{}
 	}
 	var checks []results.Check
-	err = yaml.Unmarshal(d, checks)
+	err = yaml.Unmarshal(d, &checks)
 	if err != nil {
 		panic(err)
 	}
@@ -131,7 +131,7 @@ func WriteChecksToFile(checks []results.Check, c *yatas.Config) {
 			checksToWrite = append(checksToWrite, check)
 		}
 	}
-	d, err := yaml.Marshal(checks)
+	d, err := yaml.Marshal(checksToWrite)
 	if err != nil {
 		panic(err)
 	}

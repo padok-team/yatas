@@ -27,17 +27,17 @@ type Ignore struct {
 	Values []string `yaml:"values"`
 }
 
+type AWS_Account struct {
+	Name    string `yaml:"name"`
+	Profile string `yaml:"profile"`
+	SSO     bool   `yaml:"sso"`
+	Region  string `yaml:"region"`
+}
+
 type Config struct {
-	Plugins []Plugin `yaml:"plugins"`
-	AWS     struct {
-		Enabled bool `yaml:"enabled"`
-		Account struct {
-			Profile string `yaml:"profile"`
-			SSO     bool   `yaml:"sso"`
-			Region  string `yaml:"region"`
-		} `yaml:"account"`
-	} `yaml:"aws"`
-	Ignore   []Ignore `yaml:"ignore"`
+	Plugins  []Plugin      `yaml:"plugins"`
+	AWS      []AWS_Account `yaml:"aws"`
+	Ignore   []Ignore      `yaml:"ignore"`
 	Progress *progressbar.ProgressBar
 }
 
