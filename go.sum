@@ -52,6 +52,8 @@ github.com/aws/aws-sdk-go-v2/service/dynamodb v1.15.12 h1:Mf0qu8c0cg3gr/qzGzgYRe
 github.com/aws/aws-sdk-go-v2/service/dynamodb v1.15.12/go.mod h1:1mMDtqiM/FA1NhOzXaU4ja0xPk+k17/hAbGYZrs166c=
 github.com/aws/aws-sdk-go-v2/service/ec2 v1.51.2 h1:i3Dje4PXQtcw/TCAXlUX68eddr2bDKoIa35mck+wtzU=
 github.com/aws/aws-sdk-go-v2/service/ec2 v1.51.2/go.mod h1:3Ma/uJY+DN6/bYXAmwRAeawGcsnYuq0/BDSlQbP0NJc=
+github.com/aws/aws-sdk-go-v2/service/ec2 v1.51.3 h1:UFnPwqHfqwIwejXFAAt1rGUjnAQ4UPdIuDoQQBYYdRg=
+github.com/aws/aws-sdk-go-v2/service/ec2 v1.51.3/go.mod h1:iJfg/TseDFY7bD02WgqIG+eby794WLweu9BK5dOu+vc=
 github.com/aws/aws-sdk-go-v2/service/ecr v1.17.10 h1:TKgiZS7TSHBw0rrDYAi0Lq4s0jC3TBGWi+pdqRhGCsg=
 github.com/aws/aws-sdk-go-v2/service/ecr v1.17.10/go.mod h1:cH4yPassl92UgwFzZH0/gEc9oHzTmJjsO3x22T/gmdA=
 github.com/aws/aws-sdk-go-v2/service/elasticloadbalancingv2 v1.18.10 h1:eu3ZnkY7DLpbH2GjRZvKVyWabke0Hs7Jawx5EIHdU3c=
