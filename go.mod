@@ -10,7 +10,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/cloudfront v1.18.7
 	github.com/aws/aws-sdk-go-v2/service/cloudtrail v1.16.7
 	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.15.12
-	github.com/aws/aws-sdk-go-v2/service/ec2 v1.51.3
+	github.com/aws/aws-sdk-go-v2/service/ec2 v1.52.1
 	github.com/aws/aws-sdk-go-v2/service/ecr v1.17.11
 	github.com/aws/aws-sdk-go-v2/service/elasticloadbalancingv2 v1.18.11
 	github.com/aws/aws-sdk-go-v2/service/iam v1.18.12
@@ -36,7 +36,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/internal/accept-encoding v1.9.4 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/checksum v1.1.12 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/endpoint-discovery v1.7.11 // indirect
-	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.9.11 // indirect
+	github.com/aws/aws-sdk-go-v2/service/internal/presigned-url v1.9.12 // indirect
 	github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.13.11 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sso v1.11.15 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sts v1.16.12 // indirect
