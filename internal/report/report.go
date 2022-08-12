@@ -118,6 +118,7 @@ func PrettyPrintChecks(checks []results.Tests, c *yatas.Config) {
 }
 
 func ComparePreviousWithNew(previous []results.Tests, new []results.Tests) []results.Tests {
+	returnedResults := []results.Tests{}
 	for _, tests := range new {
 
 		var checks []results.Check
@@ -125,21 +126,31 @@ func ComparePreviousWithNew(previous []results.Tests, new []results.Tests) []res
 			found := false
 			for _, previousTests := range previous {
 				for _, previousCheck := range previousTests.Checks {
+					fmt.Println("Previous account ", previousTests.Account, " current account ", tests.Account)
 					if check.Id == previousCheck.Id && tests.Account == previousTests.Account {
 						if check.Status != previousCheck.Status {
 							checks = append(checks, check)
+							fmt.Println("Found check ", check.Id, " with status ", check.Status, " in previous results")
+
+						} else {
+							found = true
 						}
-						found = true
+
 					}
 				}
 			}
 			if !found {
 				checks = append(checks, check)
+
 			}
+
 		}
-		tests.Checks = checks
+		test := tests
+		test.Checks = checks
+		returnedResults = append(returnedResults, test)
+
 	}
-	return new
+	return returnedResults
 }
 
 func ReadPreviousResults() []results.Tests {
