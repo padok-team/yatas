@@ -16,9 +16,13 @@ github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.12.11/go.mod h1:38Asv/UyQbDNpSX
 github.com/aws/aws-sdk-go-v2/internal/configsources v1.1.16/go.mod h1:GV1J/d4oB2fKCEoWRlYBOI6qzfpH8IXQN1d/caQGaMo=
 github.com/aws/aws-sdk-go-v2/internal/configsources v1.1.17 h1:U8DZvyFFesBmK62dYC6BRXm4Cd/wPP3aPcecu3xv/F4=
 github.com/aws/aws-sdk-go-v2/internal/configsources v1.1.17/go.mod h1:6qtGip7sJEyvgsLjphRZWF9qPe3xJf1mL/MM01E35Wc=
+github.com/aws/aws-sdk-go-v2/internal/configsources v1.1.18 h1:OmiwoVyLKEqqD5GvB683dbSqxiOfvx4U2lDZhG2Esc4=
+github.com/aws/aws-sdk-go-v2/internal/configsources v1.1.18/go.mod h1:348MLhzV1GSlZSMusdwQpXKbhD7X2gbI/TxwAPKkYZQ=
 github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.4.10/go.mod h1:pucnblrb8XuRc/ZEi2S+jdQa3JVAfnwhytGgawh5pR4=
 github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.4.11 h1:GMp98usVW5tzQhxd26KWhoNQPlR2noIlfbzqjVGBhLU=
 github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.4.11/go.mod h1:cYAfnB+9ZkmZWpQWmPDsuIGm4EA+6k2ZVtxKjw/XJBY=
+github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.4.12 h1:5mvQDtNWtI6H56+E4LUnLWEmATMB7oEh+Z9RurtIuC0=
+github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.4.12/go.mod h1:ckaCVTEdGAxO6KwTGzgskxR1xM+iJW4lxMyDFVda2Fc=
 github.com/aws/aws-sdk-go-v2/internal/ini v1.3.18 h1:/spg6h3tG4pefphbvhpgdMtFMegSajPPSEJd1t8lnpc=
 github.com/aws/aws-sdk-go-v2/internal/ini v1.3.18/go.mod h1:hTHq8hL4bAxJyng364s9d4IUGXZOs7Y5LSqAhIiIQ2A=
 github.com/aws/aws-sdk-go-v2/internal/v4a v1.0.7 h1:7tflWT2FdbkcoKZOZRRILuB0LKVOKzULVAfv7CzBbDE=
@@ -29,6 +33,8 @@ github.com/aws/aws-sdk-go-v2/service/apigateway v1.15.13 h1:7GZHoECUeFluWBU3IutA
 github.com/aws/aws-sdk-go-v2/service/apigateway v1.15.13/go.mod h1:0JeVZy4EsnEl7RR2k5Ku9GZ+0d3GXI8bzGywhkDK4Sg=
 github.com/aws/aws-sdk-go-v2/service/autoscaling v1.23.9 h1:ZC4YTA2VeIR8xUfkhzTlVuYyTRwqjmRL7yZ54khSBUw=
 github.com/aws/aws-sdk-go-v2/service/autoscaling v1.23.9/go.mod h1:vQ7OimlJtkrqAv7cVE++x573Bi9jFel+9PmtXKZnPrk=
+github.com/aws/aws-sdk-go-v2/service/autoscaling v1.23.10 h1:D6U34TKBxZ2rtP9QO0gqMmy0yU2zfXzkgmFcwr64Fv0=
+github.com/aws/aws-sdk-go-v2/service/autoscaling v1.23.10/go.mod h1:9XhGxXdcX9/pZwXc3BzvVQtSBVJCwL2IH2AtrfsUGBY=
 github.com/aws/aws-sdk-go-v2/service/cloudfront v1.18.7 h1:O7tI4l1bSSg8zqRTCzEuN/0iC2kdOTXhSzSki6/nCIk=
 github.com/aws/aws-sdk-go-v2/service/cloudfront v1.18.7/go.mod h1:1SPwTaoiJEorxZyJzAZrC31e0z8TLlTydQ0UcZ9Mjpc=
 github.com/aws/aws-sdk-go-v2/service/cloudtrail v1.16.7 h1:NsrUZLD6ouzspKEwkQoXCKCKqcNLNzK4CA77CZDQS0U=
