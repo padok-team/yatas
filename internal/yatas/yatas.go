@@ -53,7 +53,7 @@ func (c *Config) CheckExclude(id string) bool {
 }
 
 func (c *Config) CheckInclude(id string) bool {
-	//Split Id at _ and get first value
+	// Split Id at _ and get first value
 	idSplit := strings.Split(id, "_")[0]
 
 	for _, plugins := range c.Plugins {

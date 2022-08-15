@@ -54,7 +54,7 @@ func (policyJSON *Policy) UnmarshalJSON(policy []byte) error {
 					statementMap.Parse(statement)
 					statementList = append(statementList, statementMap)
 				}
-				//Assign statements slice to Policy
+				// Assign statements slice to Policy
 				policyJSON.Statements = statementList
 			}
 		}
@@ -78,7 +78,7 @@ func (statementJSON *Statement) Parse(statement map[string]interface{}) {
 			// Type assertion to assign
 			statementJSON.StatementID = statementValue.(string)
 		case "Effect":
-			//Type assertion to assign
+			// Type assertion to assign
 			statementJSON.Effect = statementValue.(string)
 		case "Principal":
 			// principal(statementValue) can be map[string][]string/string -> needs processing
