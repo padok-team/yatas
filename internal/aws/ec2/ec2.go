@@ -31,20 +31,16 @@ func GetEC2s(s aws.Config) []types.Instance {
 func CheckIfEC2PublicIP(wg *sync.WaitGroup, s aws.Config, instances []types.Instance, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.Name = "EC2 Public IP"
-	check.Id = testName
-	check.Description = "Check if all instances have a public IP"
-	check.Status = "OK"
+	check.InitCheck("EC2 Public IP", "Check if all instances have a public IP", testName)
 	for _, instance := range instances {
 		if instance.PublicIpAddress != nil {
-			check.Status = "FAIL"
-			status := "FAIL"
 			Message := "EC2 instance " + *instance.InstanceId + " has a public IP" + *instance.PublicIpAddress
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *instance.InstanceId})
+			result := results.Result{Status: "FAIL", Message: Message, ResourceID: *instance.InstanceId}
+			check.AddResult(result)
 		} else {
-			status := "OK"
 			Message := "EC2 instance " + *instance.InstanceId + " has no public IP "
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *instance.InstanceId})
+			result := results.Result{Status: "OK", Message: Message, ResourceID: *instance.InstanceId}
+			check.AddResult(result)
 		}
 	}
 	queueToAdd <- check

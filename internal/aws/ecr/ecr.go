@@ -28,20 +28,16 @@ func GetECRs(s aws.Config) []types.Repository {
 func CheckIfImageScanningEnabled(wg *sync.WaitGroup, s aws.Config, ecr []types.Repository, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.Name = "Image Scanning Enabled"
-	check.Id = testName
-	check.Description = "Check if all ECRs have image scanning enabled"
-	check.Status = "OK"
+	check.InitCheck("Image Scanning Enabled", "Check if all ECRs have image scanning enabled", testName)
 	for _, ecr := range ecr {
 		if !ecr.ImageScanningConfiguration.ScanOnPush {
-			check.Status = "FAIL"
-			status := "FAIL"
 			Message := "ECR " + *ecr.RepositoryName + " has image scanning disabled"
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *ecr.RepositoryArn})
+			result := results.Result{Status: "FAIL", Message: Message, ResourceID: *ecr.RepositoryName}
+			check.AddResult(result)
 		} else {
-			status := "OK"
 			Message := "ECR " + *ecr.RepositoryName + " has image scanning enabled"
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *ecr.RepositoryArn})
+			result := results.Result{Status: "OK", Message: Message, ResourceID: *ecr.RepositoryName}
+			check.AddResult(result)
 		}
 	}
 	queueToAdd <- check

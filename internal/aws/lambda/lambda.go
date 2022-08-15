@@ -28,20 +28,16 @@ func GetLambdas(s aws.Config) []types.FunctionConfiguration {
 func CheckIfLambdaPrivate(wg *sync.WaitGroup, s aws.Config, lambdas []types.FunctionConfiguration, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.Name = "Lambda Private"
-	check.Id = testName
-	check.Description = "Check if all Lambdas are private"
-	check.Status = "OK"
+	check.InitCheck("Lambda Private", "Check if all Lambdas are private", testName)
 	for _, lambda := range lambdas {
 		if lambda.VpcConfig == nil {
-			check.Status = "FAIL"
-			status := "FAIL"
 			Message := "Lambda " + *lambda.FunctionName + " is public"
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *lambda.FunctionArn})
+			result := results.Result{Status: "FAIL", Message: Message, ResourceID: *lambda.FunctionArn}
+			check.AddResult(result)
 		} else {
-			status := "OK"
 			Message := "Lambda " + *lambda.FunctionName + " is private"
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *lambda.FunctionArn})
+			result := results.Result{Status: "OK", Message: Message, ResourceID: *lambda.FunctionArn}
+			check.AddResult(result)
 		}
 	}
 	queueToAdd <- check
@@ -50,20 +46,16 @@ func CheckIfLambdaPrivate(wg *sync.WaitGroup, s aws.Config, lambdas []types.Func
 func CheckIfLambdaInSecurityGroup(wg *sync.WaitGroup, s aws.Config, lambdas []types.FunctionConfiguration, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.Name = "Lambda In Security Group"
-	check.Id = testName
-	check.Description = "Check if all Lambdas are in a security group"
-	check.Status = "OK"
+	check.InitCheck("Lambda In Security Group", "Check if all Lambdas are in a security group", testName)
 	for _, lambda := range lambdas {
 		if lambda.VpcConfig == nil || lambda.VpcConfig.SecurityGroupIds == nil {
-			check.Status = "FAIL"
-			status := "FAIL"
 			Message := "Lambda " + *lambda.FunctionName + " is not in a security group"
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *lambda.FunctionArn})
+			result := results.Result{Status: "FAIL", Message: Message, ResourceID: *lambda.FunctionArn}
+			check.AddResult(result)
 		} else {
-			status := "OK"
 			Message := "Lambda " + *lambda.FunctionName + " is in a security group"
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *lambda.FunctionArn})
+			result := results.Result{Status: "OK", Message: Message, ResourceID: *lambda.FunctionArn}
+			check.AddResult(result)
 		}
 	}
 	queueToAdd <- check

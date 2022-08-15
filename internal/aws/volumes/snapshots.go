@@ -37,18 +37,17 @@ func CheckIfAllVolumesHaveSnapshots(wg *sync.WaitGroup, s aws.Config, volumes []
 		ok := false
 		for _, snapshot := range snapshots {
 			if *snapshot.VolumeId == *volume.VolumeId {
-				status := "OK"
 				Message := "Volume " + *volume.VolumeId + " has snapshot " + *snapshot.SnapshotId
-				check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *snapshot.SnapshotId})
+				result := results.Result{Status: "OK", Message: Message, ResourceID: *volume.VolumeId}
+				check.AddResult(result)
 				ok = true
 				break
 			}
 		}
 		if !ok {
-			check.Status = "FAIL"
-			status := "FAIL"
 			Message := "Volume " + *volume.VolumeId + " has no snapshot"
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *volume.VolumeId})
+			result := results.Result{Status: "FAIL", Message: Message, ResourceID: *volume.VolumeId}
+			check.AddResult(result)
 		}
 	}
 	queueToAdd <- check
@@ -57,20 +56,16 @@ func CheckIfAllVolumesHaveSnapshots(wg *sync.WaitGroup, s aws.Config, volumes []
 func CheckIfAllSnapshotsEncrypted(wg *sync.WaitGroup, s aws.Config, snapshots []types.Snapshot, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.Name = "EC2 Snapshots Encryption"
-	check.Id = testName
-	check.Description = "Check if all snapshots are encrypted"
-	check.Status = "OK"
+	check.InitCheck("EC2 Snapshots Encryption", "Check if all snapshots are encrypted", testName)
 	for _, snapshot := range snapshots {
 		if !*snapshot.Encrypted {
-			check.Status = "FAIL"
-			status := "FAIL"
 			Message := "Snapshot " + *snapshot.SnapshotId + " is not encrypted"
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *snapshot.SnapshotId})
+			result := results.Result{Status: "FAIL", Message: Message, ResourceID: *snapshot.SnapshotId}
+			check.AddResult(result)
 		} else {
-			status := "OK"
 			Message := "Snapshot " + *snapshot.SnapshotId + " is encrypted"
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *snapshot.SnapshotId})
+			result := results.Result{Status: "OK", Message: Message, ResourceID: *snapshot.SnapshotId}
+			check.AddResult(result)
 		}
 	}
 	queueToAdd <- check
@@ -79,10 +74,7 @@ func CheckIfAllSnapshotsEncrypted(wg *sync.WaitGroup, s aws.Config, snapshots []
 func CheckIfSnapshotYoungerthan24h(wg *sync.WaitGroup, s aws.Config, vs couple, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.Name = "EC2 Snapshots Age"
-	check.Id = testName
-	check.Description = "Check if all snapshots are younger than 24h"
-	check.Status = "OK"
+	check.InitCheck("EC2 Snapshots Age", "Check if all snapshots are younger than 24h", testName)
 	for _, volume := range vs.volume {
 		snapshotYoungerThan24h := false
 		for _, snapshot := range vs.snapshot {
@@ -95,14 +87,13 @@ func CheckIfSnapshotYoungerthan24h(wg *sync.WaitGroup, s aws.Config, vs couple, 
 			}
 		}
 		if !snapshotYoungerThan24h {
-			check.Status = "FAIL"
-			status := "FAIL"
 			Message := "Volume " + *volume.VolumeId + " has no snapshot younger than 24h"
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *volume.VolumeId})
+			result := results.Result{Status: "FAIL", Message: Message, ResourceID: *volume.VolumeId}
+			check.Results = append(check.Results, result)
 		} else {
-			status := "OK"
 			Message := "Volume " + *volume.VolumeId + " has snapshot younger than 24h"
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *volume.VolumeId})
+			result := results.Result{Status: "OK", Message: Message, ResourceID: *volume.VolumeId}
+			check.AddResult(result)
 		}
 	}
 	queueToAdd <- check

@@ -28,10 +28,7 @@ func GetElasticLoadBalancers(s aws.Config) []types.LoadBalancer {
 func CheckIfAccessLogsEnabled(wg *sync.WaitGroup, s aws.Config, loadBalancers []types.LoadBalancer, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.Name = "ELB Access Logs Enabled"
-	check.Id = testName
-	check.Description = "Check if all load balancers have access logs enabled"
-	check.Status = "OK"
+	check.InitCheck("ELB Access Logs Enabled", "Check if all load balancers have access logs enabled", testName)
 	svc := elasticloadbalancingv2.NewFromConfig(s)
 	// Get Load Balancers attributes
 	for _, loadBalancer := range loadBalancers {
@@ -45,14 +42,13 @@ func CheckIfAccessLogsEnabled(wg *sync.WaitGroup, s aws.Config, loadBalancers []
 		for _, attribute := range result.Attributes {
 			{
 				if *attribute.Key == "access_logs.s3.enabled" && *attribute.Value == "true" {
-					status := "OK"
 					Message := "Access logs are enabled on : " + *loadBalancer.LoadBalancerName
-					check.Results = append(check.Results, results.Result{Status: status, Message: Message})
+					result := results.Result{Status: "OK", Message: Message, ResourceID: *loadBalancer.LoadBalancerArn}
+					check.AddResult(result)
 				} else if *attribute.Key == "access_logs.s3.enabled" && *attribute.Value == "false" {
-					check.Status = "FAIL"
-					status := "FAIL"
 					Message := "Access logs are not enabled on : " + *loadBalancer.LoadBalancerName
-					check.Results = append(check.Results, results.Result{Status: status, Message: Message})
+					result := results.Result{Status: "FAIL", Message: Message, ResourceID: *loadBalancer.LoadBalancerArn}
+					check.AddResult(result)
 				} else {
 					continue
 				}

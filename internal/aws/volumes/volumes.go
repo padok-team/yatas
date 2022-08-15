@@ -26,10 +26,7 @@ func GetVolumes(s aws.Config) []types.Volume {
 func checkIfEncryptionEnabled(wg *sync.WaitGroup, s aws.Config, volumes []types.Volume, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.Name = "EC2 Volumes Encryption"
-	check.Id = testName
-	check.Description = "Check if EC2 encryption is enabled"
-	check.Status = "OK"
+	check.InitCheck("EC2 Volumes Encryption", "Check if EC2 encryption is enabled", testName)
 	svc := ec2.NewFromConfig(s)
 	for _, volume := range volumes {
 		params := &ec2.DescribeVolumesInput{
@@ -40,14 +37,13 @@ func checkIfEncryptionEnabled(wg *sync.WaitGroup, s aws.Config, volumes []types.
 			panic(err)
 		}
 		if *resp.Volumes[0].Encrypted {
-			check.Status = "FAIL"
-			status := "FAIL"
 			Message := "EC2 encryption is not enabled on " + *volume.VolumeId
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message})
+			result := results.Result{Status: "FAIL", Message: Message, ResourceID: *volume.VolumeId}
+			check.AddResult(result)
 		} else {
-			status := "OK"
 			Message := "EC2 encryption is enabled on " + *volume.VolumeId
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message})
+			result := results.Result{Status: "OK", Message: Message, ResourceID: *volume.VolumeId}
+			check.AddResult(result)
 		}
 	}
 	queueToAdd <- check
@@ -56,20 +52,16 @@ func checkIfEncryptionEnabled(wg *sync.WaitGroup, s aws.Config, volumes []types.
 func CheckIfVolumesTypeGP3(wg *sync.WaitGroup, s aws.Config, volumes []types.Volume, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.Name = "EC2 Volumes Type"
-	check.Id = testName
-	check.Description = "Check if all volumes are of type gp3"
-	check.Status = "OK"
+	check.InitCheck("EC2 Volumes Type", "Check if all volumes are of type gp3", testName)
 	for _, volume := range volumes {
 		if volume.VolumeType != "gp3" {
-			check.Status = "FAIL"
-			status := "FAIL"
 			Message := "Volume " + *volume.VolumeId + " is not of type gp3"
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message})
+			result := results.Result{Status: "FAIL", Message: Message, ResourceID: *volume.VolumeId}
+			check.AddResult(result)
 		} else {
-			status := "OK"
 			Message := "Volume " + *volume.VolumeId + " is of type gp3"
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message})
+			result := results.Result{Status: "OK", Message: Message, ResourceID: *volume.VolumeId}
+			check.AddResult(result)
 		}
 	}
 	queueToAdd <- check

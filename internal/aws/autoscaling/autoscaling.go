@@ -26,20 +26,16 @@ func GetAutoscalingGroups(s aws.Config) []types.AutoScalingGroup {
 func CheckIfDesiredCapacityMaxCapacityBelow80percent(wg *sync.WaitGroup, s aws.Config, groups []types.AutoScalingGroup, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.Name = "Autoscaling DesiredCapacity MaxCapacity below 80%"
-	check.Id = testName
-	check.Description = "Check if all autoscaling groups have a desired capacity below 80%"
-	check.Status = "OK"
+	check.InitCheck("Autoscaling Desired Capacity vs Max Capacity below 80%", "Check if all autoscaling groups have a desired capacity below 80%", testName)
 	for _, group := range groups {
 		if group.DesiredCapacity != nil && group.MaxSize != nil && float64(*group.DesiredCapacity) > float64(*group.MaxSize)*0.8 {
-			check.Status = "FAIL"
-			status := "FAIL"
 			Message := "Autoscaling group " + *group.AutoScalingGroupName + " has a desired capacity above 80%"
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *group.AutoScalingGroupName})
+			result := results.Result{Status: "FAIL", Message: Message, ResourceID: *group.AutoScalingGroupName}
+			check.AddResult(result)
 		} else {
-			status := "OK"
 			Message := "Autoscaling group " + *group.AutoScalingGroupName + " has a desired capacity below 80%"
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *group.AutoScalingGroupName})
+			result := results.Result{Status: "OK", Message: Message, ResourceID: *group.AutoScalingGroupName}
+			check.AddResult(result)
 		}
 	}
 	queueToAdd <- check

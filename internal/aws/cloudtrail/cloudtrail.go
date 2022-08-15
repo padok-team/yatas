@@ -29,20 +29,16 @@ func CheckIfCloudtrailsEncrypted(wg *sync.WaitGroup, s aws.Config, cloudtrails [
 	logger.Info(fmt.Sprint("Running ", testName))
 
 	var check results.Check
-	check.Name = "Cloudtrails Encryption"
-	check.Id = testName
-	check.Description = "Check if all cloudtrails are encrypted"
-	check.Status = "OK"
+	check.InitCheck("Cloudtrails Encryption", "check if all cloudtrails are encrypted", testName)
 	for _, cloudtrail := range cloudtrails {
 		if cloudtrail.KmsKeyId == nil || *cloudtrail.KmsKeyId == "" {
-			check.Status = "FAIL"
-			status := "FAIL"
 			Message := "Cloudtrail " + *cloudtrail.Name + " is not encrypted"
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *cloudtrail.TrailARN})
+			result := results.Result{Status: "FAIL", Message: Message, ResourceID: *cloudtrail.TrailARN}
+			check.AddResult(result)
 		} else {
-			status := "OK"
 			Message := "Cloudtrail " + *cloudtrail.Name + " is encrypted"
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *cloudtrail.TrailARN})
+			result := results.Result{Status: "OK", Message: Message, ResourceID: *cloudtrail.TrailARN}
+			check.AddResult(result)
 		}
 	}
 	queueToAdd <- check
@@ -51,20 +47,16 @@ func CheckIfCloudtrailsEncrypted(wg *sync.WaitGroup, s aws.Config, cloudtrails [
 func CheckIfCloudtrailsGlobalServiceEventsEnabled(wg *sync.WaitGroup, s aws.Config, cloudtrails []types.Trail, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.Name = "Cloudtrails Global Service Events Activated"
-	check.Id = testName
-	check.Description = "Check if all cloudtrails have global service events enabled"
-	check.Status = "OK"
+	check.InitCheck("Cloudtrails Global Service Events Activated", "check if all cloudtrails have global service events enabled", testName)
 	for _, cloudtrail := range cloudtrails {
 		if !*cloudtrail.IncludeGlobalServiceEvents {
-			check.Status = "FAIL"
-			status := "FAIL"
 			Message := "Cloudtrail " + *cloudtrail.Name + " has global service events disabled"
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *cloudtrail.TrailARN})
+			result := results.Result{Status: "FAIL", Message: Message, ResourceID: *cloudtrail.TrailARN}
+			check.AddResult(result)
 		} else {
-			status := "OK"
 			Message := "Cloudtrail " + *cloudtrail.Name + " has global service events enabled"
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *cloudtrail.TrailARN})
+			result := results.Result{Status: "OK", Message: Message, ResourceID: *cloudtrail.TrailARN}
+			check.AddResult(result)
 		}
 	}
 	queueToAdd <- check
@@ -73,20 +65,16 @@ func CheckIfCloudtrailsGlobalServiceEventsEnabled(wg *sync.WaitGroup, s aws.Conf
 func CheckIfCloudtrailsMultiRegion(wg *sync.WaitGroup, s aws.Config, cloudtrails []types.Trail, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.Name = "Cloudtrails Multi Region"
-	check.Id = testName
-	check.Description = "Check if all cloudtrails are multi region"
-	check.Status = "OK"
+	check.InitCheck("Cloudtrails Multi Region", "check if all cloudtrails are multi region", testName)
 	for _, cloudtrail := range cloudtrails {
 		if !*cloudtrail.IsMultiRegionTrail {
-			check.Status = "FAIL"
-			status := "FAIL"
 			Message := "Cloudtrail " + *cloudtrail.Name + " is not multi region"
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *cloudtrail.TrailARN})
+			result := results.Result{Status: "FAIL", Message: Message, ResourceID: *cloudtrail.TrailARN}
+			check.AddResult(result)
 		} else {
-			status := "OK"
 			Message := "Cloudtrail " + *cloudtrail.Name + " is multi region"
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *cloudtrail.TrailARN})
+			result := results.Result{Status: "OK", Message: Message, ResourceID: *cloudtrail.TrailARN}
+			check.AddResult(result)
 		}
 	}
 	queueToAdd <- check

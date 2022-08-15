@@ -19,3 +19,17 @@ type Tests struct {
 	Account string  `yaml:"account"`
 	Checks  []Check `yaml:"checks"`
 }
+
+func (c *Check) AddResult(result Result) {
+	if result.Status == "FAIL" {
+		c.Status = "FAIL"
+	}
+	c.Results = append(c.Results, result)
+}
+
+func (c *Check) InitCheck(name, description, id string) {
+	c.Name = name
+	c.Description = description
+	c.Status = "OK"
+	c.Id = id
+}

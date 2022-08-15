@@ -27,20 +27,16 @@ func GetAllCloudfront(s aws.Config) []types.DistributionSummary {
 func CheckIfCloudfrontTLS1_2Minimum(wg *sync.WaitGroup, s aws.Config, d []types.DistributionSummary, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.Name = "TLS 1.2 Minimum"
-	check.Id = testName
-	check.Description = "Check if all cloudfront distributions have TLS 1.2 minimum"
-	check.Status = "OK"
+	check.InitCheck("TLS 1.2 Minimum", "Check if all cloudfront distributions have TLS 1.2 minimum", testName)
 	for _, cloudfront := range d {
 		if cloudfront.ViewerCertificate != nil && strings.Contains(string(cloudfront.ViewerCertificate.MinimumProtocolVersion), "TLSv1.2") {
-			check.Status = "OK"
-			status := "OK"
 			Message := "TLS 1.2 minimum is set on " + *cloudfront.Id
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *cloudfront.Id})
+			result := results.Result{Status: "OK", Message: Message, ResourceID: *cloudfront.Id}
+			check.AddResult(result)
 		} else {
-			status := "FAIL"
 			Message := "TLS 1.2 minimum is not set on " + *cloudfront.Id
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *cloudfront.Id})
+			result := results.Result{Status: "FAIL", Message: Message, ResourceID: *cloudfront.Id}
+			check.AddResult(result)
 		}
 	}
 	queueToAdd <- check
@@ -49,20 +45,16 @@ func CheckIfCloudfrontTLS1_2Minimum(wg *sync.WaitGroup, s aws.Config, d []types.
 func CheckIfHTTPSOnly(wg *sync.WaitGroup, s aws.Config, d []types.DistributionSummary, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.Name = "Cloudfront HTTPS Only"
-	check.Id = testName
-	check.Description = "Check if all cloudfront distributions are HTTPS only"
-	check.Status = "OK"
+	check.InitCheck("Cloudfront HTTPS Only", "Check if all cloudfront distributions are HTTPS only", testName)
 	for _, cloudfront := range d {
 		if cloudfront.DefaultCacheBehavior != nil && cloudfront.DefaultCacheBehavior.ViewerProtocolPolicy == "https-only" || cloudfront.DefaultCacheBehavior.ViewerProtocolPolicy == "redirect-to-https" {
-			check.Status = "OK"
-			status := "OK"
 			Message := "Cloudfront distribution is HTTPS only on " + *cloudfront.Id
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *cloudfront.Id})
+			result := results.Result{Status: "OK", Message: Message, ResourceID: *cloudfront.Id}
+			check.AddResult(result)
 		} else {
-			status := "FAIL"
 			Message := "Cloudfront distribution is not HTTPS only on " + *cloudfront.Id
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *cloudfront.Id})
+			result := results.Result{Status: "FAIL", Message: Message, ResourceID: *cloudfront.Id}
+			check.AddResult(result)
 		}
 	}
 
@@ -72,10 +64,7 @@ func CheckIfHTTPSOnly(wg *sync.WaitGroup, s aws.Config, d []types.DistributionSu
 func CheckIfStandardLogginEnabled(wg *sync.WaitGroup, s aws.Config, d []types.DistributionSummary, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.Name = "Standard Logging Enabled"
-	check.Id = testName
-	check.Description = "Check if all cloudfront distributions have standard logging enabled"
-	check.Status = "OK"
+	check.InitCheck("Standard Logging Enabled", "Check if all cloudfront distributions have standard logging enabled", testName)
 	svc := cloudfront.NewFromConfig(s)
 	for _, cc := range d {
 		input := &cloudfront.GetDistributionConfigInput{
@@ -86,14 +75,13 @@ func CheckIfStandardLogginEnabled(wg *sync.WaitGroup, s aws.Config, d []types.Di
 			panic(err)
 		}
 		if result.DistributionConfig.Logging != nil && *result.DistributionConfig.Logging.Enabled {
-			check.Status = "OK"
-			status := "OK"
 			Message := "Standard logging is enabled on " + *cc.Id
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *cc.Id})
+			result := results.Result{Status: "OK", Message: Message, ResourceID: *cc.Id}
+			check.AddResult(result)
 		} else {
-			status := "FAIL"
 			Message := "Standard logging is not enabled on " + *cc.Id
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *cc.Id})
+			result := results.Result{Status: "FAIL", Message: Message, ResourceID: *cc.Id}
+			check.AddResult(result)
 		}
 	}
 	queueToAdd <- check
@@ -102,10 +90,7 @@ func CheckIfStandardLogginEnabled(wg *sync.WaitGroup, s aws.Config, d []types.Di
 func CheckIfCookieLogginEnabled(wg *sync.WaitGroup, s aws.Config, d []types.DistributionSummary, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.Name = "Cookie Logging Enabled"
-	check.Id = testName
-	check.Description = "Check if all cloudfront distributions have cookie logging enabled"
-	check.Status = "OK"
+	check.InitCheck("Cookies Logging Enabled", "Check if all cloudfront distributions have cookies logging enabled", testName)
 	svc := cloudfront.NewFromConfig(s)
 	for _, cc := range d {
 		input := &cloudfront.GetDistributionConfigInput{
@@ -116,14 +101,13 @@ func CheckIfCookieLogginEnabled(wg *sync.WaitGroup, s aws.Config, d []types.Dist
 			panic(err)
 		}
 		if result.DistributionConfig.Logging != nil && *result.DistributionConfig.Logging.Enabled && *result.DistributionConfig.Logging.IncludeCookies {
-			check.Status = "OK"
-			status := "OK"
 			Message := "Cookie logging is enabled on " + *cc.Id
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *cc.Id})
+			result := results.Result{Status: "OK", Message: Message, ResourceID: *cc.Id}
+			check.AddResult(result)
 		} else {
-			status := "FAIL"
 			Message := "Cookie logging is not enabled on " + *cc.Id
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *cc.Id})
+			result := results.Result{Status: "FAIL", Message: Message, ResourceID: *cc.Id}
+			check.AddResult(result)
 		}
 	}
 	queueToAdd <- check
@@ -132,10 +116,7 @@ func CheckIfCookieLogginEnabled(wg *sync.WaitGroup, s aws.Config, d []types.Dist
 func CheckIfACLUsed(wg *sync.WaitGroup, s aws.Config, d []types.DistributionSummary, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.Name = "ACL Used"
-	check.Id = testName
-	check.Description = "Check if all cloudfront distributions have an ACL used"
-	check.Status = "OK"
+	check.InitCheck("ACL Used", "Check if all cloudfront distributions have an ACL used", testName)
 	svc := cloudfront.NewFromConfig(s)
 	for _, cc := range d {
 		input := &cloudfront.GetDistributionConfigInput{
@@ -146,14 +127,13 @@ func CheckIfACLUsed(wg *sync.WaitGroup, s aws.Config, d []types.DistributionSumm
 			panic(err)
 		}
 		if *result.DistributionConfig.WebACLId != "" {
-			check.Status = "OK"
-			status := "OK"
 			Message := "ACL is used on " + *cc.Id
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *cc.Id})
+			result := results.Result{Status: "OK", Message: Message, ResourceID: *cc.Id}
+			check.AddResult(result)
 		} else {
-			status := "FAIL"
 			Message := "ACL is not used on " + *cc.Id
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *cc.Id})
+			result := results.Result{Status: "FAIL", Message: Message, ResourceID: *cc.Id}
+			check.AddResult(result)
 		}
 	}
 	queueToAdd <- check

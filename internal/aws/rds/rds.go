@@ -30,10 +30,7 @@ func GetListRDS(s aws.Config) []types.DBInstance {
 func checkIfEncryptionEnabled(wg *sync.WaitGroup, s aws.Config, instances []types.DBInstance, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.Name = "RDS Encryption"
-	check.Id = testName
-	check.Description = "Check if RDS encryption is enabled"
-	check.Status = "OK"
+	check.InitCheck("RDS Encryption", "Check if RDS encryption is enabled", testName)
 	svc := rds.NewFromConfig(s)
 	for _, instance := range instances {
 		params := &rds.DescribeDBInstancesInput{
@@ -44,14 +41,13 @@ func checkIfEncryptionEnabled(wg *sync.WaitGroup, s aws.Config, instances []type
 			panic(err)
 		}
 		if !resp.DBInstances[0].StorageEncrypted {
-			check.Status = "FAIL"
-			status := "FAIL"
 			Message := "RDS encryption is not enabled on " + *instance.DBInstanceIdentifier
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *instance.DBInstanceArn})
+			result := results.Result{Status: "FAIL", Message: Message, ResourceID: *instance.DBInstanceArn}
+			check.AddResult(result)
 		} else {
-			status := "OK"
 			Message := "RDS encryption is enabled on " + *instance.DBInstanceIdentifier
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *instance.DBInstanceArn})
+			result := results.Result{Status: "OK", Message: Message, ResourceID: *instance.DBInstanceArn}
+			check.AddResult(result)
 		}
 	}
 	queueToAdd <- check
@@ -60,10 +56,7 @@ func checkIfEncryptionEnabled(wg *sync.WaitGroup, s aws.Config, instances []type
 func checkIfBackupEnabled(wg *sync.WaitGroup, s aws.Config, instances []types.DBInstance, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.Name = "RDS Backup"
-	check.Id = testName
-	check.Description = "Check if RDS backup is enabled"
-	check.Status = "OK"
+	check.InitCheck("RDS Backup", "Check if RDS backup is enabled", testName)
 	svc := rds.NewFromConfig(s)
 	for _, instance := range instances {
 		params := &rds.DescribeDBInstancesInput{
@@ -74,14 +67,13 @@ func checkIfBackupEnabled(wg *sync.WaitGroup, s aws.Config, instances []types.DB
 			panic(err)
 		}
 		if resp.DBInstances[0].BackupRetentionPeriod == 0 {
-			check.Status = "FAIL"
-			status := "FAIL"
 			Message := "RDS backup is not enabled on " + *instance.DBInstanceIdentifier
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *instance.DBInstanceArn})
+			result := results.Result{Status: "FAIL", Message: Message, ResourceID: *instance.DBInstanceArn}
+			check.AddResult(result)
 		} else {
-			status := "OK"
 			Message := "RDS backup is enabled on " + *instance.DBInstanceIdentifier
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *instance.DBInstanceArn})
+			result := results.Result{Status: "OK", Message: Message, ResourceID: *instance.DBInstanceArn}
+			check.AddResult(result)
 		}
 	}
 	queueToAdd <- check
@@ -90,10 +82,7 @@ func checkIfBackupEnabled(wg *sync.WaitGroup, s aws.Config, instances []types.DB
 func checkIfAutoUpgradeEnabled(wg *sync.WaitGroup, s aws.Config, instances []types.DBInstance, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.Name = "RDS Minor Auto Upgrade"
-	check.Id = testName
-	check.Description = "Check if RDS minor auto upgrade is enabled"
-	check.Status = "OK"
+	check.InitCheck("RDS Minor Auto Upgrade", "Check if RDS minor auto upgrade is enabled", testName)
 	svc := rds.NewFromConfig(s)
 	for _, instance := range instances {
 		params := &rds.DescribeDBInstancesInput{
@@ -104,14 +93,13 @@ func checkIfAutoUpgradeEnabled(wg *sync.WaitGroup, s aws.Config, instances []typ
 			panic(err)
 		}
 		if !resp.DBInstances[0].AutoMinorVersionUpgrade {
-			check.Status = "FAIL"
-			status := "FAIL"
 			Message := "RDS auto upgrade is not enabled on " + *instance.DBInstanceIdentifier
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *instance.DBInstanceArn})
+			result := results.Result{Status: "FAIL", Message: Message, ResourceID: *instance.DBInstanceArn}
+			check.Results = append(check.Results, result)
 		} else {
-			status := "OK"
 			Message := "RDS auto upgrade is enabled on " + *instance.DBInstanceIdentifier
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *instance.DBInstanceArn})
+			result := results.Result{Status: "OK", Message: Message, ResourceID: *instance.DBInstanceArn}
+			check.AddResult(result)
 		}
 	}
 	queueToAdd <- check
@@ -120,10 +108,7 @@ func checkIfAutoUpgradeEnabled(wg *sync.WaitGroup, s aws.Config, instances []typ
 func checkIfRDSPrivateEnabled(wg *sync.WaitGroup, s aws.Config, instances []types.DBInstance, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.Name = "RDS Private"
-	check.Id = testName
-	check.Description = "Check if RDS private is enabled"
-	check.Status = "OK"
+	check.InitCheck("RDS Private", "Check if RDS private is enabled", testName)
 	svc := rds.NewFromConfig(s)
 	for _, instance := range instances {
 		params := &rds.DescribeDBInstancesInput{
@@ -134,14 +119,13 @@ func checkIfRDSPrivateEnabled(wg *sync.WaitGroup, s aws.Config, instances []type
 			panic(err)
 		}
 		if resp.DBInstances[0].PubliclyAccessible {
-			check.Status = "FAIL"
-			status := "FAIL"
 			Message := "RDS private is not enabled on " + *instance.DBInstanceIdentifier
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *instance.DBInstanceArn})
+			result := results.Result{Status: "FAIL", Message: Message, ResourceID: *instance.DBInstanceArn}
+			check.AddResult(result)
 		} else {
-			status := "OK"
 			Message := "RDS private is enabled on " + *instance.DBInstanceIdentifier
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *instance.DBInstanceArn})
+			result := results.Result{Status: "OK", Message: Message, ResourceID: *instance.DBInstanceArn}
+			check.AddResult(result)
 		}
 	}
 	queueToAdd <- check
@@ -150,24 +134,21 @@ func checkIfRDSPrivateEnabled(wg *sync.WaitGroup, s aws.Config, instances []type
 func CheckIfLoggingEnabled(wg *sync.WaitGroup, s aws.Config, instances []types.DBInstance, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.Name = "RDS Logging"
-	check.Id = testName
-	check.Description = "Check if RDS logging is enabled"
-	check.Status = "OK"
+	check.InitCheck("RDS Logging", "Check if RDS logging is enabled", testName)
 	for _, instance := range instances {
 		if instance.EnabledCloudwatchLogsExports != nil {
 			for _, export := range instance.EnabledCloudwatchLogsExports {
 				if export == "audit" {
-					status := "OK"
 					Message := "RDS logging is enabled on " + *instance.DBInstanceIdentifier
-					check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *instance.DBInstanceArn})
+					result := results.Result{Status: "OK", Message: Message, ResourceID: *instance.DBInstanceArn}
+					check.AddResult(result)
+					break
 				}
 			}
 		} else {
-			check.Status = "FAIL"
-			status := "FAIL"
 			Message := "RDS logging is not enabled on " + *instance.DBInstanceIdentifier
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *instance.DBInstanceArn})
+			result := results.Result{Status: "FAIL", Message: Message, ResourceID: *instance.DBInstanceArn}
+			check.Results = append(check.Results, result)
 		}
 	}
 	queueToAdd <- check
@@ -176,19 +157,16 @@ func CheckIfLoggingEnabled(wg *sync.WaitGroup, s aws.Config, instances []types.D
 func CheckIfDeleteProtectionEnabled(wg *sync.WaitGroup, s aws.Config, instances []types.DBInstance, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.Name = "RDS Delete Protection"
-	check.Id = testName
-	check.Description = "Check if RDS delete protection is enabled"
-	check.Status = "OK"
+	check.InitCheck("RDS Delete Protection", "Check if RDS delete protection is enabled", testName)
 	for _, instance := range instances {
 		if instance.DeletionProtection {
-			status := "OK"
 			Message := "RDS delete protection is enabled on " + *instance.DBInstanceIdentifier
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *instance.DBInstanceArn})
+			result := results.Result{Status: "OK", Message: Message, ResourceID: *instance.DBInstanceArn}
+			check.AddResult(result)
 		} else {
-			status := "FAIL"
 			Message := "RDS delete protection is not enabled on " + *instance.DBInstanceIdentifier
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *instance.DBInstanceArn})
+			result := results.Result{Status: "FAIL", Message: Message, ResourceID: *instance.DBInstanceArn}
+			check.AddResult(result)
 		}
 	}
 	queueToAdd <- check

@@ -54,20 +54,16 @@ func GetAllStagesApiGateway(s aws.Config, apis []types.RestApi) []types.Stage {
 func CheckIfStagesCloudwatchLogsExist(wg *sync.WaitGroup, s aws.Config, stages []types.Stage, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.Name = "Apigateway Cloudwatch Logs enabled"
-	check.Id = testName
-	check.Description = "Check if all cloudwatch logs are enabled for all stages"
-	check.Status = "OK"
+	check.InitCheck("Apigateway Cloudwatch Logs enabled", "Check if all cloudwatch logs are enabled for all stages", testName)
 	for _, stage := range stages {
 		if stage.AccessLogSettings != nil && stage.AccessLogSettings.DestinationArn != nil {
-			check.Status = "OK"
-			status := "OK"
 			Message := "Cloudwatch logs are enabled on stage" + *stage.StageName
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *stage.StageName})
+			result := results.Result{Status: "OK", Message: Message, ResourceID: *stage.StageName}
+			check.AddResult(result)
 		} else {
-			status := "FAIL"
 			Message := "Cloudwatch logs are not enabled on " + *stage.StageName
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *stage.StageName})
+			result := results.Result{Status: "FAIL", Message: Message, ResourceID: *stage.StageName}
+			check.AddResult(result)
 		}
 	}
 	queueToAdd <- check
@@ -76,20 +72,16 @@ func CheckIfStagesCloudwatchLogsExist(wg *sync.WaitGroup, s aws.Config, stages [
 func CheckIfStagesProtectedByAcl(wg *sync.WaitGroup, s aws.Config, stages []types.Stage, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.Name = "Apigateway Stages protected by ACL"
-	check.Id = testName
-	check.Description = "Check if all stages are protected by ACL"
-	check.Status = "OK"
+	check.InitCheck("APIGateway stages protected, by ACL", "Check if all stages are protected by ACL", testName)
 	for _, stage := range stages {
 		if *stage.WebAclArn != "" {
-			check.Status = "OK"
-			status := "OK"
 			Message := "Stage " + *stage.StageName + " is protected by ACL"
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *stage.StageName})
+			result := results.Result{Status: "OK", Message: Message, ResourceID: *stage.StageName}
+			check.AddResult(result)
 		} else {
-			status := "FAIL"
 			Message := "Stage " + *stage.StageName + " is not protected by ACL"
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *stage.StageName})
+			result := results.Result{Status: "FAIL", Message: Message, ResourceID: *stage.StageName}
+			check.AddResult(result)
 		}
 	}
 	queueToAdd <- check

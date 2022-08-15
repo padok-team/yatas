@@ -31,10 +31,7 @@ func GetListS3(s aws.Config) []types.Bucket {
 func checkIfEncryptionEnabled(wg *sync.WaitGroup, s aws.Config, buckets []types.Bucket, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.Name = "S3 Encryption"
-	check.Id = testName
-	check.Description = "Check if S3 encryption is enabled"
-	check.Status = "OK"
+	check.InitCheck("S3 Encryption", "Check if S3 encryption is enabled", testName)
 	svc := s3.NewFromConfig(s)
 	for _, bucket := range buckets {
 		if !CheckS3Location(s, *bucket.Name, s.Region) {
@@ -48,14 +45,13 @@ func checkIfEncryptionEnabled(wg *sync.WaitGroup, s aws.Config, buckets []types.
 		if err != nil && !strings.Contains(err.Error(), "ServerSideEncryptionConfigurationNotFoundError") {
 			panic(err)
 		} else if err != nil {
-			check.Status = "FAIL"
-			status := "FAIL"
 			Message := "S3 encryption is not enabled on " + *bucket.Name
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *bucket.Name})
+			result := results.Result{Status: "FAIL", Message: Message, ResourceID: *bucket.Name}
+			check.AddResult(result)
 		} else {
-			status := "OK"
 			Message := "S3 encryption is enabled on " + *bucket.Name
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *bucket.Name})
+			result := results.Result{Status: "OK", Message: Message, ResourceID: *bucket.Name}
+			check.AddResult(result)
 		}
 	}
 	queueToAdd <- check
@@ -64,20 +60,16 @@ func checkIfEncryptionEnabled(wg *sync.WaitGroup, s aws.Config, buckets []types.
 func CheckIfBucketInOneZone(wg *sync.WaitGroup, s aws.Config, buckets []types.Bucket, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.Name = "S3 Bucket in one zone"
-	check.Id = testName
-	check.Description = "Check if S3 buckets are in one zone"
-	check.Status = "OK"
+	check.InitCheck("S3 Bucket in one zone", "Check if S3 buckets are in one zone", testName)
 	for _, bucket := range buckets {
 		if !CheckS3Location(s, *bucket.Name, s.Region) {
-			check.Status = "FAIL"
-			status := "FAIL"
 			Message := "S3 bucket " + *bucket.Name + " is not in the same zone as the account"
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *bucket.Name})
+			result := results.Result{Status: "FAIL", Message: Message, ResourceID: *bucket.Name}
+			check.AddResult(result)
 		} else {
-			status := "OK"
 			Message := "S3 bucket " + *bucket.Name + " is in the same zone as the account"
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *bucket.Name})
+			result := results.Result{Status: "OK", Message: Message, ResourceID: *bucket.Name}
+			check.AddResult(result)
 		}
 	}
 	queueToAdd <- check
@@ -86,10 +78,7 @@ func CheckIfBucketInOneZone(wg *sync.WaitGroup, s aws.Config, buckets []types.Bu
 func CheckIfBucketObjectVersioningEnabled(wg *sync.WaitGroup, s aws.Config, buckets []types.Bucket, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.Name = "S3 Bucket object versioning"
-	check.Id = testName
-	check.Description = "Check if S3 buckets are using object versioning"
-	check.Status = "OK"
+	check.InitCheck("S3 Bucket object versioning", "Check if S3 buckets are using object versioning", testName)
 	svc := s3.NewFromConfig(s)
 	for _, bucket := range buckets {
 		if !CheckS3Location(s, *bucket.Name, s.Region) {
@@ -102,15 +91,14 @@ func CheckIfBucketObjectVersioningEnabled(wg *sync.WaitGroup, s aws.Config, buck
 		if err != nil {
 			panic(err)
 		}
-		if &resp.Status != nil && resp.Status != "Enabled" {
-			check.Status = "FAIL"
-			status := "FAIL"
+		if resp.Status != "Enabled" {
 			Message := "S3 bucket " + *bucket.Name + " is not using object versioning"
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *bucket.Name})
+			result := results.Result{Status: "FAIL", Message: Message, ResourceID: *bucket.Name}
+			check.AddResult(result)
 		} else {
-			status := "OK"
 			Message := "S3 bucket " + *bucket.Name + " is using object versioning"
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *bucket.Name})
+			result := results.Result{Status: "OK", Message: Message, ResourceID: *bucket.Name}
+			check.AddResult(result)
 		}
 	}
 	queueToAdd <- check
@@ -119,10 +107,7 @@ func CheckIfBucketObjectVersioningEnabled(wg *sync.WaitGroup, s aws.Config, buck
 func CheckIfObjectLockConfigurationEnabled(wg *sync.WaitGroup, s aws.Config, buckets []types.Bucket, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.Name = "S3 Bucket retention policy"
-	check.Id = testName
-	check.Description = "Check if S3 buckets are using retention policy"
-	check.Status = "OK"
+	check.InitCheck("S3 Bucket retention policy", "Check if S3 buckets are using retention policy", testName)
 	svc := s3.NewFromConfig(s)
 	for _, bucket := range buckets {
 		if !CheckS3Location(s, *bucket.Name, s.Region) {
@@ -133,15 +118,14 @@ func CheckIfObjectLockConfigurationEnabled(wg *sync.WaitGroup, s aws.Config, buc
 		}
 		resp, err := svc.GetObjectLockConfiguration(context.TODO(), params)
 		if err != nil || (resp.ObjectLockConfiguration != nil && resp.ObjectLockConfiguration.ObjectLockEnabled != "Enabled") {
-			check.Status = "FAIL"
-			status := "FAIL"
 			Message := "S3 bucket " + *bucket.Name + " is not using retention policy"
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *bucket.Name})
+			result := results.Result{Status: "FAIL", Message: Message, ResourceID: *bucket.Name}
+			check.AddResult(result)
 
 		} else {
-			status := "OK"
 			Message := "S3 bucket " + *bucket.Name + " is using retention policy"
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *bucket.Name})
+			result := results.Result{Status: "OK", Message: Message, ResourceID: *bucket.Name}
+			check.AddResult(result)
 		}
 	}
 	queueToAdd <- check
@@ -150,10 +134,7 @@ func CheckIfObjectLockConfigurationEnabled(wg *sync.WaitGroup, s aws.Config, buc
 func CheckIfS3PublicAccessBlockEnabled(wg *sync.WaitGroup, s aws.Config, buckets []types.Bucket, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.Name = "S3 Public Access Block"
-	check.Id = testName
-	check.Description = "Check if S3 buckets are using Public Access Block"
-	check.Status = "OK"
+	check.InitCheck("S3 Public Access Block", "Check if S3 buckets are using Public Access Block", testName)
 	svc := s3.NewFromConfig(s)
 	for _, bucket := range buckets {
 		if !CheckS3Location(s, *bucket.Name, s.Region) {
@@ -165,14 +146,13 @@ func CheckIfS3PublicAccessBlockEnabled(wg *sync.WaitGroup, s aws.Config, buckets
 		resp, err := svc.GetPublicAccessBlock(context.TODO(), params)
 
 		if err != nil || resp.PublicAccessBlockConfiguration == nil || !resp.PublicAccessBlockConfiguration.BlockPublicAcls {
-			check.Status = "FAIL"
-			status := "FAIL"
 			Message := "S3 bucket " + *bucket.Name + " is not using Public Access Block"
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *bucket.Name})
+			result := results.Result{Status: "FAIL", Message: Message, ResourceID: *bucket.Name}
+			check.AddResult(result)
 		} else {
-			status := "OK"
 			Message := "S3 bucket " + *bucket.Name + " is using Public Access Block"
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *bucket.Name})
+			result := results.Result{Status: "OK", Message: Message, ResourceID: *bucket.Name}
+			check.AddResult(result)
 		}
 	}
 	queueToAdd <- check

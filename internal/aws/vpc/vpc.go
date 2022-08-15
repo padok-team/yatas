@@ -28,10 +28,7 @@ func GetListVPC(s aws.Config) []types.Vpc {
 func checkCIDR20(wg *sync.WaitGroup, s aws.Config, vpcs []types.Vpc, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.Name = "VPC CIDR"
-	check.Id = testName
-	check.Description = "Check if VPC CIDR is /20 or bigger"
-	check.Status = "OK"
+	check.InitCheck("VPC CIDR", "Check if VPC CIDR is /20 or bigger", testName)
 	svc := ec2.NewFromConfig(s)
 	for _, vpc := range vpcs {
 		params := &ec2.DescribeVpcsInput{
@@ -45,14 +42,13 @@ func checkCIDR20(wg *sync.WaitGroup, s aws.Config, vpcs []types.Vpc, testName st
 		// split the cidr to / and get the last part as an int
 		cidrInt, _ := strconv.Atoi(strings.Split(cidr, "/")[1])
 		if cidrInt > 20 {
-			check.Status = "FAIL"
-			status := "FAIL"
 			Message := "VPC CIDR is not /20 or bigger on " + *vpc.VpcId
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *vpc.VpcId})
+			result := results.Result{Status: "FAIL", Message: Message, ResourceID: *vpc.VpcId}
+			check.AddResult(result)
 		} else {
-			status := "OK"
 			Message := "VPC CIDR is /20 or bigger on " + *vpc.VpcId
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *vpc.VpcId})
+			result := results.Result{Status: "OK", Message: Message, ResourceID: *vpc.VpcId}
+			check.AddResult(result)
 		}
 	}
 	queueToAdd <- check
@@ -61,10 +57,7 @@ func checkCIDR20(wg *sync.WaitGroup, s aws.Config, vpcs []types.Vpc, testName st
 func checkIfVPCFLowLogsEnabled(wg *sync.WaitGroup, s aws.Config, vpcs []types.Vpc, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.Name = "VPC Flow Logs"
-	check.Id = testName
-	check.Description = "Check if VPC Flow Logs are enabled"
-	check.Status = "OK"
+	check.InitCheck("VPC Flow Logs", "Check if VPC Flow Logs are enabled", testName)
 	svc := ec2.NewFromConfig(s)
 	for _, vpc := range vpcs {
 		params := &ec2.DescribeFlowLogsInput{
@@ -82,14 +75,13 @@ func checkIfVPCFLowLogsEnabled(wg *sync.WaitGroup, s aws.Config, vpcs []types.Vp
 			panic(err)
 		}
 		if len(resp.FlowLogs) == 0 {
-			check.Status = "FAIL"
-			status := "FAIL"
 			Message := "VPC Flow Logs are not enabled on " + *vpc.VpcId
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *vpc.VpcId})
+			result := results.Result{Status: "FAIL", Message: Message, ResourceID: *vpc.VpcId}
+			check.AddResult(result)
 		} else {
-			status := "OK"
 			Message := "VPC Flow Logs are enabled on " + *vpc.VpcId
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *vpc.VpcId})
+			result := results.Result{Status: "OK", Message: Message, ResourceID: *vpc.VpcId}
+			check.AddResult(result)
 		}
 	}
 	queueToAdd <- check
@@ -98,10 +90,7 @@ func checkIfVPCFLowLogsEnabled(wg *sync.WaitGroup, s aws.Config, vpcs []types.Vp
 func checkIfOnlyOneGateway(wg *sync.WaitGroup, s aws.Config, vpcs []types.Vpc, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.Name = "VPC Gateway"
-	check.Id = testName
-	check.Description = "Check if VPC has only one gateway"
-	check.Status = "OK"
+	check.InitCheck("VPC Gateway", "Check if VPC has only one gateway", testName)
 	svc := ec2.NewFromConfig(s)
 	for _, vpc := range vpcs {
 		params := &ec2.DescribeInternetGatewaysInput{
@@ -119,14 +108,13 @@ func checkIfOnlyOneGateway(wg *sync.WaitGroup, s aws.Config, vpcs []types.Vpc, t
 			panic(err)
 		}
 		if len(resp.InternetGateways) > 1 {
-			check.Status = "FAIL"
-			status := "FAIL"
 			Message := "VPC has more than one gateway on " + *vpc.VpcId
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *vpc.VpcId})
+			result := results.Result{Status: "FAIL", Message: Message, ResourceID: *vpc.VpcId}
+			check.Results = append(check.Results, result)
 		} else {
-			status := "OK"
 			Message := "VPC has only one gateway on " + *vpc.VpcId
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *vpc.VpcId})
+			result := results.Result{Status: "OK", Message: Message, ResourceID: *vpc.VpcId}
+			check.AddResult(result)
 		}
 	}
 	queueToAdd <- check
@@ -135,20 +123,16 @@ func checkIfOnlyOneGateway(wg *sync.WaitGroup, s aws.Config, vpcs []types.Vpc, t
 func checkIfOnlyOneVPC(wg *sync.WaitGroup, s aws.Config, vpcs []types.Vpc, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.Name = "VPC Only One"
-	check.Id = testName
-	check.Description = "Check if VPC has only one VPC"
-	check.Status = "OK"
+	check.InitCheck("VPC Only One", "Check if VPC has only one VPC", testName)
 	for _, vpc := range vpcs {
 		if len(vpcs) > 1 {
-			check.Status = "FAIL"
-			status := "FAIL"
 			Message := "VPC Id:" + *vpc.VpcId
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *vpc.VpcId})
+			result := results.Result{Status: "FAIL", Message: Message, ResourceID: *vpc.VpcId}
+			check.AddResult(result)
 		} else {
-			status := "OK"
 			Message := "VPC Id:" + *vpc.VpcId
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *vpc.VpcId})
+			result := results.Result{Status: "OK", Message: Message, ResourceID: *vpc.VpcId}
+			check.AddResult(result)
 		}
 	}
 
@@ -158,10 +142,7 @@ func checkIfOnlyOneVPC(wg *sync.WaitGroup, s aws.Config, vpcs []types.Vpc, testN
 func CheckIfSubnetInDifferentZone(wg *sync.WaitGroup, s aws.Config, vpcs []types.Vpc, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.Name = "Subnets in different zone"
-	check.Id = testName
-	check.Description = "Check if Subnet are in different zone"
-	check.Status = "OK"
+	check.InitCheck("Subnets in different zone", "Check if Subnet are in different zone", testName)
 	svc := ec2.NewFromConfig(s)
 	for _, vpc := range vpcs {
 		params := &ec2.DescribeSubnetsInput{
@@ -183,15 +164,13 @@ func CheckIfSubnetInDifferentZone(wg *sync.WaitGroup, s aws.Config, vpcs []types
 			subnetsAZ[*subnet.AvailabilityZone]++
 		}
 		if len(subnetsAZ) > 1 {
-			check.Status = "OK"
-			status := "OK"
 			Message := "Subnets are in different zone on " + *vpc.VpcId
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *vpc.VpcId})
+			result := results.Result{Status: "OK", Message: Message, ResourceID: *vpc.VpcId}
+			check.Results = append(check.Results, result)
 		} else {
-			check.Status = "FAIL"
-			status := "FAIL"
 			Message := "Subnets are in same zone on " + *vpc.VpcId
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *vpc.VpcId})
+			result := results.Result{Status: "FAIL", Message: Message, ResourceID: *vpc.VpcId}
+			check.Results = append(check.Results, result)
 		}
 	}
 	queueToAdd <- check
@@ -200,10 +179,7 @@ func CheckIfSubnetInDifferentZone(wg *sync.WaitGroup, s aws.Config, vpcs []types
 func CheckIfAtLeast2Subnets(wg *sync.WaitGroup, s aws.Config, vpcs []types.Vpc, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.Name = "At least 2 subnets"
-	check.Id = testName
-	check.Description = "Check if VPC has at least 2 subnets"
-	check.Status = "OK"
+	check.InitCheck("At least 2 subnets", "Check if VPC has at least 2 subnets", testName)
 	svc := ec2.NewFromConfig(s)
 	for _, vpc := range vpcs {
 		params := &ec2.DescribeSubnetsInput{
@@ -221,14 +197,13 @@ func CheckIfAtLeast2Subnets(wg *sync.WaitGroup, s aws.Config, vpcs []types.Vpc, 
 			panic(err)
 		}
 		if len(resp.Subnets) < 2 {
-			check.Status = "FAIL"
-			status := "FAIL"
 			Message := "VPC " + *vpc.VpcId + " has less than 2 subnets"
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *vpc.VpcId})
+			result := results.Result{Status: "FAIL", Message: Message, ResourceID: *vpc.VpcId}
+			check.AddResult(result)
 		} else {
-			status := "OK"
 			Message := "VPC " + *vpc.VpcId + " has at least 2 subnets"
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *vpc.VpcId})
+			result := results.Result{Status: "OK", Message: Message, ResourceID: *vpc.VpcId}
+			check.AddResult(result)
 		}
 	}
 	queueToAdd <- check

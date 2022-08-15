@@ -25,10 +25,7 @@ func GetDynamodbs(s aws.Config) []string {
 func CheckIfDynamodbEncrypted(wg *sync.WaitGroup, s aws.Config, dynamodbs []string, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.Name = "Dynamodb Encryption"
-	check.Id = testName
-	check.Description = "Check if DynamoDB encryption is enabled"
-	check.Status = "OK"
+	check.InitCheck("Dynamodb Encryption", "Check if DynamoDB encryption is enabled", testName)
 	svc := dynamodb.NewFromConfig(s)
 	for _, d := range dynamodbs {
 		params := &dynamodb.DescribeTableInput{
@@ -39,15 +36,14 @@ func CheckIfDynamodbEncrypted(wg *sync.WaitGroup, s aws.Config, dynamodbs []stri
 			panic(err)
 		}
 		if resp.Table != nil && resp.Table.SSEDescription != nil && resp.Table.SSEDescription.Status == "ENABLED" {
-			status := "OK"
 			Message := "Dynamodb encryption is enabled on " + d
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *resp.Table.TableArn})
+			result := results.Result{Status: "OK", Message: Message, ResourceID: d}
+			check.AddResult(result)
 
 		} else {
-			check.Status = "FAIL"
-			status := "FAIL"
 			Message := "Dynamodb encryption is not enabled on " + d
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: *resp.Table.TableArn})
+			result := results.Result{Status: "FAIL", Message: Message, ResourceID: d}
+			check.AddResult(result)
 		}
 	}
 	queueToAdd <- check
@@ -56,10 +52,7 @@ func CheckIfDynamodbEncrypted(wg *sync.WaitGroup, s aws.Config, dynamodbs []stri
 func CheckIfDynamodbContinuousBackupsEnabled(wg *sync.WaitGroup, s aws.Config, dynamodbs []string, testName string, queueToAdd chan results.Check) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.Name = "Dynamodb Continuous Backups"
-	check.Id = testName
-	check.Description = "Check if DynamoDB continuous backups are enabled"
-	check.Status = "OK"
+	check.InitCheck("Dynamodb Continuous Backups", "Check if DynamoDB continuous backups are enabled", testName)
 	svc := dynamodb.NewFromConfig(s)
 	for _, d := range dynamodbs {
 		params := &dynamodb.DescribeContinuousBackupsInput{
@@ -70,14 +63,13 @@ func CheckIfDynamodbContinuousBackupsEnabled(wg *sync.WaitGroup, s aws.Config, d
 			panic(err)
 		}
 		if resp.ContinuousBackupsDescription.ContinuousBackupsStatus != "ENABLED" {
-			check.Status = "FAIL"
-			status := "FAIL"
 			Message := "Dynamodb continuous backups are not enabled on " + d
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: d})
+			result := results.Result{Status: "FAIL", Message: Message, ResourceID: d}
+			check.AddResult(result)
 		} else {
-			status := "OK"
 			Message := "Dynamodb continuous backups are enabled on " + d
-			check.Results = append(check.Results, results.Result{Status: status, Message: Message, ResourceID: d})
+			result := results.Result{Status: "OK", Message: Message, ResourceID: d}
+			check.AddResult(result)
 		}
 	}
 	queueToAdd <- check
