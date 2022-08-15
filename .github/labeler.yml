@@ -1,0 +1,42 @@
+aws: 
+- internal/aws/**/*
+
+custom:
+- internal/custom/**/*
+
+cmd:
+- internal/cmd/**/*
+
+helpers:
+- internal/helpers/**/*
+
+logger:
+- internal/logger/**/*
+
+plugins:
+- internal/plugins/**/*
+
+report:
+- internal/report/**/*
+
+results:
+- internal/results/**/*
+
+yatas: 
+- internal/yatas/**/*
+
+dependencies:
+- go.mod
+- go.sum
+
+main:
+- main.go
+
+makefile:
+- Makefile
+
+readme:
+- README.md
+
+github-actions:
+- .github/workflows/*
