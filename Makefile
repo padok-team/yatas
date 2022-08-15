@@ -31,6 +31,11 @@ lint:
 test:
 	go test ./... -cover
 
+## Critic: Runs Go Critic
+.PHONY: critic
+critic:
+	gocritic check ./...
+
 ## release: Release a new version
 .PHONY: release
 release: test
