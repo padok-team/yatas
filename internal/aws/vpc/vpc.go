@@ -25,11 +25,11 @@ func GetListVPC(s aws.Config) []types.Vpc {
 	return result.Vpcs
 }
 
-func checkCIDR20(wg *sync.WaitGroup, s aws.Config, vpcs []types.Vpc, testName string, queueToAdd chan results.Check) {
+func checkCIDR20(checkConfig yatas.CheckConfig, vpcs []types.Vpc, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.InitCheck("VPC CIDR", "Check if VPC CIDR is /20 or bigger", testName)
-	svc := ec2.NewFromConfig(s)
+	svc := ec2.NewFromConfig(checkConfig.ConfigAWS)
 	for _, vpc := range vpcs {
 		params := &ec2.DescribeVpcsInput{
 			VpcIds: []string{*vpc.VpcId},
@@ -51,14 +51,14 @@ func checkCIDR20(wg *sync.WaitGroup, s aws.Config, vpcs []types.Vpc, testName st
 			check.AddResult(result)
 		}
 	}
-	queueToAdd <- check
+	checkConfig.Queue <- check
 }
 
-func checkIfVPCFLowLogsEnabled(wg *sync.WaitGroup, s aws.Config, vpcs []types.Vpc, testName string, queueToAdd chan results.Check) {
+func checkIfVPCFLowLogsEnabled(checkConfig yatas.CheckConfig, vpcs []types.Vpc, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.InitCheck("VPC Flow Logs", "Check if VPC Flow Logs are enabled", testName)
-	svc := ec2.NewFromConfig(s)
+	svc := ec2.NewFromConfig(checkConfig.ConfigAWS)
 	for _, vpc := range vpcs {
 		params := &ec2.DescribeFlowLogsInput{
 			Filter: []types.Filter{
@@ -84,14 +84,14 @@ func checkIfVPCFLowLogsEnabled(wg *sync.WaitGroup, s aws.Config, vpcs []types.Vp
 			check.AddResult(result)
 		}
 	}
-	queueToAdd <- check
+	checkConfig.Queue <- check
 }
 
-func checkIfOnlyOneGateway(wg *sync.WaitGroup, s aws.Config, vpcs []types.Vpc, testName string, queueToAdd chan results.Check) {
+func checkIfOnlyOneGateway(checkConfig yatas.CheckConfig, vpcs []types.Vpc, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.InitCheck("VPC Gateway", "Check if VPC has only one gateway", testName)
-	svc := ec2.NewFromConfig(s)
+	svc := ec2.NewFromConfig(checkConfig.ConfigAWS)
 	for _, vpc := range vpcs {
 		params := &ec2.DescribeInternetGatewaysInput{
 			Filters: []types.Filter{
@@ -117,10 +117,10 @@ func checkIfOnlyOneGateway(wg *sync.WaitGroup, s aws.Config, vpcs []types.Vpc, t
 			check.AddResult(result)
 		}
 	}
-	queueToAdd <- check
+	checkConfig.Queue <- check
 }
 
-func checkIfOnlyOneVPC(wg *sync.WaitGroup, s aws.Config, vpcs []types.Vpc, testName string, queueToAdd chan results.Check) {
+func checkIfOnlyOneVPC(checkConfig yatas.CheckConfig, vpcs []types.Vpc, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.InitCheck("VPC Only One", "Check if VPC has only one VPC", testName)
@@ -136,14 +136,14 @@ func checkIfOnlyOneVPC(wg *sync.WaitGroup, s aws.Config, vpcs []types.Vpc, testN
 		}
 	}
 
-	queueToAdd <- check
+	checkConfig.Queue <- check
 }
 
-func CheckIfSubnetInDifferentZone(wg *sync.WaitGroup, s aws.Config, vpcs []types.Vpc, testName string, queueToAdd chan results.Check) {
+func CheckIfSubnetInDifferentZone(checkConfig yatas.CheckConfig, vpcs []types.Vpc, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.InitCheck("Subnets in different zone", "Check if Subnet are in different zone", testName)
-	svc := ec2.NewFromConfig(s)
+	svc := ec2.NewFromConfig(checkConfig.ConfigAWS)
 	for _, vpc := range vpcs {
 		params := &ec2.DescribeSubnetsInput{
 			Filters: []types.Filter{
@@ -173,14 +173,14 @@ func CheckIfSubnetInDifferentZone(wg *sync.WaitGroup, s aws.Config, vpcs []types
 			check.Results = append(check.Results, result)
 		}
 	}
-	queueToAdd <- check
+	checkConfig.Queue <- check
 }
 
-func CheckIfAtLeast2Subnets(wg *sync.WaitGroup, s aws.Config, vpcs []types.Vpc, testName string, queueToAdd chan results.Check) {
+func CheckIfAtLeast2Subnets(checkConfig yatas.CheckConfig, vpcs []types.Vpc, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.InitCheck("At least 2 subnets", "Check if VPC has at least 2 subnets", testName)
-	svc := ec2.NewFromConfig(s)
+	svc := ec2.NewFromConfig(checkConfig.ConfigAWS)
 	for _, vpc := range vpcs {
 		params := &ec2.DescribeSubnetsInput{
 			Filters: []types.Filter{
@@ -206,7 +206,7 @@ func CheckIfAtLeast2Subnets(wg *sync.WaitGroup, s aws.Config, vpcs []types.Vpc, 
 			check.AddResult(result)
 		}
 	}
-	queueToAdd <- check
+	checkConfig.Queue <- check
 }
 
 func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []results.Check) {
@@ -216,12 +216,12 @@ func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []r
 	var checks []results.Check
 	vpcs := GetListVPC(s)
 
-	go yatas.CheckTest(checkConfig.Wg, c, "AWS_VPC_001", checkCIDR20)(checkConfig.Wg, checkConfig.ConfigAWS, vpcs, "AWS_VPC_001", checkConfig.Queue)
-	go yatas.CheckTest(checkConfig.Wg, c, "AWS_VPC_002", checkIfOnlyOneVPC)(checkConfig.Wg, checkConfig.ConfigAWS, vpcs, "AWS_VPC_002", checkConfig.Queue)
-	go yatas.CheckTest(checkConfig.Wg, c, "AWS_VPC_003", checkIfOnlyOneGateway)(checkConfig.Wg, checkConfig.ConfigAWS, vpcs, "AWS_VPC_003", checkConfig.Queue)
-	go yatas.CheckTest(checkConfig.Wg, c, "AWS_VPC_004", checkIfVPCFLowLogsEnabled)(checkConfig.Wg, checkConfig.ConfigAWS, vpcs, "AWS_VPC_004", checkConfig.Queue)
-	go yatas.CheckTest(checkConfig.Wg, c, "AWS_VPC_005", CheckIfAtLeast2Subnets)(checkConfig.Wg, checkConfig.ConfigAWS, vpcs, "AWS_VPC_005", checkConfig.Queue)
-	go yatas.CheckTest(checkConfig.Wg, c, "AWS_VPC_006", CheckIfSubnetInDifferentZone)(checkConfig.Wg, checkConfig.ConfigAWS, vpcs, "AWS_VPC_006", checkConfig.Queue)
+	go yatas.CheckTest(checkConfig.Wg, c, "AWS_VPC_001", checkCIDR20)(checkConfig, vpcs, "AWS_VPC_001")
+	go yatas.CheckTest(checkConfig.Wg, c, "AWS_VPC_002", checkIfOnlyOneVPC)(checkConfig, vpcs, "AWS_VPC_002")
+	go yatas.CheckTest(checkConfig.Wg, c, "AWS_VPC_003", checkIfOnlyOneGateway)(checkConfig, vpcs, "AWS_VPC_003")
+	go yatas.CheckTest(checkConfig.Wg, c, "AWS_VPC_004", checkIfVPCFLowLogsEnabled)(checkConfig, vpcs, "AWS_VPC_004")
+	go yatas.CheckTest(checkConfig.Wg, c, "AWS_VPC_005", CheckIfAtLeast2Subnets)(checkConfig, vpcs, "AWS_VPC_005")
+	go yatas.CheckTest(checkConfig.Wg, c, "AWS_VPC_006", CheckIfSubnetInDifferentZone)(checkConfig, vpcs, "AWS_VPC_006")
 	go func() {
 		for t := range checkConfig.Queue {
 			checks = append(checks, t)

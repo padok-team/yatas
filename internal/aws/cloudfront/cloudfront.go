@@ -24,7 +24,7 @@ func GetAllCloudfront(s aws.Config) []types.DistributionSummary {
 	return result.DistributionList.Items
 }
 
-func CheckIfCloudfrontTLS1_2Minimum(wg *sync.WaitGroup, s aws.Config, d []types.DistributionSummary, testName string, queueToAdd chan results.Check) {
+func CheckIfCloudfrontTLS1_2Minimum(checkConfig yatas.CheckConfig, d []types.DistributionSummary, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.InitCheck("TLS 1.2 Minimum", "Check if all cloudfront distributions have TLS 1.2 minimum", testName)
@@ -39,10 +39,10 @@ func CheckIfCloudfrontTLS1_2Minimum(wg *sync.WaitGroup, s aws.Config, d []types.
 			check.AddResult(result)
 		}
 	}
-	queueToAdd <- check
+	checkConfig.Queue <- check
 }
 
-func CheckIfHTTPSOnly(wg *sync.WaitGroup, s aws.Config, d []types.DistributionSummary, testName string, queueToAdd chan results.Check) {
+func CheckIfHTTPSOnly(checkConfig yatas.CheckConfig, d []types.DistributionSummary, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.InitCheck("Cloudfront HTTPS Only", "Check if all cloudfront distributions are HTTPS only", testName)
@@ -58,14 +58,14 @@ func CheckIfHTTPSOnly(wg *sync.WaitGroup, s aws.Config, d []types.DistributionSu
 		}
 	}
 
-	queueToAdd <- check
+	checkConfig.Queue <- check
 }
 
-func CheckIfStandardLogginEnabled(wg *sync.WaitGroup, s aws.Config, d []types.DistributionSummary, testName string, queueToAdd chan results.Check) {
+func CheckIfStandardLogginEnabled(checkConfig yatas.CheckConfig, d []types.DistributionSummary, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.InitCheck("Standard Logging Enabled", "Check if all cloudfront distributions have standard logging enabled", testName)
-	svc := cloudfront.NewFromConfig(s)
+	svc := cloudfront.NewFromConfig(checkConfig.ConfigAWS)
 	for _, cc := range d {
 		input := &cloudfront.GetDistributionConfigInput{
 			Id: cc.Id,
@@ -84,14 +84,14 @@ func CheckIfStandardLogginEnabled(wg *sync.WaitGroup, s aws.Config, d []types.Di
 			check.AddResult(result)
 		}
 	}
-	queueToAdd <- check
+	checkConfig.Queue <- check
 }
 
-func CheckIfCookieLogginEnabled(wg *sync.WaitGroup, s aws.Config, d []types.DistributionSummary, testName string, queueToAdd chan results.Check) {
+func CheckIfCookieLogginEnabled(checkConfig yatas.CheckConfig, d []types.DistributionSummary, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.InitCheck("Cookies Logging Enabled", "Check if all cloudfront distributions have cookies logging enabled", testName)
-	svc := cloudfront.NewFromConfig(s)
+	svc := cloudfront.NewFromConfig(checkConfig.ConfigAWS)
 	for _, cc := range d {
 		input := &cloudfront.GetDistributionConfigInput{
 			Id: cc.Id,
@@ -110,14 +110,14 @@ func CheckIfCookieLogginEnabled(wg *sync.WaitGroup, s aws.Config, d []types.Dist
 			check.AddResult(result)
 		}
 	}
-	queueToAdd <- check
+	checkConfig.Queue <- check
 }
 
-func CheckIfACLUsed(wg *sync.WaitGroup, s aws.Config, d []types.DistributionSummary, testName string, queueToAdd chan results.Check) {
+func CheckIfACLUsed(checkConfig yatas.CheckConfig, d []types.DistributionSummary, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.InitCheck("ACL Used", "Check if all cloudfront distributions have an ACL used", testName)
-	svc := cloudfront.NewFromConfig(s)
+	svc := cloudfront.NewFromConfig(checkConfig.ConfigAWS)
 	for _, cc := range d {
 		input := &cloudfront.GetDistributionConfigInput{
 			Id: cc.Id,
@@ -136,7 +136,7 @@ func CheckIfACLUsed(wg *sync.WaitGroup, s aws.Config, d []types.DistributionSumm
 			check.AddResult(result)
 		}
 	}
-	queueToAdd <- check
+	checkConfig.Queue <- check
 }
 
 func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []results.Check) {
@@ -145,11 +145,11 @@ func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []r
 	checkConfig.Init(s, c)
 	var checks []results.Check
 	d := GetAllCloudfront(s)
-	go yatas.CheckTest(checkConfig.Wg, c, "AWS_CFT_001", CheckIfCloudfrontTLS1_2Minimum)(checkConfig.Wg, checkConfig.ConfigAWS, d, "AWS_CFT_001", checkConfig.Queue)
-	go yatas.CheckTest(checkConfig.Wg, c, "AWS_CFT_002", CheckIfHTTPSOnly)(checkConfig.Wg, checkConfig.ConfigAWS, d, "AWS_CFT_002", checkConfig.Queue)
-	go yatas.CheckTest(checkConfig.Wg, c, "AWS_CFT_003", CheckIfStandardLogginEnabled)(checkConfig.Wg, checkConfig.ConfigAWS, d, "AWS_CFT_003", checkConfig.Queue)
-	go yatas.CheckTest(checkConfig.Wg, c, "AWS_CFT_004", CheckIfCookieLogginEnabled)(checkConfig.Wg, checkConfig.ConfigAWS, d, "AWS_CFT_004", checkConfig.Queue)
-	go yatas.CheckTest(checkConfig.Wg, c, "AWS_CFT_005", CheckIfACLUsed)(checkConfig.Wg, checkConfig.ConfigAWS, d, "AWS_CFT_005", checkConfig.Queue)
+	go yatas.CheckTest(checkConfig.Wg, c, "AWS_CFT_001", CheckIfCloudfrontTLS1_2Minimum)(checkConfig, d, "AWS_CFT_001")
+	go yatas.CheckTest(checkConfig.Wg, c, "AWS_CFT_002", CheckIfHTTPSOnly)(checkConfig, d, "AWS_CFT_002")
+	go yatas.CheckTest(checkConfig.Wg, c, "AWS_CFT_003", CheckIfStandardLogginEnabled)(checkConfig, d, "AWS_CFT_003")
+	go yatas.CheckTest(checkConfig.Wg, c, "AWS_CFT_004", CheckIfCookieLogginEnabled)(checkConfig, d, "AWS_CFT_004")
+	go yatas.CheckTest(checkConfig.Wg, c, "AWS_CFT_005", CheckIfACLUsed)(checkConfig, d, "AWS_CFT_005")
 
 	go func() {
 		for t := range checkConfig.Queue {

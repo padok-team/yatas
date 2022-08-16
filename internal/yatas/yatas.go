@@ -99,12 +99,12 @@ func unmarshalYAML(data []byte, config *Config) error {
 	return err
 }
 
-func CheckTest[A, B, C, D, E any](wg *sync.WaitGroup, config *Config, id string, test func(A, B, C, D, E)) func(A, B, C, D, E) {
+func CheckTest[A, B, C any](wg *sync.WaitGroup, config *Config, id string, test func(A, B, C)) func(A, B, C) {
 	if !config.CheckExclude(id) && config.CheckInclude(id) {
 		wg.Add(1)
 		return test
 	} else {
-		return func(A, B, C, D, E) {}
+		return func(A, B, C) {}
 	}
 
 }

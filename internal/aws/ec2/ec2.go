@@ -28,7 +28,7 @@ func GetEC2s(s aws.Config) []types.Instance {
 	return instances
 }
 
-func CheckIfEC2PublicIP(wg *sync.WaitGroup, s aws.Config, instances []types.Instance, testName string, queueToAdd chan results.Check) {
+func CheckIfEC2PublicIP(checkConfig yatas.CheckConfig, instances []types.Instance, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.InitCheck("EC2 Public IP", "Check if all instances have a public IP", testName)
@@ -43,10 +43,10 @@ func CheckIfEC2PublicIP(wg *sync.WaitGroup, s aws.Config, instances []types.Inst
 			check.AddResult(result)
 		}
 	}
-	queueToAdd <- check
+	checkConfig.Queue <- check
 }
 
-func CheckIfMonitoringEnabled(wg *sync.WaitGroup, s aws.Config, instances []types.Instance, testName string, queueToAdd chan results.Check) {
+func CheckIfMonitoringEnabled(checkConfig yatas.CheckConfig, instances []types.Instance, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.InitCheck("Monitoring Enabled", "Check if all instances have monitoring enabled", testName)
@@ -61,7 +61,7 @@ func CheckIfMonitoringEnabled(wg *sync.WaitGroup, s aws.Config, instances []type
 			check.AddResult(result)
 		}
 	}
-	queueToAdd <- check
+	checkConfig.Queue <- check
 }
 
 func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []results.Check) {
@@ -70,8 +70,8 @@ func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []r
 	checkConfig.Init(s, c)
 	var checks []results.Check
 	instances := GetEC2s(s)
-	go yatas.CheckTest(checkConfig.Wg, c, "AWS_EC2_001", CheckIfEC2PublicIP)(checkConfig.Wg, checkConfig.ConfigAWS, instances, "AWS_EC2_001", checkConfig.Queue)
-	go yatas.CheckTest(checkConfig.Wg, c, "AWS_EC2_002", CheckIfMonitoringEnabled)(checkConfig.Wg, checkConfig.ConfigAWS, instances, "AWS_EC2_002", checkConfig.Queue)
+	go yatas.CheckTest(checkConfig.Wg, c, "AWS_EC2_001", CheckIfEC2PublicIP)(checkConfig, instances, "AWS_EC2_001")
+	go yatas.CheckTest(checkConfig.Wg, c, "AWS_EC2_002", CheckIfMonitoringEnabled)(checkConfig, instances, "AWS_EC2_002")
 
 	go func() {
 		for t := range checkConfig.Queue {

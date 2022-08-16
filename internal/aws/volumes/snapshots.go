@@ -3,7 +3,6 @@ package volumes
 import (
 	"context"
 	"fmt"
-	"sync"
 	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -11,6 +10,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/ec2/types"
 	"github.com/stangirard/yatas/internal/logger"
 	"github.com/stangirard/yatas/internal/results"
+	"github.com/stangirard/yatas/internal/yatas"
 )
 
 func GetSnapshots(s aws.Config) []types.Snapshot {
@@ -25,14 +25,14 @@ func GetSnapshots(s aws.Config) []types.Snapshot {
 	return result.Snapshots
 }
 
-func CheckIfAllVolumesHaveSnapshots(wg *sync.WaitGroup, s aws.Config, volumes []types.Volume, testName string, queueToAdd chan results.Check) {
+func CheckIfAllVolumesHaveSnapshots(checkConfig yatas.CheckConfig, volumes []types.Volume, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.Name = "EC2 Volumes Snapshots"
 	check.Id = testName
 	check.Description = "Check if all volumes have snapshots"
 	check.Status = "OK"
-	snapshots := GetSnapshots(s)
+	snapshots := GetSnapshots(checkConfig.ConfigAWS)
 	for _, volume := range volumes {
 		ok := false
 		for _, snapshot := range snapshots {
@@ -50,10 +50,10 @@ func CheckIfAllVolumesHaveSnapshots(wg *sync.WaitGroup, s aws.Config, volumes []
 			check.AddResult(result)
 		}
 	}
-	queueToAdd <- check
+	checkConfig.Queue <- check
 }
 
-func CheckIfAllSnapshotsEncrypted(wg *sync.WaitGroup, s aws.Config, snapshots []types.Snapshot, testName string, queueToAdd chan results.Check) {
+func CheckIfAllSnapshotsEncrypted(checkConfig yatas.CheckConfig, snapshots []types.Snapshot, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.InitCheck("EC2 Snapshots Encryption", "Check if all snapshots are encrypted", testName)
@@ -68,10 +68,10 @@ func CheckIfAllSnapshotsEncrypted(wg *sync.WaitGroup, s aws.Config, snapshots []
 			check.AddResult(result)
 		}
 	}
-	queueToAdd <- check
+	checkConfig.Queue <- check
 }
 
-func CheckIfSnapshotYoungerthan24h(wg *sync.WaitGroup, s aws.Config, vs couple, testName string, queueToAdd chan results.Check) {
+func CheckIfSnapshotYoungerthan24h(checkConfig yatas.CheckConfig, vs couple, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.InitCheck("EC2 Snapshots Age", "Check if all snapshots are younger than 24h", testName)
@@ -96,5 +96,5 @@ func CheckIfSnapshotYoungerthan24h(wg *sync.WaitGroup, s aws.Config, vs couple, 
 			check.AddResult(result)
 		}
 	}
-	queueToAdd <- check
+	checkConfig.Queue <- check
 }

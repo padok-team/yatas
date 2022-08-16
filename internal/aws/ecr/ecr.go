@@ -25,7 +25,7 @@ func GetECRs(s aws.Config) []types.Repository {
 	return result.Repositories
 }
 
-func CheckIfImageScanningEnabled(wg *sync.WaitGroup, s aws.Config, ecr []types.Repository, testName string, queueToAdd chan results.Check) {
+func CheckIfImageScanningEnabled(checkConfig yatas.CheckConfig, ecr []types.Repository, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.InitCheck("Image Scanning Enabled", "Check if all ECRs have image scanning enabled", testName)
@@ -40,7 +40,7 @@ func CheckIfImageScanningEnabled(wg *sync.WaitGroup, s aws.Config, ecr []types.R
 			check.AddResult(result)
 		}
 	}
-	queueToAdd <- check
+	checkConfig.Queue <- check
 }
 
 func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []results.Check) {
@@ -49,7 +49,7 @@ func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []r
 	checkConfig.Init(s, c)
 	var checks []results.Check
 	ecr := GetECRs(s)
-	go yatas.CheckTest(checkConfig.Wg, c, "AWS_ECR_001", CheckIfImageScanningEnabled)(checkConfig.Wg, checkConfig.ConfigAWS, ecr, "AWS_ECR_001", checkConfig.Queue)
+	go yatas.CheckTest(checkConfig.Wg, c, "AWS_ECR_001", CheckIfImageScanningEnabled)(checkConfig, ecr, "AWS_ECR_001")
 	go func() {
 		for t := range checkConfig.Queue {
 			checks = append(checks, t)

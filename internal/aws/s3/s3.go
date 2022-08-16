@@ -28,13 +28,13 @@ func GetListS3(s aws.Config) []types.Bucket {
 	return resp.Buckets
 }
 
-func checkIfEncryptionEnabled(wg *sync.WaitGroup, s aws.Config, buckets []types.Bucket, testName string, queueToAdd chan results.Check) {
+func checkIfEncryptionEnabled(checkConfig yatas.CheckConfig, buckets []types.Bucket, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.InitCheck("S3 Encryption", "Check if S3 encryption is enabled", testName)
-	svc := s3.NewFromConfig(s)
+	svc := s3.NewFromConfig(checkConfig.ConfigAWS)
 	for _, bucket := range buckets {
-		if !CheckS3Location(s, *bucket.Name, s.Region) {
+		if !CheckS3Location(checkConfig.ConfigAWS, *bucket.Name, checkConfig.ConfigAWS.Region) {
 			continue
 		}
 		params := &s3.GetBucketEncryptionInput{
@@ -54,15 +54,15 @@ func checkIfEncryptionEnabled(wg *sync.WaitGroup, s aws.Config, buckets []types.
 			check.AddResult(result)
 		}
 	}
-	queueToAdd <- check
+	checkConfig.Queue <- check
 }
 
-func CheckIfBucketInOneZone(wg *sync.WaitGroup, s aws.Config, buckets []types.Bucket, testName string, queueToAdd chan results.Check) {
+func CheckIfBucketInOneZone(checkConfig yatas.CheckConfig, buckets []types.Bucket, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.InitCheck("S3 Bucket in one zone", "Check if S3 buckets are in one zone", testName)
 	for _, bucket := range buckets {
-		if !CheckS3Location(s, *bucket.Name, s.Region) {
+		if !CheckS3Location(checkConfig.ConfigAWS, *bucket.Name, checkConfig.ConfigAWS.Region) {
 			Message := "S3 bucket " + *bucket.Name + " is not in the same zone as the account"
 			result := results.Result{Status: "FAIL", Message: Message, ResourceID: *bucket.Name}
 			check.AddResult(result)
@@ -72,16 +72,16 @@ func CheckIfBucketInOneZone(wg *sync.WaitGroup, s aws.Config, buckets []types.Bu
 			check.AddResult(result)
 		}
 	}
-	queueToAdd <- check
+	checkConfig.Queue <- check
 }
 
-func CheckIfBucketObjectVersioningEnabled(wg *sync.WaitGroup, s aws.Config, buckets []types.Bucket, testName string, queueToAdd chan results.Check) {
+func CheckIfBucketObjectVersioningEnabled(checkConfig yatas.CheckConfig, buckets []types.Bucket, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.InitCheck("S3 Bucket object versioning", "Check if S3 buckets are using object versioning", testName)
-	svc := s3.NewFromConfig(s)
+	svc := s3.NewFromConfig(checkConfig.ConfigAWS)
 	for _, bucket := range buckets {
-		if !CheckS3Location(s, *bucket.Name, s.Region) {
+		if !CheckS3Location(checkConfig.ConfigAWS, *bucket.Name, checkConfig.ConfigAWS.Region) {
 			continue
 		}
 		params := &s3.GetBucketVersioningInput{
@@ -101,16 +101,16 @@ func CheckIfBucketObjectVersioningEnabled(wg *sync.WaitGroup, s aws.Config, buck
 			check.AddResult(result)
 		}
 	}
-	queueToAdd <- check
+	checkConfig.Queue <- check
 }
 
-func CheckIfObjectLockConfigurationEnabled(wg *sync.WaitGroup, s aws.Config, buckets []types.Bucket, testName string, queueToAdd chan results.Check) {
+func CheckIfObjectLockConfigurationEnabled(checkConfig yatas.CheckConfig, buckets []types.Bucket, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.InitCheck("S3 Bucket retention policy", "Check if S3 buckets are using retention policy", testName)
-	svc := s3.NewFromConfig(s)
+	svc := s3.NewFromConfig(checkConfig.ConfigAWS)
 	for _, bucket := range buckets {
-		if !CheckS3Location(s, *bucket.Name, s.Region) {
+		if !CheckS3Location(checkConfig.ConfigAWS, *bucket.Name, checkConfig.ConfigAWS.Region) {
 			continue
 		}
 		params := &s3.GetObjectLockConfigurationInput{
@@ -128,16 +128,16 @@ func CheckIfObjectLockConfigurationEnabled(wg *sync.WaitGroup, s aws.Config, buc
 			check.AddResult(result)
 		}
 	}
-	queueToAdd <- check
+	checkConfig.Queue <- check
 }
 
-func CheckIfS3PublicAccessBlockEnabled(wg *sync.WaitGroup, s aws.Config, buckets []types.Bucket, testName string, queueToAdd chan results.Check) {
+func CheckIfS3PublicAccessBlockEnabled(checkConfig yatas.CheckConfig, buckets []types.Bucket, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.InitCheck("S3 Public Access Block", "Check if S3 buckets are using Public Access Block", testName)
-	svc := s3.NewFromConfig(s)
+	svc := s3.NewFromConfig(checkConfig.ConfigAWS)
 	for _, bucket := range buckets {
-		if !CheckS3Location(s, *bucket.Name, s.Region) {
+		if !CheckS3Location(checkConfig.ConfigAWS, *bucket.Name, checkConfig.ConfigAWS.Region) {
 			continue
 		}
 		params := &s3.GetPublicAccessBlockInput{
@@ -155,7 +155,7 @@ func CheckIfS3PublicAccessBlockEnabled(wg *sync.WaitGroup, s aws.Config, buckets
 			check.AddResult(result)
 		}
 	}
-	queueToAdd <- check
+	checkConfig.Queue <- check
 }
 
 func CheckS3Location(s aws.Config, bucket, region string) bool {
@@ -191,11 +191,11 @@ func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []r
 	var checks []results.Check
 	buckets := GetListS3(s)
 
-	go yatas.CheckTest(checkConfig.Wg, c, "AWS_S3_001", checkIfEncryptionEnabled)(checkConfig.Wg, checkConfig.ConfigAWS, buckets, "AWS_S3_001", checkConfig.Queue)
-	go yatas.CheckTest(checkConfig.Wg, c, "AWS_S3_002", CheckIfBucketInOneZone)(checkConfig.Wg, checkConfig.ConfigAWS, buckets, "AWS_S3_002", checkConfig.Queue)
-	go yatas.CheckTest(checkConfig.Wg, c, "AWS_S3_003", CheckIfBucketObjectVersioningEnabled)(checkConfig.Wg, checkConfig.ConfigAWS, buckets, "AWS_S3_003", checkConfig.Queue)
-	go yatas.CheckTest(checkConfig.Wg, c, "AWS_S3_004", CheckIfObjectLockConfigurationEnabled)(checkConfig.Wg, checkConfig.ConfigAWS, buckets, "AWS_S3_004", checkConfig.Queue)
-	go yatas.CheckTest(checkConfig.Wg, c, "AWS_S3_005", CheckIfS3PublicAccessBlockEnabled)(checkConfig.Wg, checkConfig.ConfigAWS, buckets, "AWS_S3_005", checkConfig.Queue)
+	go yatas.CheckTest(checkConfig.Wg, c, "AWS_S3_001", checkIfEncryptionEnabled)(checkConfig, buckets, "AWS_S3_001")
+	go yatas.CheckTest(checkConfig.Wg, c, "AWS_S3_002", CheckIfBucketInOneZone)(checkConfig, buckets, "AWS_S3_002")
+	go yatas.CheckTest(checkConfig.Wg, c, "AWS_S3_003", CheckIfBucketObjectVersioningEnabled)(checkConfig, buckets, "AWS_S3_003")
+	go yatas.CheckTest(checkConfig.Wg, c, "AWS_S3_004", CheckIfObjectLockConfigurationEnabled)(checkConfig, buckets, "AWS_S3_004")
+	go yatas.CheckTest(checkConfig.Wg, c, "AWS_S3_005", CheckIfS3PublicAccessBlockEnabled)(checkConfig, buckets, "AWS_S3_005")
 	// Wait for all the goroutines to finish
 
 	go func() {

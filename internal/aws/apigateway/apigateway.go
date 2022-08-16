@@ -23,8 +23,8 @@ func GetApiGateways(s aws.Config) []types.RestApi {
 	return result.Items
 }
 
-func GetAllResourcesApiGateway(wg *sync.WaitGroup, s aws.Config, apiId string) []types.Resource {
-	svc := apigateway.NewFromConfig(s)
+func GetAllResourcesApiGateway(checkConfig yatas.CheckConfig, apiId string) []types.Resource {
+	svc := apigateway.NewFromConfig(checkConfig.ConfigAWS)
 	input := &apigateway.GetResourcesInput{
 		RestApiId: &apiId,
 	}
@@ -51,7 +51,7 @@ func GetAllStagesApiGateway(s aws.Config, apis []types.RestApi) []types.Stage {
 	return stages
 }
 
-func CheckIfStagesCloudwatchLogsExist(wg *sync.WaitGroup, s aws.Config, stages []types.Stage, testName string, queueToAdd chan results.Check) {
+func CheckIfStagesCloudwatchLogsExist(checkConfig yatas.CheckConfig, stages []types.Stage, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.InitCheck("Apigateway Cloudwatch Logs enabled", "Check if all cloudwatch logs are enabled for all stages", testName)
@@ -66,10 +66,10 @@ func CheckIfStagesCloudwatchLogsExist(wg *sync.WaitGroup, s aws.Config, stages [
 			check.AddResult(result)
 		}
 	}
-	queueToAdd <- check
+	checkConfig.Queue <- check
 }
 
-func CheckIfStagesProtectedByAcl(wg *sync.WaitGroup, s aws.Config, stages []types.Stage, testName string, queueToAdd chan results.Check) {
+func CheckIfStagesProtectedByAcl(checkConfig yatas.CheckConfig, stages []types.Stage, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
 	check.InitCheck("APIGateway stages protected, by ACL", "Check if all stages are protected by ACL", testName)
@@ -84,7 +84,7 @@ func CheckIfStagesProtectedByAcl(wg *sync.WaitGroup, s aws.Config, stages []type
 			check.AddResult(result)
 		}
 	}
-	queueToAdd <- check
+	checkConfig.Queue <- check
 }
 
 func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []results.Check) {
@@ -93,8 +93,8 @@ func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []r
 	var checks []results.Check
 	apis := GetApiGateways(s)
 	stages := GetAllStagesApiGateway(s, apis)
-	go yatas.CheckTest(checkConfig.Wg, c, "AWS_APG_001", CheckIfStagesCloudwatchLogsExist)(checkConfig.Wg, checkConfig.ConfigAWS, stages, "AWS_APG_001", checkConfig.Queue)
-	go yatas.CheckTest(checkConfig.Wg, c, "AWS_APG_002", CheckIfStagesProtectedByAcl)(checkConfig.Wg, checkConfig.ConfigAWS, stages, "AWS_APG_002", checkConfig.Queue)
+	go yatas.CheckTest(checkConfig.Wg, c, "AWS_APG_001", CheckIfStagesCloudwatchLogsExist)(checkConfig, stages, "AWS_APG_001")
+	go yatas.CheckTest(checkConfig.Wg, c, "AWS_APG_002", CheckIfStagesProtectedByAcl)(checkConfig, stages, "AWS_APG_002")
 
 	go func() {
 		for t := range checkConfig.Queue {
