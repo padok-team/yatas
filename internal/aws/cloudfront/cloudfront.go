@@ -141,24 +141,24 @@ func CheckIfACLUsed(wg *sync.WaitGroup, s aws.Config, d []types.DistributionSumm
 
 func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []results.Check) {
 
+	var checkConfig yatas.CheckConfig
+	checkConfig.Init(s, c)
 	var checks []results.Check
 	d := GetAllCloudfront(s)
-	var wg sync.WaitGroup
-	queueResults := make(chan results.Check, 10)
-	go yatas.CheckTest(&wg, c, "AWS_CFT_001", CheckIfCloudfrontTLS1_2Minimum)(&wg, s, d, "AWS_CFT_001", queueResults)
-	go yatas.CheckTest(&wg, c, "AWS_CFT_002", CheckIfHTTPSOnly)(&wg, s, d, "AWS_CFT_002", queueResults)
-	go yatas.CheckTest(&wg, c, "AWS_CFT_003", CheckIfStandardLogginEnabled)(&wg, s, d, "AWS_CFT_003", queueResults)
-	go yatas.CheckTest(&wg, c, "AWS_CFT_004", CheckIfCookieLogginEnabled)(&wg, s, d, "AWS_CFT_004", queueResults)
-	go yatas.CheckTest(&wg, c, "AWS_CFT_005", CheckIfACLUsed)(&wg, s, d, "AWS_CFT_005", queueResults)
+	go yatas.CheckTest(checkConfig.Wg, c, "AWS_CFT_001", CheckIfCloudfrontTLS1_2Minimum)(checkConfig.Wg, checkConfig.ConfigAWS, d, "AWS_CFT_001", checkConfig.Queue)
+	go yatas.CheckTest(checkConfig.Wg, c, "AWS_CFT_002", CheckIfHTTPSOnly)(checkConfig.Wg, checkConfig.ConfigAWS, d, "AWS_CFT_002", checkConfig.Queue)
+	go yatas.CheckTest(checkConfig.Wg, c, "AWS_CFT_003", CheckIfStandardLogginEnabled)(checkConfig.Wg, checkConfig.ConfigAWS, d, "AWS_CFT_003", checkConfig.Queue)
+	go yatas.CheckTest(checkConfig.Wg, c, "AWS_CFT_004", CheckIfCookieLogginEnabled)(checkConfig.Wg, checkConfig.ConfigAWS, d, "AWS_CFT_004", checkConfig.Queue)
+	go yatas.CheckTest(checkConfig.Wg, c, "AWS_CFT_005", CheckIfACLUsed)(checkConfig.Wg, checkConfig.ConfigAWS, d, "AWS_CFT_005", checkConfig.Queue)
 
 	go func() {
-		for t := range queueResults {
+		for t := range checkConfig.Queue {
 			checks = append(checks, t)
-			wg.Done()
+			checkConfig.Wg.Done()
 		}
 	}()
 
-	wg.Wait()
+	checkConfig.Wg.Wait()
 
 	queue <- checks
 }

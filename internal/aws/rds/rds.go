@@ -174,25 +174,25 @@ func CheckIfDeleteProtectionEnabled(wg *sync.WaitGroup, s aws.Config, instances 
 
 func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []results.Check) {
 
+	var checkConfig yatas.CheckConfig
+	checkConfig.Init(s, c)
 	var checks []results.Check
 	instances := GetListRDS(s)
-	var wg sync.WaitGroup
-	queueResults := make(chan results.Check, 10)
 
-	go yatas.CheckTest(&wg, c, "AWS_RDS_001", checkIfEncryptionEnabled)(&wg, s, instances, "AWS_RDS_001", queueResults)
-	go yatas.CheckTest(&wg, c, "AWS_RDS_002", checkIfBackupEnabled)(&wg, s, instances, "AWS_RDS_002", queueResults)
-	go yatas.CheckTest(&wg, c, "AWS_RDS_003", checkIfAutoUpgradeEnabled)(&wg, s, instances, "AWS_RDS_003", queueResults)
-	go yatas.CheckTest(&wg, c, "AWS_RDS_004", checkIfRDSPrivateEnabled)(&wg, s, instances, "AWS_RDS_004", queueResults)
-	go yatas.CheckTest(&wg, c, "AWS_RDS_005", CheckIfLoggingEnabled)(&wg, s, instances, "AWS_RDS_005", queueResults)
-	go yatas.CheckTest(&wg, c, "AWS_RDS_006", CheckIfDeleteProtectionEnabled)(&wg, s, instances, "AWS_RDS_006", queueResults)
+	go yatas.CheckTest(checkConfig.Wg, c, "AWS_RDS_001", checkIfEncryptionEnabled)(checkConfig.Wg, checkConfig.ConfigAWS, instances, "AWS_RDS_001", checkConfig.Queue)
+	go yatas.CheckTest(checkConfig.Wg, c, "AWS_RDS_002", checkIfBackupEnabled)(checkConfig.Wg, checkConfig.ConfigAWS, instances, "AWS_RDS_002", checkConfig.Queue)
+	go yatas.CheckTest(checkConfig.Wg, c, "AWS_RDS_003", checkIfAutoUpgradeEnabled)(checkConfig.Wg, checkConfig.ConfigAWS, instances, "AWS_RDS_003", checkConfig.Queue)
+	go yatas.CheckTest(checkConfig.Wg, c, "AWS_RDS_004", checkIfRDSPrivateEnabled)(checkConfig.Wg, checkConfig.ConfigAWS, instances, "AWS_RDS_004", checkConfig.Queue)
+	go yatas.CheckTest(checkConfig.Wg, c, "AWS_RDS_005", CheckIfLoggingEnabled)(checkConfig.Wg, checkConfig.ConfigAWS, instances, "AWS_RDS_005", checkConfig.Queue)
+	go yatas.CheckTest(checkConfig.Wg, c, "AWS_RDS_006", CheckIfDeleteProtectionEnabled)(checkConfig.Wg, checkConfig.ConfigAWS, instances, "AWS_RDS_006", checkConfig.Queue)
 	go func() {
-		for t := range queueResults {
+		for t := range checkConfig.Queue {
 			checks = append(checks, t)
-			wg.Done()
+			checkConfig.Wg.Done()
 		}
 	}()
 
-	wg.Wait()
+	checkConfig.Wg.Wait()
 
 	queue <- checks
 }

@@ -186,28 +186,26 @@ func CheckS3Location(s aws.Config, bucket, region string) bool {
 
 func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []results.Check) {
 
+	var checkConfig yatas.CheckConfig
+	checkConfig.Init(s, c)
 	var checks []results.Check
-	logger.Debug("Starting S3 tests")
 	buckets := GetListS3(s)
-	// Create a wait group to wait for all the goroutines to finish
-	var wg sync.WaitGroup
-	queueResults := make(chan results.Check, 10)
 
-	go yatas.CheckTest(&wg, c, "AWS_S3_001", checkIfEncryptionEnabled)(&wg, s, buckets, "AWS_S3_001", queueResults)
-	go yatas.CheckTest(&wg, c, "AWS_S3_002", CheckIfBucketInOneZone)(&wg, s, buckets, "AWS_S3_002", queueResults)
-	go yatas.CheckTest(&wg, c, "AWS_S3_003", CheckIfBucketObjectVersioningEnabled)(&wg, s, buckets, "AWS_S3_003", queueResults)
-	go yatas.CheckTest(&wg, c, "AWS_S3_004", CheckIfObjectLockConfigurationEnabled)(&wg, s, buckets, "AWS_S3_004", queueResults)
-	go yatas.CheckTest(&wg, c, "AWS_S3_005", CheckIfS3PublicAccessBlockEnabled)(&wg, s, buckets, "AWS_S3_005", queueResults)
+	go yatas.CheckTest(checkConfig.Wg, c, "AWS_S3_001", checkIfEncryptionEnabled)(checkConfig.Wg, checkConfig.ConfigAWS, buckets, "AWS_S3_001", checkConfig.Queue)
+	go yatas.CheckTest(checkConfig.Wg, c, "AWS_S3_002", CheckIfBucketInOneZone)(checkConfig.Wg, checkConfig.ConfigAWS, buckets, "AWS_S3_002", checkConfig.Queue)
+	go yatas.CheckTest(checkConfig.Wg, c, "AWS_S3_003", CheckIfBucketObjectVersioningEnabled)(checkConfig.Wg, checkConfig.ConfigAWS, buckets, "AWS_S3_003", checkConfig.Queue)
+	go yatas.CheckTest(checkConfig.Wg, c, "AWS_S3_004", CheckIfObjectLockConfigurationEnabled)(checkConfig.Wg, checkConfig.ConfigAWS, buckets, "AWS_S3_004", checkConfig.Queue)
+	go yatas.CheckTest(checkConfig.Wg, c, "AWS_S3_005", CheckIfS3PublicAccessBlockEnabled)(checkConfig.Wg, checkConfig.ConfigAWS, buckets, "AWS_S3_005", checkConfig.Queue)
 	// Wait for all the goroutines to finish
 
 	go func() {
-		for t := range queueResults {
+		for t := range checkConfig.Queue {
 			checks = append(checks, t)
-			wg.Done()
+			checkConfig.Wg.Done()
 		}
 	}()
 
-	wg.Wait()
+	checkConfig.Wg.Wait()
 
 	queue <- checks
 }

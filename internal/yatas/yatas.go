@@ -4,8 +4,10 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/schollz/progressbar/v3"
 	"github.com/stangirard/yatas/internal/helpers"
+	"github.com/stangirard/yatas/internal/results"
 	"gopkg.in/yaml.v3"
 )
 
@@ -110,4 +112,18 @@ func CheckTest[A, B, C, D, E any](wg *sync.WaitGroup, config *Config, id string,
 func CheckMacroTest[A, B, C, D any](wg *sync.WaitGroup, config *Config, test func(A, B, C, D)) func(A, B, C, D) {
 	wg.Add(1)
 	return test
+}
+
+type CheckConfig struct {
+	Wg          *sync.WaitGroup
+	ConfigAWS   aws.Config
+	Queue       chan results.Check
+	ConfigYatas *Config
+}
+
+func (c *CheckConfig) Init(s aws.Config, config *Config) {
+	c.Wg = &sync.WaitGroup{}
+	c.ConfigAWS = s
+	c.Queue = make(chan results.Check, 10)
+	c.ConfigYatas = config
 }
