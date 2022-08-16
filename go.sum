@@ -22,6 +22,8 @@ github.com/aws/aws-sdk-go-v2/service/autoscaling v1.23.10 h1:D6U34TKBxZ2rtP9QO0g
 github.com/aws/aws-sdk-go-v2/service/autoscaling v1.23.10/go.mod h1:9XhGxXdcX9/pZwXc3BzvVQtSBVJCwL2IH2AtrfsUGBY=
 github.com/aws/aws-sdk-go-v2/service/cloudfront v1.18.8 h1:cEyz3Baavcf/o04SdkRIekONUCZDc130qQJBUUPrxiY=
 github.com/aws/aws-sdk-go-v2/service/cloudfront v1.18.8/go.mod h1:8xLCTMp8Lp0TFMitgMZUGC1LQvt0aaLCt4PHxblxvT0=
+github.com/aws/aws-sdk-go-v2/service/cloudfront v1.19.0 h1:iCHSAFGILA2zVjmn9lLNJk31fyoCg3z/perLEPPGjUU=
+github.com/aws/aws-sdk-go-v2/service/cloudfront v1.19.0/go.mod h1:8xLCTMp8Lp0TFMitgMZUGC1LQvt0aaLCt4PHxblxvT0=
 github.com/aws/aws-sdk-go-v2/service/cloudtrail v1.16.8 h1:8y6EWV7zcggA+1mhI4AndodYLaDwTAD2m8kG2BGKQ48=
 github.com/aws/aws-sdk-go-v2/service/cloudtrail v1.16.8/go.mod h1:DAYVFTQuWYLg/8haillTZEi0k1w/QAFEahIkreT4DMY=
 github.com/aws/aws-sdk-go-v2/service/dynamodb v1.15.13 h1:x8pzEpqNoX56iN8d7Pjtda8RRZNOOcGbqkRYsCUZ/Xg=
