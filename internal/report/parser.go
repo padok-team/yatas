@@ -9,8 +9,8 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func parseReportYaml(filename string) ([]results.Check, error) {
-	var report []results.Check
+func parseReportYaml(filename string) ([]results.Tests, error) {
+	var report []results.Tests
 	data, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return report, err
@@ -27,27 +27,30 @@ func GenerateReadme(filename string) error {
 	splitFirst := ""
 	splitSecond := ""
 	splitFirstMap := make(map[string]int)
-	for _, check := range report {
-		split := strings.Split(check.Id, "_")
-		splitFirstMap[split[0]]++
-	}
-	for _, check := range report {
-		split := strings.Split(check.Id, "_")
-		if split[0] != splitFirst {
-			splitFirst = split[0]
-			fmt.Printf("\n## %s - %d Checks\n", split[0], splitFirstMap[split[0]])
+	for _, tests := range report {
+		for _, check := range tests.Checks {
+			split := strings.Split(check.Id, "_")
+			splitFirstMap[split[0]]++
 		}
-		if split[1] != splitSecond {
-			splitSecond = split[1]
-			// If split is in fullName map then use fullName as name
-			if fullName, ok := fullName[split[1]]; ok {
-				fmt.Printf("\n### %s\n", fullName)
-			} else {
-				fmt.Printf("\n### %s\n", split[1])
+		for _, check := range tests.Checks {
+			split := strings.Split(check.Id, "_")
+			if split[0] != splitFirst {
+				splitFirst = split[0]
+				fmt.Printf("\n## %s - %d Checks\n", split[0], splitFirstMap[split[0]])
 			}
-		}
-		fmt.Printf("- %s %s\n", check.Id, check.Name)
+			if split[1] != splitSecond {
+				splitSecond = split[1]
+				// If split is in fullName map then use fullName as name
+				if fullName, ok := fullName[split[1]]; ok {
+					fmt.Printf("\n### %s\n", fullName)
+				} else {
+					fmt.Printf("\n### %s\n", split[1])
+				}
+			}
+			fmt.Printf("- %s %s\n", check.Id, check.Name)
 
+		}
+		break
 	}
 	return nil
 }

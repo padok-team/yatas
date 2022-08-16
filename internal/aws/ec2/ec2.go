@@ -46,6 +46,24 @@ func CheckIfEC2PublicIP(wg *sync.WaitGroup, s aws.Config, instances []types.Inst
 	queueToAdd <- check
 }
 
+func CheckIfMonitoringEnabled(wg *sync.WaitGroup, s aws.Config, instances []types.Instance, testName string, queueToAdd chan results.Check) {
+	logger.Info(fmt.Sprint("Running ", testName))
+	var check results.Check
+	check.InitCheck("Monitoring Enabled", "Check if all instances have monitoring enabled", testName)
+	for _, instance := range instances {
+		if instance.Monitoring.State != types.MonitoringStateEnabled {
+			Message := "EC2 instance " + *instance.InstanceId + " has no monitoring enabled"
+			result := results.Result{Status: "FAIL", Message: Message, ResourceID: *instance.InstanceId}
+			check.AddResult(result)
+		} else {
+			Message := "EC2 instance " + *instance.InstanceId + " has monitoring enabled"
+			result := results.Result{Status: "OK", Message: Message, ResourceID: *instance.InstanceId}
+			check.AddResult(result)
+		}
+	}
+	queueToAdd <- check
+}
+
 func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []results.Check) {
 
 	var checks []results.Check
@@ -53,6 +71,7 @@ func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []r
 	var wg sync.WaitGroup
 	queueResults := make(chan results.Check, 10)
 	go yatas.CheckTest(&wg, c, "AWS_EC2_001", CheckIfEC2PublicIP)(&wg, s, instances, "AWS_EC2_001", queueResults)
+	go yatas.CheckTest(&wg, c, "AWS_EC2_002", CheckIfMonitoringEnabled)(&wg, s, instances, "AWS_EC2_002", queueResults)
 
 	go func() {
 		for t := range queueResults {

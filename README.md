@@ -83,14 +83,14 @@ plugins:
       - "AWS_VPC_004"
 ```
 
-## AWS - 43 Checks
+## AWS - 44 Checks
 
 ### APIGateway
 - AWS_APG_001 Apigateway Cloudwatch Logs enabled
-- AWS_APG_002 Apigateway Stages protected by ACL
+- AWS_APG_002 APIGateway stages protected, by ACL
 
 ### AutoScaling
-- AWS_ASG_001 Autoscaling DesiredCapacity MaxCapacity below 80%
+- AWS_ASG_001 Autoscaling Desired Capacity vs Max Capacity below 80%
 
 ### Backup
 - AWS_BAK_001 EC2 Snapshots Encryption
@@ -100,7 +100,7 @@ plugins:
 - AWS_CFT_001 TLS 1.2 Minimum
 - AWS_CFT_002 Cloudfront HTTPS Only
 - AWS_CFT_003 Standard Logging Enabled
-- AWS_CFT_004 Cookie Logging Enabled
+- AWS_CFT_004 Cookies Logging Enabled
 - AWS_CFT_005 ACL Used
 
 ### CloudTrail
@@ -114,6 +114,7 @@ plugins:
 
 ### EC2
 - AWS_EC2_001 EC2 Public IP
+- AWS_EC2_002 Monitoring Enabled
 
 ### ECR
 - AWS_ECR_001 Image Scanning Enabled
