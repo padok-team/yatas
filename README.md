@@ -83,7 +83,7 @@ plugins:
       - "AWS_VPC_004"
 ```
 
-## AWS - 44 Checks
+## AWS - 45 Checks
 
 ### APIGateway
 - AWS_APG_001 Apigateway Cloudwatch Logs enabled
@@ -121,6 +121,9 @@ plugins:
 
 ### LoadBalancer
 - AWS_ELB_001 ELB Access Logs Enabled
+
+### GD
+- AWS_GD_001 GuardDuty Enabled
 
 ### IAM
 - AWS_IAM_001 IAM 2FA
