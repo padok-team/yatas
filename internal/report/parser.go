@@ -71,4 +71,6 @@ var fullName = map[string]string{
 	"APG": "APIGateway",
 	"ASG": "AutoScaling",
 	"ELB": "LoadBalancer",
+	"GDT": "GuardDuty",
+	"SHU": "SecurityHub",
 }

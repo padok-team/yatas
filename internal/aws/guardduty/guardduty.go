@@ -45,7 +45,7 @@ func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []r
 	checkConfig.Init(s, c)
 	var checks []results.Check
 	guardyDetectors := GetDetectors(checkConfig.ConfigAWS)
-	go yatas.CheckTest(checkConfig.Wg, c, "AWS_GDT_001", CheckIfGuarddutyEnabled)(checkConfig, "AWS_GD_001", guardyDetectors)
+	go yatas.CheckTest(checkConfig.Wg, c, "AWS_GDT_001", CheckIfGuarddutyEnabled)(checkConfig, "AWS_GDT_001", guardyDetectors)
 	go func() {
 		for t := range checkConfig.Queue {
 			checks = append(checks, t)

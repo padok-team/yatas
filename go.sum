@@ -20,8 +20,6 @@ github.com/aws/aws-sdk-go-v2/service/apigateway v1.15.14 h1:yilnyCQHotVy8M/+q0xo
 github.com/aws/aws-sdk-go-v2/service/apigateway v1.15.14/go.mod h1:SmENhc95N2pJEDm4JMIQ+HG5B/SACuBed3uWkXuLfpc=
 github.com/aws/aws-sdk-go-v2/service/autoscaling v1.23.10 h1:D6U34TKBxZ2rtP9QO0gqMmy0yU2zfXzkgmFcwr64Fv0=
 github.com/aws/aws-sdk-go-v2/service/autoscaling v1.23.10/go.mod h1:9XhGxXdcX9/pZwXc3BzvVQtSBVJCwL2IH2AtrfsUGBY=
-github.com/aws/aws-sdk-go-v2/service/cloudfront v1.18.8 h1:cEyz3Baavcf/o04SdkRIekONUCZDc130qQJBUUPrxiY=
-github.com/aws/aws-sdk-go-v2/service/cloudfront v1.18.8/go.mod h1:8xLCTMp8Lp0TFMitgMZUGC1LQvt0aaLCt4PHxblxvT0=
 github.com/aws/aws-sdk-go-v2/service/cloudfront v1.19.0 h1:iCHSAFGILA2zVjmn9lLNJk31fyoCg3z/perLEPPGjUU=
 github.com/aws/aws-sdk-go-v2/service/cloudfront v1.19.0/go.mod h1:8xLCTMp8Lp0TFMitgMZUGC1LQvt0aaLCt4PHxblxvT0=
 github.com/aws/aws-sdk-go-v2/service/cloudtrail v1.16.8 h1:8y6EWV7zcggA+1mhI4AndodYLaDwTAD2m8kG2BGKQ48=
