@@ -55,7 +55,6 @@ func TestCheckIfDesiredCapacityMaxCapacityBelow80percent(t *testing.T) {
 			tt.args.checkConfig.Wg.Add(1)
 			go func() {
 				for check := range tt.args.checkConfig.Queue {
-					tt.args.checkConfig.Wg.Done()
 					if check.Status != "OK" {
 						t.Errorf("CheckIfDesiredCapacityMaxCapacityBelow80percent() = %v", t)
 					}

@@ -65,7 +65,7 @@ func TestCheckIfHTTPSOnly(t *testing.T) {
 			go func() {
 				for r := range tt.args.checkConfig.Queue {
 					if r.Status != "OK" {
-						t.Errorf("CheckIfHTTPSOnly() = %v, want %v", r.Status, results.StatusOK)
+						t.Errorf("CheckIfHTTPSOnly() = %v, want %v", r.Status, "OK")
 					}
 					tt.args.checkConfig.Wg.Done()
 				}
