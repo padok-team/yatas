@@ -1,0 +1,477 @@
+- account: Université
+  checks:
+    - name: Apigateway Cloudwatch Logs enabled
+      description: Check if all cloudwatch logs are enabled for all stages
+      status: OK
+      id: AWS_APG_001
+      results: []
+    - name: APIGateway stages protected, by ACL
+      description: Check if all stages are protected by ACL
+      status: OK
+      id: AWS_APG_002
+      results: []
+    - name: Autoscaling Desired Capacity vs Max Capacity below 80%
+      description: Check if all autoscaling groups have a desired capacity below 80%
+      status: OK
+      id: AWS_ASG_001
+      results: []
+    - name: EC2 Snapshots Encryption
+      description: Check if all snapshots are encrypted
+      status: FAIL
+      id: AWS_BAK_001
+      results:
+        - message: Snapshot snap-0c4176fc053e30841 is not encrypted
+          status: FAIL
+          resource_arn: snap-0c4176fc053e30841
+    - name: EC2 Snapshots Age
+      description: Check if all snapshots are younger than 24h
+      status: OK
+      id: AWS_BAK_002
+      results:
+        - message: Volume vol-04f57bf4c92666d94 has no snapshot younger than 24h
+          status: FAIL
+          resource_arn: vol-04f57bf4c92666d94
+        - message: Volume vol-0fc4d5d3d5238d6c4 has no snapshot younger than 24h
+          status: FAIL
+          resource_arn: vol-0fc4d5d3d5238d6c4
+    - name: TLS 1.2 Minimum
+      description: Check if all cloudfront distributions have TLS 1.2 minimum
+      status: OK
+      id: AWS_CFT_001
+      results: []
+    - name: Cloudfront HTTPS Only
+      description: Check if all cloudfront distributions are HTTPS only
+      status: OK
+      id: AWS_CFT_002
+      results: []
+    - name: Standard Logging Enabled
+      description: Check if all cloudfront distributions have standard logging enabled
+      status: OK
+      id: AWS_CFT_003
+      results: []
+    - name: Cookies Logging Enabled
+      description: Check if all cloudfront distributions have cookies logging enabled
+      status: OK
+      id: AWS_CFT_004
+      results: []
+    - name: ACL Used
+      description: Check if all cloudfront distributions have an ACL used
+      status: OK
+      id: AWS_CFT_005
+      results: []
+    - name: Cloudtrails Encryption
+      description: check if all cloudtrails are encrypted
+      status: OK
+      id: AWS_CLD_001
+      results:
+        - message: Cloudtrail test is encrypted
+          status: OK
+          resource_arn: arn:aws:cloudtrail:eu-west-2:766369807176:trail/test
+    - name: Cloudtrails Global Service Events Activated
+      description: check if all cloudtrails have global service events enabled
+      status: OK
+      id: AWS_CLD_002
+      results:
+        - message: Cloudtrail test has global service events enabled
+          status: OK
+          resource_arn: arn:aws:cloudtrail:eu-west-2:766369807176:trail/test
+    - name: Cloudtrails Multi Region
+      description: check if all cloudtrails are multi region
+      status: OK
+      id: AWS_CLD_003
+      results:
+        - message: Cloudtrail test is multi region
+          status: OK
+          resource_arn: arn:aws:cloudtrail:eu-west-2:766369807176:trail/test
+    - name: Dynamodb Encryption
+      description: Check if DynamoDB encryption is enabled
+      status: OK
+      id: AWS_DYN_001
+      results: []
+    - name: Dynamodb Continuous Backups
+      description: Check if DynamoDB continuous backups are enabled
+      status: OK
+      id: AWS_DYN_002
+      results: []
+    - name: EC2 Public IP
+      description: Check if all instances have a public IP
+      status: OK
+      id: AWS_EC2_001
+      results: []
+    - name: Monitoring Enabled
+      description: Check if all instances have monitoring enabled
+      status: OK
+      id: AWS_EC2_002
+      results: []
+    - name: Image Scanning Enabled
+      description: Check if all ECRs have image scanning enabled
+      status: OK
+      id: AWS_ECR_001
+      results: []
+    - name: ELB Access Logs Enabled
+      description: Check if all load balancers have access logs enabled
+      status: OK
+      id: AWS_ELB_001
+      results: []
+    - name: GuardDuty Enabled
+      description: Check if GuardDuty is enabled
+      status: FAIL
+      id: AWS_GD_001
+      results:
+        - message: GuardDuty is not enabled
+          status: FAIL
+          resource_arn: ""
+    - name: IAM 2FA
+      description: Check if all users have 2FA activated
+      status: FAIL
+      id: AWS_IAM_001
+      results:
+        - message: 2FA is not activated on annefloref
+          status: FAIL
+          resource_arn: annefloref
+        - message: 2FA is not activated on nicolasb
+          status: FAIL
+          resource_arn: nicolasb
+        - message: 2FA is not activated on nicolast
+          status: FAIL
+          resource_arn: nicolast
+        - message: 2FA is not activated on remip
+          status: FAIL
+          resource_arn: remip
+        - message: 2FA is not activated on robinb
+          status: FAIL
+          resource_arn: robinb
+        - message: 2FA is not activated on stang
+          status: FAIL
+          resource_arn: stang
+    - name: IAM Access Key Age
+      description: Check if all users have access key less than 90 days
+      status: FAIL
+      id: AWS_IAM_002
+      results:
+        - message: Access key AKIAZ6SZBRYQO6OZSEXS is older than 90 days on annefloref
+          status: FAIL
+          resource_arn: annefloref
+        - message: Access key AKIAZ6SZBRYQINLH5GI7 is older than 90 days on nicolasb
+          status: FAIL
+          resource_arn: nicolasb
+        - message: Access key AKIAZ6SZBRYQNY3TGU52 is older than 90 days on nicolast
+          status: FAIL
+          resource_arn: nicolast
+        - message: Access key AKIAZ6SZBRYQBL2OCTJ7 is younger than 90 days on remip
+          status: OK
+          resource_arn: remip
+        - message: Access key AKIAZ6SZBRYQHJJPOSF6 is older than 90 days on robinb
+          status: FAIL
+          resource_arn: robinb
+        - message: Access key AKIAZ6SZBRYQG7DCOZWO is younger than 90 days on robinb
+          status: OK
+          resource_arn: robinb
+        - message: Access key AKIAZ6SZBRYQNNIUXG5E is younger than 90 days on stang
+          status: OK
+          resource_arn: stang
+        - message: Access key AKIAZ6SZBRYQGVRH7RH2 is younger than 90 days on stang
+          status: OK
+          resource_arn: stang
+    - name: IAM User Can Elevate Rights
+      description: Check if  users can elevate rights
+      status: FAIL
+      id: AWS_IAM_003
+      results:
+        - message: User nicolast can elevate rights with [[lambda:UpdateFunctionConfiguration] [sagemaker:CreateNotebookInstance sagemaker:CreatePresignedNotebookInstanceUrl iam:PassRole] [sagemaker:CreatePresignedNotebookInstanceUrl]] only last 3 policies
+          status: FAIL
+          resource_arn: nicolast
+        - message: User remip can elevate rights with [[lambda:UpdateFunctionConfiguration] [sagemaker:CreateNotebookInstance sagemaker:CreatePresignedNotebookInstanceUrl iam:PassRole] [sagemaker:CreatePresignedNotebookInstanceUrl]] only last 3 policies
+          status: FAIL
+          resource_arn: remip
+        - message: User robinb can elevate rights with [[lambda:UpdateFunctionConfiguration] [sagemaker:CreateNotebookInstance sagemaker:CreatePresignedNotebookInstanceUrl iam:PassRole] [sagemaker:CreatePresignedNotebookInstanceUrl]] only last 3 policies
+          status: FAIL
+          resource_arn: robinb
+        - message: User stang can elevate rights with [[lambda:UpdateFunctionConfiguration] [sagemaker:CreateNotebookInstance sagemaker:CreatePresignedNotebookInstanceUrl iam:PassRole] [sagemaker:CreatePresignedNotebookInstanceUrl]] only last 3 policies
+          status: FAIL
+          resource_arn: stang
+        - message: User nicolasb can elevate rights with [[lambda:UpdateFunctionConfiguration] [sagemaker:CreateNotebookInstance sagemaker:CreatePresignedNotebookInstanceUrl iam:PassRole] [sagemaker:CreatePresignedNotebookInstanceUrl]] only last 3 policies
+          status: FAIL
+          resource_arn: nicolasb
+        - message: User annefloref can elevate rights with [[lambda:UpdateFunctionConfiguration] [sagemaker:CreateNotebookInstance sagemaker:CreatePresignedNotebookInstanceUrl iam:PassRole] [sagemaker:CreatePresignedNotebookInstanceUrl]] only last 3 policies
+          status: FAIL
+          resource_arn: annefloref
+    - name: Lambda Private
+      description: Check if all Lambdas are private
+      status: OK
+      id: AWS_LMD_001
+      results: []
+    - name: Lambda In Security Group
+      description: Check if all Lambdas are in a security group
+      status: OK
+      id: AWS_LMD_002
+      results: []
+    - name: RDS Encryption
+      description: Check if RDS encryption is enabled
+      status: FAIL
+      id: AWS_RDS_001
+      results:
+        - message: RDS encryption is not enabled on database-1
+          status: FAIL
+          resource_arn: arn:aws:rds:eu-west-3:684160290336:db:database-1
+        - message: RDS encryption is enabled on database-2
+          status: OK
+          resource_arn: arn:aws:rds:eu-west-3:684160290336:db:database-2
+    - name: RDS Backup
+      description: Check if RDS backup is enabled
+      status: FAIL
+      id: AWS_RDS_002
+      results:
+        - message: RDS backup is not enabled on database-1
+          status: FAIL
+          resource_arn: arn:aws:rds:eu-west-3:684160290336:db:database-1
+        - message: RDS backup is enabled on database-2
+          status: OK
+          resource_arn: arn:aws:rds:eu-west-3:684160290336:db:database-2
+    - name: RDS Minor Auto Upgrade
+      description: Check if RDS minor auto upgrade is enabled
+      status: OK
+      id: AWS_RDS_003
+      results:
+        - message: RDS auto upgrade is enabled on database-1
+          status: OK
+          resource_arn: arn:aws:rds:eu-west-3:684160290336:db:database-1
+        - message: RDS auto upgrade is enabled on database-2
+          status: OK
+          resource_arn: arn:aws:rds:eu-west-3:684160290336:db:database-2
+    - name: RDS Private
+      description: Check if RDS private is enabled
+      status: OK
+      id: AWS_RDS_004
+      results:
+        - message: RDS private is enabled on database-1
+          status: OK
+          resource_arn: arn:aws:rds:eu-west-3:684160290336:db:database-1
+        - message: RDS private is enabled on database-2
+          status: OK
+          resource_arn: arn:aws:rds:eu-west-3:684160290336:db:database-2
+    - name: RDS Logging
+      description: Check if RDS logging is enabled
+      status: OK
+      id: AWS_RDS_005
+      results:
+        - message: RDS logging is not enabled on database-2
+          status: FAIL
+          resource_arn: arn:aws:rds:eu-west-3:684160290336:db:database-2
+    - name: RDS Delete Protection
+      description: Check if RDS delete protection is enabled
+      status: FAIL
+      id: AWS_RDS_006
+      results:
+        - message: RDS delete protection is not enabled on database-1
+          status: FAIL
+          resource_arn: arn:aws:rds:eu-west-3:684160290336:db:database-1
+        - message: RDS delete protection is not enabled on database-2
+          status: FAIL
+          resource_arn: arn:aws:rds:eu-west-3:684160290336:db:database-2
+    - name: S3 Encryption
+      description: Check if S3 encryption is enabled
+      status: FAIL
+      id: AWS_S3_001
+      results:
+        - message: S3 encryption is enabled on s3-yatas-test
+          status: OK
+          resource_arn: s3-yatas-test
+        - message: S3 encryption is not enabled on test-2-yatas
+          status: FAIL
+          resource_arn: test-2-yatas
+    - name: S3 Bucket in one zone
+      description: Check if S3 buckets are in one zone
+      status: OK
+      id: AWS_S3_002
+      results:
+        - message: S3 bucket s3-yatas-test is in the same zone as the account
+          status: OK
+          resource_arn: s3-yatas-test
+        - message: S3 bucket test-2-yatas is in the same zone as the account
+          status: OK
+          resource_arn: test-2-yatas
+    - name: S3 Bucket object versioning
+      description: Check if S3 buckets are using object versioning
+      status: FAIL
+      id: AWS_S3_003
+      results:
+        - message: S3 bucket s3-yatas-test is not using object versioning
+          status: FAIL
+          resource_arn: s3-yatas-test
+        - message: S3 bucket test-2-yatas is not using object versioning
+          status: FAIL
+          resource_arn: test-2-yatas
+    - name: S3 Bucket retention policy
+      description: Check if S3 buckets are using retention policy
+      status: FAIL
+      id: AWS_S3_004
+      results:
+        - message: S3 bucket s3-yatas-test is not using retention policy
+          status: FAIL
+          resource_arn: s3-yatas-test
+        - message: S3 bucket test-2-yatas is not using retention policy
+          status: FAIL
+          resource_arn: test-2-yatas
+    - name: S3 Public Access Block
+      description: Check if S3 buckets are using Public Access Block
+      status: OK
+      id: AWS_S3_005
+      results:
+        - message: S3 bucket s3-yatas-test is using Public Access Block
+          status: OK
+          resource_arn: s3-yatas-test
+        - message: S3 bucket test-2-yatas is using Public Access Block
+          status: OK
+          resource_arn: test-2-yatas
+    - name: SecurityHub Activated
+      description: Check if SecurityHub is activated for the account
+      status: FAIL
+      id: AWS_SHU_001
+      results:
+        - message: SecurityHub is not activated
+          status: FAIL
+          resource_arn: ""
+    - name: SecurityHub Auto Enabled
+      description: Check if SecurityHub is auto enabled for new accounts
+      status: FAIL
+      id: AWS_SHU_002
+      results:
+        - message: SecurityHub is not activated
+          status: FAIL
+          resource_arn: ""
+    - name: EC2 Volumes Encryption
+      description: Check if EC2 encryption is enabled
+      status: FAIL
+      id: AWS_VOL_001
+      results:
+        - message: EC2 encryption is enabled on vol-04f57bf4c92666d94
+          status: OK
+          resource_arn: vol-04f57bf4c92666d94
+        - message: EC2 encryption is not enabled on vol-0fc4d5d3d5238d6c4
+          status: FAIL
+          resource_arn: vol-0fc4d5d3d5238d6c4
+    - name: EC2 Volumes Type
+      description: Check if all volumes are of type gp3
+      status: FAIL
+      id: AWS_VOL_002
+      results:
+        - message: Volume vol-04f57bf4c92666d94 is not of type gp3
+          status: FAIL
+          resource_arn: vol-04f57bf4c92666d94
+        - message: Volume vol-0fc4d5d3d5238d6c4 is not of type gp3
+          status: FAIL
+          resource_arn: vol-0fc4d5d3d5238d6c4
+    - name: EC2 Volumes Snapshots
+      description: Check if all volumes have snapshots
+      status: FAIL
+      id: AWS_VOL_003
+      results:
+        - message: Volume vol-04f57bf4c92666d94 has snapshot snap-0c4176fc053e30841
+          status: OK
+          resource_arn: vol-04f57bf4c92666d94
+        - message: Volume vol-0fc4d5d3d5238d6c4 has no snapshot
+          status: FAIL
+          resource_arn: vol-0fc4d5d3d5238d6c4
+    - name: VPC CIDR
+      description: Check if VPC CIDR is /20 or bigger
+      status: OK
+      id: AWS_VPC_001
+      results:
+        - message: VPC CIDR is /20 or bigger on vpc-08ffec87e034a8953
+          status: OK
+          resource_arn: vpc-08ffec87e034a8953
+        - message: VPC CIDR is /20 or bigger on vpc-0b2c22d807fc44f37
+          status: OK
+          resource_arn: vpc-0b2c22d807fc44f37
+        - message: VPC CIDR is /20 or bigger on vpc-0024a11d205909a29
+          status: OK
+          resource_arn: vpc-0024a11d205909a29
+        - message: VPC CIDR is /20 or bigger on vpc-0eb1f4880065f4d85
+          status: OK
+          resource_arn: vpc-0eb1f4880065f4d85
+    - name: VPC Only One
+      description: Check if VPC has only one VPC
+      status: FAIL
+      id: AWS_VPC_002
+      results:
+        - message: VPC Id:vpc-08ffec87e034a8953
+          status: FAIL
+          resource_arn: vpc-08ffec87e034a8953
+        - message: VPC Id:vpc-0b2c22d807fc44f37
+          status: FAIL
+          resource_arn: vpc-0b2c22d807fc44f37
+        - message: VPC Id:vpc-0024a11d205909a29
+          status: FAIL
+          resource_arn: vpc-0024a11d205909a29
+        - message: VPC Id:vpc-0eb1f4880065f4d85
+          status: FAIL
+          resource_arn: vpc-0eb1f4880065f4d85
+    - name: VPC Gateway
+      description: Check if VPC has only one gateway
+      status: OK
+      id: AWS_VPC_003
+      results:
+        - message: VPC has only one gateway on vpc-08ffec87e034a8953
+          status: OK
+          resource_arn: vpc-08ffec87e034a8953
+        - message: VPC has only one gateway on vpc-0b2c22d807fc44f37
+          status: OK
+          resource_arn: vpc-0b2c22d807fc44f37
+        - message: VPC has only one gateway on vpc-0024a11d205909a29
+          status: OK
+          resource_arn: vpc-0024a11d205909a29
+        - message: VPC has only one gateway on vpc-0eb1f4880065f4d85
+          status: OK
+          resource_arn: vpc-0eb1f4880065f4d85
+    - name: VPC Flow Logs
+      description: Check if VPC Flow Logs are enabled
+      status: FAIL
+      id: AWS_VPC_004
+      results:
+        - message: VPC Flow Logs are enabled on vpc-08ffec87e034a8953
+          status: OK
+          resource_arn: vpc-08ffec87e034a8953
+        - message: VPC Flow Logs are not enabled on vpc-0b2c22d807fc44f37
+          status: FAIL
+          resource_arn: vpc-0b2c22d807fc44f37
+        - message: VPC Flow Logs are not enabled on vpc-0024a11d205909a29
+          status: FAIL
+          resource_arn: vpc-0024a11d205909a29
+        - message: VPC Flow Logs are not enabled on vpc-0eb1f4880065f4d85
+          status: FAIL
+          resource_arn: vpc-0eb1f4880065f4d85
+    - name: At least 2 subnets
+      description: Check if VPC has at least 2 subnets
+      status: FAIL
+      id: AWS_VPC_005
+      results:
+        - message: VPC vpc-08ffec87e034a8953 has less than 2 subnets
+          status: FAIL
+          resource_arn: vpc-08ffec87e034a8953
+        - message: VPC vpc-0b2c22d807fc44f37 has at least 2 subnets
+          status: OK
+          resource_arn: vpc-0b2c22d807fc44f37
+        - message: VPC vpc-0024a11d205909a29 has at least 2 subnets
+          status: OK
+          resource_arn: vpc-0024a11d205909a29
+        - message: VPC vpc-0eb1f4880065f4d85 has at least 2 subnets
+          status: OK
+          resource_arn: vpc-0eb1f4880065f4d85
+    - name: Subnets in different zone
+      description: Check if Subnet are in different zone
+      status: OK
+      id: AWS_VPC_006
+      results:
+        - message: Subnets are in same zone on vpc-08ffec87e034a8953
+          status: FAIL
+          resource_arn: vpc-08ffec87e034a8953
+        - message: Subnets are in different zone on vpc-0b2c22d807fc44f37
+          status: OK
+          resource_arn: vpc-0b2c22d807fc44f37
+        - message: Subnets are in different zone on vpc-0024a11d205909a29
+          status: OK
+          resource_arn: vpc-0024a11d205909a29
+        - message: Subnets are in different zone on vpc-0eb1f4880065f4d85
+          status: OK
+          resource_arn: vpc-0eb1f4880065f4d85
