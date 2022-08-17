@@ -55,6 +55,7 @@ func TestCheckIfStagesProtectedByAcl(t *testing.T) {
 					tt.args.checkConfig.Wg.Done()
 				}
 			}()
+			tt.args.checkConfig.Wg.Wait()
 		})
 	}
 }
