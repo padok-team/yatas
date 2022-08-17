@@ -3,7 +3,6 @@ package cloudfront
 import (
 	"context"
 	"fmt"
-	"strings"
 	"sync"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -13,53 +12,6 @@ import (
 	"github.com/stangirard/yatas/internal/results"
 	"github.com/stangirard/yatas/internal/yatas"
 )
-
-func GetAllCloudfront(s aws.Config) []types.DistributionSummary {
-	svc := cloudfront.NewFromConfig(s)
-	input := &cloudfront.ListDistributionsInput{}
-	result, err := svc.ListDistributions(context.TODO(), input)
-	if err != nil {
-		panic(err)
-	}
-	return result.DistributionList.Items
-}
-
-func CheckIfCloudfrontTLS1_2Minimum(checkConfig yatas.CheckConfig, d []types.DistributionSummary, testName string) {
-	logger.Info(fmt.Sprint("Running ", testName))
-	var check results.Check
-	check.InitCheck("TLS 1.2 Minimum", "Check if all cloudfront distributions have TLS 1.2 minimum", testName)
-	for _, cloudfront := range d {
-		if cloudfront.ViewerCertificate != nil && strings.Contains(string(cloudfront.ViewerCertificate.MinimumProtocolVersion), "TLSv1.2") {
-			Message := "TLS 1.2 minimum is set on " + *cloudfront.Id
-			result := results.Result{Status: "OK", Message: Message, ResourceID: *cloudfront.Id}
-			check.AddResult(result)
-		} else {
-			Message := "TLS 1.2 minimum is not set on " + *cloudfront.Id
-			result := results.Result{Status: "FAIL", Message: Message, ResourceID: *cloudfront.Id}
-			check.AddResult(result)
-		}
-	}
-	checkConfig.Queue <- check
-}
-
-func CheckIfHTTPSOnly(checkConfig yatas.CheckConfig, d []types.DistributionSummary, testName string) {
-	logger.Info(fmt.Sprint("Running ", testName))
-	var check results.Check
-	check.InitCheck("Cloudfront HTTPS Only", "Check if all cloudfront distributions are HTTPS only", testName)
-	for _, cloudfront := range d {
-		if cloudfront.DefaultCacheBehavior != nil && cloudfront.DefaultCacheBehavior.ViewerProtocolPolicy == "https-only" || cloudfront.DefaultCacheBehavior.ViewerProtocolPolicy == "redirect-to-https" {
-			Message := "Cloudfront distribution is HTTPS only on " + *cloudfront.Id
-			result := results.Result{Status: "OK", Message: Message, ResourceID: *cloudfront.Id}
-			check.AddResult(result)
-		} else {
-			Message := "Cloudfront distribution is not HTTPS only on " + *cloudfront.Id
-			result := results.Result{Status: "FAIL", Message: Message, ResourceID: *cloudfront.Id}
-			check.AddResult(result)
-		}
-	}
-
-	checkConfig.Queue <- check
-}
 
 func CheckIfStandardLogginEnabled(checkConfig yatas.CheckConfig, d []types.DistributionSummary, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))

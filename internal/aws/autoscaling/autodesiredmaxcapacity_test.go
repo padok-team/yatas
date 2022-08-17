@@ -52,7 +52,7 @@ func TestCheckIfDesiredCapacityMaxCapacityBelow80percent(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			CheckIfDesiredCapacityMaxCapacityBelow80percent(tt.args.checkConfig, tt.args.groups, tt.args.testName)
-			tt.args.checkConfig.Wg.Add(2)
+			tt.args.checkConfig.Wg.Add(1)
 			go func() {
 				for check := range tt.args.checkConfig.Queue {
 					tt.args.checkConfig.Wg.Done()
