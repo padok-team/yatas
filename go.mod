@@ -10,7 +10,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/cloudfront v1.19.0
 	github.com/aws/aws-sdk-go-v2/service/cloudtrail v1.16.8
 	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.15.13
-	github.com/aws/aws-sdk-go-v2/service/ec2 v1.52.1
+	github.com/aws/aws-sdk-go-v2/service/ec2 v1.53.0
 	github.com/aws/aws-sdk-go-v2/service/ecr v1.17.12
 	github.com/aws/aws-sdk-go-v2/service/elasticloadbalancingv2 v1.18.12
 	github.com/aws/aws-sdk-go-v2/service/guardduty v1.15.4
