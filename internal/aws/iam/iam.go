@@ -14,43 +14,6 @@ import (
 	"github.com/stangirard/yatas/internal/yatas"
 )
 
-func GetAllUsers(s aws.Config) []types.User {
-	svc := iam.NewFromConfig(s)
-	input := &iam.ListUsersInput{}
-	result, err := svc.ListUsers(context.TODO(), input)
-	if err != nil {
-		panic(err)
-	}
-	return result.Users
-}
-
-func CheckIf2FAActivated(checkConfig yatas.CheckConfig, users []types.User, testName string) {
-	logger.Info(fmt.Sprint("Running ", testName))
-	var check results.Check
-	check.InitCheck("IAM 2FA", "Check if all users have 2FA activated", testName)
-	svc := iam.NewFromConfig(checkConfig.ConfigAWS)
-	for _, user := range users {
-		// List MFA devices for the user
-		params := &iam.ListMFADevicesInput{
-			UserName: user.UserName,
-		}
-		resp, err := svc.ListMFADevices(context.TODO(), params)
-		if err != nil {
-			panic(err)
-		}
-		if len(resp.MFADevices) == 0 {
-			Message := "2FA is not activated on " + *user.UserName
-			result := results.Result{Status: "FAIL", Message: Message, ResourceID: *user.UserName}
-			check.AddResult(result)
-		} else {
-			Message := "2FA is activated on " + *user.UserName
-			result := results.Result{Status: "OK", Message: Message, ResourceID: *user.UserName}
-			check.AddResult(result)
-		}
-	}
-	checkConfig.Queue <- check
-}
-
 func CheckAgeAccessKeyLessThan90Days(checkConfig yatas.CheckConfig, users []types.User, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
@@ -128,8 +91,9 @@ func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []r
 	checkConfig.Init(s, c)
 	var checks []results.Check
 	users := GetAllUsers(s)
+	mfaForUsers := GetMfaForUsers(s, users)
 
-	go yatas.CheckTest(checkConfig.Wg, c, "AWS_IAM_001", CheckIf2FAActivated)(checkConfig, users, "AWS_IAM_001")
+	go yatas.CheckTest(checkConfig.Wg, c, "AWS_IAM_001", CheckIf2FAActivated)(checkConfig, mfaForUsers, "AWS_IAM_001")
 	go yatas.CheckTest(checkConfig.Wg, c, "AWS_IAM_002", CheckAgeAccessKeyLessThan90Days)(checkConfig, users, "AWS_IAM_002")
 	go yatas.CheckTest(checkConfig.Wg, c, "AWS_IAM_003", CheckIfUserCanElevateRights)(checkConfig, users, "AWS_IAM_003")
 	go func() {
