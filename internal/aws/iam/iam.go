@@ -82,11 +82,6 @@ func CheckAgeAccessKeyLessThan90Days(checkConfig yatas.CheckConfig, users []type
 	checkConfig.Queue <- check
 }
 
-type UserPolicies struct {
-	UserName string
-	Policies []Policy
-}
-
 func CheckIfUserCanElevateRights(checkConfig yatas.CheckConfig, users []types.User, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check

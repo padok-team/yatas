@@ -19,3 +19,8 @@ type Statement struct {
 	NotResource  []string            `json:"NotResource,omitempty"`  // matches everything except
 	Condition    []string            `json:"Condition,omitempty"`    // conditions for when a policy is in effect
 }
+
+type UserPolicies struct {
+	UserName string
+	Policies []Policy
+}
