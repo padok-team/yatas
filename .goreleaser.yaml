@@ -28,8 +28,13 @@ changelog:
   sort: asc
   filters:
     exclude:
-      - '^docs:'
-      - '^test:'
+      - '^docs'
+      - '^test'
+      - '^style'
+      - '^refactor'
+      - '^build'
+      - '^ci'
+
 brews:
 - name: yatas
   homepage: https://github.com/stangirard/yatas
