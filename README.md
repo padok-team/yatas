@@ -1,5 +1,6 @@
 # YATAS
 [![codecov](https://codecov.io/gh/StanGirard/YATAS/branch/main/graph/badge.svg?token=OFGny8Za4x)](https://codecov.io/gh/StanGirard/YATAS)
+
 Yet Another Testing &amp; Auditing Solution 
 
 ## Features
