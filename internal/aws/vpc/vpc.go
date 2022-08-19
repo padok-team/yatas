@@ -1,172 +1,12 @@
 package vpc
 
 import (
-	"context"
-	"fmt"
 	"sync"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/service/ec2"
-	"github.com/aws/aws-sdk-go-v2/service/ec2/types"
-	"github.com/stangirard/yatas/internal/logger"
 	"github.com/stangirard/yatas/internal/results"
 	"github.com/stangirard/yatas/internal/yatas"
 )
-
-func checkIfVPCFLowLogsEnabled(checkConfig yatas.CheckConfig, vpcs []types.Vpc, testName string) {
-	logger.Info(fmt.Sprint("Running ", testName))
-	var check results.Check
-	check.InitCheck("VPC Flow Logs", "Check if VPC Flow Logs are enabled", testName)
-	svc := ec2.NewFromConfig(checkConfig.ConfigAWS)
-	for _, vpc := range vpcs {
-		params := &ec2.DescribeFlowLogsInput{
-			Filter: []types.Filter{
-				{
-					Name: aws.String("resource-id"),
-					Values: []string{
-						*vpc.VpcId,
-					},
-				},
-			},
-		}
-		resp, err := svc.DescribeFlowLogs(context.TODO(), params)
-		if err != nil {
-			panic(err)
-		}
-		if len(resp.FlowLogs) == 0 {
-			Message := "VPC Flow Logs are not enabled on " + *vpc.VpcId
-			result := results.Result{Status: "FAIL", Message: Message, ResourceID: *vpc.VpcId}
-			check.AddResult(result)
-		} else {
-			Message := "VPC Flow Logs are enabled on " + *vpc.VpcId
-			result := results.Result{Status: "OK", Message: Message, ResourceID: *vpc.VpcId}
-			check.AddResult(result)
-		}
-	}
-	checkConfig.Queue <- check
-}
-
-func checkIfOnlyOneGateway(checkConfig yatas.CheckConfig, vpcs []types.Vpc, testName string) {
-	logger.Info(fmt.Sprint("Running ", testName))
-	var check results.Check
-	check.InitCheck("VPC Gateway", "Check if VPC has only one gateway", testName)
-	svc := ec2.NewFromConfig(checkConfig.ConfigAWS)
-	for _, vpc := range vpcs {
-		params := &ec2.DescribeInternetGatewaysInput{
-			Filters: []types.Filter{
-				{
-					Name: aws.String("attachment.vpc-id"),
-					Values: []string{
-						*vpc.VpcId,
-					},
-				},
-			},
-		}
-		resp, err := svc.DescribeInternetGateways(context.TODO(), params)
-		if err != nil {
-			panic(err)
-		}
-		if len(resp.InternetGateways) > 1 {
-			Message := "VPC has more than one gateway on " + *vpc.VpcId
-			result := results.Result{Status: "FAIL", Message: Message, ResourceID: *vpc.VpcId}
-			check.Results = append(check.Results, result)
-		} else {
-			Message := "VPC has only one gateway on " + *vpc.VpcId
-			result := results.Result{Status: "OK", Message: Message, ResourceID: *vpc.VpcId}
-			check.AddResult(result)
-		}
-	}
-	checkConfig.Queue <- check
-}
-
-func checkIfOnlyOneVPC(checkConfig yatas.CheckConfig, vpcs []types.Vpc, testName string) {
-	logger.Info(fmt.Sprint("Running ", testName))
-	var check results.Check
-	check.InitCheck("VPC Only One", "Check if VPC has only one VPC", testName)
-	for _, vpc := range vpcs {
-		if len(vpcs) > 1 {
-			Message := "VPC Id:" + *vpc.VpcId
-			result := results.Result{Status: "FAIL", Message: Message, ResourceID: *vpc.VpcId}
-			check.AddResult(result)
-		} else {
-			Message := "VPC Id:" + *vpc.VpcId
-			result := results.Result{Status: "OK", Message: Message, ResourceID: *vpc.VpcId}
-			check.AddResult(result)
-		}
-	}
-
-	checkConfig.Queue <- check
-}
-
-func CheckIfSubnetInDifferentZone(checkConfig yatas.CheckConfig, vpcs []types.Vpc, testName string) {
-	logger.Info(fmt.Sprint("Running ", testName))
-	var check results.Check
-	check.InitCheck("Subnets in different zone", "Check if Subnet are in different zone", testName)
-	svc := ec2.NewFromConfig(checkConfig.ConfigAWS)
-	for _, vpc := range vpcs {
-		params := &ec2.DescribeSubnetsInput{
-			Filters: []types.Filter{
-				{
-					Name: aws.String("vpc-id"),
-					Values: []string{
-						*vpc.VpcId,
-					},
-				},
-			},
-		}
-		resp, err := svc.DescribeSubnets(context.TODO(), params)
-		if err != nil {
-			panic(err)
-		}
-		subnetsAZ := make(map[string]int)
-		for _, subnet := range resp.Subnets {
-			subnetsAZ[*subnet.AvailabilityZone]++
-		}
-		if len(subnetsAZ) > 1 {
-			Message := "Subnets are in different zone on " + *vpc.VpcId
-			result := results.Result{Status: "OK", Message: Message, ResourceID: *vpc.VpcId}
-			check.Results = append(check.Results, result)
-		} else {
-			Message := "Subnets are in same zone on " + *vpc.VpcId
-			result := results.Result{Status: "FAIL", Message: Message, ResourceID: *vpc.VpcId}
-			check.Results = append(check.Results, result)
-		}
-	}
-	checkConfig.Queue <- check
-}
-
-func CheckIfAtLeast2Subnets(checkConfig yatas.CheckConfig, vpcs []types.Vpc, testName string) {
-	logger.Info(fmt.Sprint("Running ", testName))
-	var check results.Check
-	check.InitCheck("At least 2 subnets", "Check if VPC has at least 2 subnets", testName)
-	svc := ec2.NewFromConfig(checkConfig.ConfigAWS)
-	for _, vpc := range vpcs {
-		params := &ec2.DescribeSubnetsInput{
-			Filters: []types.Filter{
-				{
-					Name: aws.String("vpc-id"),
-					Values: []string{
-						*vpc.VpcId,
-					},
-				},
-			},
-		}
-		resp, err := svc.DescribeSubnets(context.TODO(), params)
-		if err != nil {
-			panic(err)
-		}
-		if len(resp.Subnets) < 2 {
-			Message := "VPC " + *vpc.VpcId + " has less than 2 subnets"
-			result := results.Result{Status: "FAIL", Message: Message, ResourceID: *vpc.VpcId}
-			check.AddResult(result)
-		} else {
-			Message := "VPC " + *vpc.VpcId + " has at least 2 subnets"
-			result := results.Result{Status: "OK", Message: Message, ResourceID: *vpc.VpcId}
-			check.AddResult(result)
-		}
-	}
-	checkConfig.Queue <- check
-}
 
 func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []results.Check) {
 
@@ -174,13 +14,16 @@ func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []r
 	checkConfig.Init(s, c)
 	var checks []results.Check
 	vpcs := GetListVPC(s)
+	subnetsforvpcs := GetSubnetForVPCS(s, vpcs)
+	internetGatewaysForVpc := GetInternetGatewaysForVpc(s, vpcs)
+	vpcFlowLogs := GetFlowLogsForVpc(s, vpcs)
 
 	go yatas.CheckTest(checkConfig.Wg, c, "AWS_VPC_001", checkCIDR20)(checkConfig, vpcs, "AWS_VPC_001")
 	go yatas.CheckTest(checkConfig.Wg, c, "AWS_VPC_002", checkIfOnlyOneVPC)(checkConfig, vpcs, "AWS_VPC_002")
-	go yatas.CheckTest(checkConfig.Wg, c, "AWS_VPC_003", checkIfOnlyOneGateway)(checkConfig, vpcs, "AWS_VPC_003")
-	go yatas.CheckTest(checkConfig.Wg, c, "AWS_VPC_004", checkIfVPCFLowLogsEnabled)(checkConfig, vpcs, "AWS_VPC_004")
-	go yatas.CheckTest(checkConfig.Wg, c, "AWS_VPC_005", CheckIfAtLeast2Subnets)(checkConfig, vpcs, "AWS_VPC_005")
-	go yatas.CheckTest(checkConfig.Wg, c, "AWS_VPC_006", CheckIfSubnetInDifferentZone)(checkConfig, vpcs, "AWS_VPC_006")
+	go yatas.CheckTest(checkConfig.Wg, c, "AWS_VPC_003", checkIfOnlyOneGateway)(checkConfig, internetGatewaysForVpc, "AWS_VPC_003")
+	go yatas.CheckTest(checkConfig.Wg, c, "AWS_VPC_004", checkIfVPCFLowLogsEnabled)(checkConfig, vpcFlowLogs, "AWS_VPC_004")
+	go yatas.CheckTest(checkConfig.Wg, c, "AWS_VPC_005", CheckIfAtLeast2Subnets)(checkConfig, subnetsforvpcs, "AWS_VPC_005")
+	go yatas.CheckTest(checkConfig.Wg, c, "AWS_VPC_006", CheckIfSubnetInDifferentZone)(checkConfig, subnetsforvpcs, "AWS_VPC_006")
 	go func() {
 		for t := range checkConfig.Queue {
 			checks = append(checks, t)
