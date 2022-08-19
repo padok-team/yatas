@@ -5,7 +5,6 @@
     ":automergePatch"
   ],
   "platformAutomerge": true,
-  "automergeType": "branch",
   "postUpdateOptions": ["gomodTidy", "gomodUpdateImportPaths"],
   "packageRules": [
     {
