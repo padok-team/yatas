@@ -48,7 +48,7 @@ func TestCheckIfStagesCloudwatchLogsExist(t *testing.T) {
 					if check.Id != tt.args.testName {
 						t.Errorf("Check name is not equal to test name")
 					}
-					if check.Results[0].Status != "OK" {
+					if check.Status != "OK" {
 						t.Errorf("Check status is not equal to OK")
 					}
 					tt.args.checkConfig.Wg.Done()
@@ -91,7 +91,7 @@ func TestCheckIfStagesCloudwatchLogsExistFail(t *testing.T) {
 			tt.args.checkConfig.Wg.Add(1)
 			go func() {
 				for check := range tt.args.checkConfig.Queue {
-					if check.Results[0].Status != "FAIL" {
+					if check.Status != "FAIL" {
 						t.Errorf("Check status is not equal to FAIL")
 					}
 					tt.args.checkConfig.Wg.Done()

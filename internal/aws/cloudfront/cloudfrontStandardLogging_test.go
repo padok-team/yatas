@@ -46,8 +46,8 @@ func TestCheckIfStandardLogginEnabled(t *testing.T) {
 			tt.args.checkConfig.Wg.Add(1)
 			go func() {
 				for check := range tt.args.checkConfig.Queue {
-					if check.Results[0].Status != "OK" {
-						t.Errorf("CheckIfStandardLogginEnabled() = %v, want %v", check.Results[0].Status, "OK")
+					if check.Status != "OK" {
+						t.Errorf("CheckIfStandardLogginEnabled() = %v, want %v", check.Status, "OK")
 					}
 					tt.args.checkConfig.Wg.Done()
 				}
@@ -110,8 +110,8 @@ func TestCheckIfStandardLogginEnabledFail(t *testing.T) {
 			tt.args.checkConfig.Wg.Add(1)
 			go func() {
 				for check := range tt.args.checkConfig.Queue {
-					if check.Results[0].Status != "FAIL" {
-						t.Errorf("CheckIfStandardLogginEnabled() = %v, want %v", check.Results[0].Status, "FAIL")
+					if check.Status != "FAIL" {
+						t.Errorf("CheckIfStandardLogginEnabled() = %v, want %v", check.Status, "FAIL")
 					}
 					tt.args.checkConfig.Wg.Done()
 				}

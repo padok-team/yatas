@@ -26,7 +26,7 @@ func CheckIfLoggingEnabled(checkConfig yatas.CheckConfig, instances []types.DBIn
 		} else {
 			Message := "RDS logging is not enabled on " + *instance.DBInstanceIdentifier
 			result := results.Result{Status: "FAIL", Message: Message, ResourceID: *instance.DBInstanceArn}
-			check.Results = append(check.Results, result)
+			check.AddResult(result)
 		}
 	}
 	checkConfig.Queue <- check

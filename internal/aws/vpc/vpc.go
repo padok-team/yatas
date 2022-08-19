@@ -3,8 +3,6 @@ package vpc
 import (
 	"context"
 	"fmt"
-	"strconv"
-	"strings"
 	"sync"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
@@ -14,45 +12,6 @@ import (
 	"github.com/stangirard/yatas/internal/results"
 	"github.com/stangirard/yatas/internal/yatas"
 )
-
-func GetListVPC(s aws.Config) []types.Vpc {
-	svc := ec2.NewFromConfig(s)
-	input := &ec2.DescribeVpcsInput{}
-	result, err := svc.DescribeVpcs(context.TODO(), input)
-	if err != nil {
-		panic(err)
-	}
-	return result.Vpcs
-}
-
-func checkCIDR20(checkConfig yatas.CheckConfig, vpcs []types.Vpc, testName string) {
-	logger.Info(fmt.Sprint("Running ", testName))
-	var check results.Check
-	check.InitCheck("VPC CIDR", "Check if VPC CIDR is /20 or bigger", testName)
-	svc := ec2.NewFromConfig(checkConfig.ConfigAWS)
-	for _, vpc := range vpcs {
-		params := &ec2.DescribeVpcsInput{
-			VpcIds: []string{*vpc.VpcId},
-		}
-		resp, err := svc.DescribeVpcs(context.TODO(), params)
-		if err != nil {
-			panic(err)
-		}
-		cidr := *resp.Vpcs[0].CidrBlock
-		// split the cidr to / and get the last part as an int
-		cidrInt, _ := strconv.Atoi(strings.Split(cidr, "/")[1])
-		if cidrInt > 20 {
-			Message := "VPC CIDR is not /20 or bigger on " + *vpc.VpcId
-			result := results.Result{Status: "FAIL", Message: Message, ResourceID: *vpc.VpcId}
-			check.AddResult(result)
-		} else {
-			Message := "VPC CIDR is /20 or bigger on " + *vpc.VpcId
-			result := results.Result{Status: "OK", Message: Message, ResourceID: *vpc.VpcId}
-			check.AddResult(result)
-		}
-	}
-	checkConfig.Queue <- check
-}
 
 func checkIfVPCFLowLogsEnabled(checkConfig yatas.CheckConfig, vpcs []types.Vpc, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))

@@ -27,7 +27,7 @@ func CheckIfSnapshotYoungerthan24h(checkConfig yatas.CheckConfig, vs couple, tes
 		if !snapshotYoungerThan24h {
 			Message := "Volume " + *volume.VolumeId + " has no snapshot younger than 24h"
 			result := results.Result{Status: "FAIL", Message: Message, ResourceID: *volume.VolumeId}
-			check.Results = append(check.Results, result)
+			check.AddResult(result)
 		} else {
 			Message := "Volume " + *volume.VolumeId + " has snapshot younger than 24h"
 			result := results.Result{Status: "OK", Message: Message, ResourceID: *volume.VolumeId}

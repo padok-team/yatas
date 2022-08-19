@@ -17,7 +17,7 @@ func checkIfAutoUpgradeEnabled(checkConfig yatas.CheckConfig, instances []types.
 		if !instance.AutoMinorVersionUpgrade {
 			Message := "RDS auto upgrade is not enabled on " + *instance.DBInstanceIdentifier
 			result := results.Result{Status: "FAIL", Message: Message, ResourceID: *instance.DBInstanceArn}
-			check.Results = append(check.Results, result)
+			check.AddResult(result)
 		} else {
 			Message := "RDS auto upgrade is enabled on " + *instance.DBInstanceIdentifier
 			result := results.Result{Status: "OK", Message: Message, ResourceID: *instance.DBInstanceArn}

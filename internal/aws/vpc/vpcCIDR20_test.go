@@ -1,4 +1,4 @@
-package volumes
+package vpc
 
 import (
 	"sync"
@@ -10,10 +10,10 @@ import (
 	"github.com/stangirard/yatas/internal/yatas"
 )
 
-func TestCheckIfVolumesTypeGP3(t *testing.T) {
+func Test_checkCIDR20(t *testing.T) {
 	type args struct {
 		checkConfig yatas.CheckConfig
-		volumes     []types.Volume
+		vpcs        []types.Vpc
 		testName    string
 	}
 	tests := []struct {
@@ -21,43 +21,41 @@ func TestCheckIfVolumesTypeGP3(t *testing.T) {
 		args args
 	}{
 		{
-			name: "TestCheckIfVolumesTypeGP3",
+			name: "Test_checkCIDR20",
 			args: args{
-				checkConfig: yatas.CheckConfig{
-					Wg:    &sync.WaitGroup{},
-					Queue: make(chan results.Check, 1),
-				},
-				volumes: []types.Volume{
+				checkConfig: yatas.CheckConfig{Queue: make(chan results.Check, 1), Wg: &sync.WaitGroup{}},
+				vpcs: []types.Vpc{
 					{
-						VolumeId:   aws.String("test"),
-						Encrypted:  aws.Bool(true),
-						VolumeType: types.VolumeTypeGp3,
+						CidrBlock: aws.String("32.32.32.0/20"),
+						VpcId:     aws.String("test"),
 					},
 				},
+				testName: "AWS_VPC_001",
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			CheckIfVolumesTypeGP3(tt.args.checkConfig, tt.args.volumes, tt.args.testName)
+			checkCIDR20(tt.args.checkConfig, tt.args.vpcs, tt.args.testName)
 			tt.args.checkConfig.Wg.Add(1)
 			go func() {
 				for check := range tt.args.checkConfig.Queue {
 					if check.Status != "OK" {
-						t.Errorf("CheckIfVolumesTypeGP3() = %v, want %v", check.Status, "OK")
+						t.Errorf("checkCIDR20() = %v", t)
 					}
 					tt.args.checkConfig.Wg.Done()
 				}
+
 			}()
 			tt.args.checkConfig.Wg.Wait()
 		})
 	}
 }
 
-func TestCheckIfVolumesTypeGP3Fail(t *testing.T) {
+func Test_checkCIDR21(t *testing.T) {
 	type args struct {
 		checkConfig yatas.CheckConfig
-		volumes     []types.Volume
+		vpcs        []types.Vpc
 		testName    string
 	}
 	tests := []struct {
@@ -65,33 +63,31 @@ func TestCheckIfVolumesTypeGP3Fail(t *testing.T) {
 		args args
 	}{
 		{
-			name: "TestCheckIfVolumesTypeGP3",
+			name: "Test_checkCIDR20",
 			args: args{
-				checkConfig: yatas.CheckConfig{
-					Wg:    &sync.WaitGroup{},
-					Queue: make(chan results.Check, 1),
-				},
-				volumes: []types.Volume{
+				checkConfig: yatas.CheckConfig{Queue: make(chan results.Check, 1), Wg: &sync.WaitGroup{}},
+				vpcs: []types.Vpc{
 					{
-						VolumeId:   aws.String("test"),
-						Encrypted:  aws.Bool(true),
-						VolumeType: types.VolumeTypeSt1,
+						CidrBlock: aws.String("32.32.32.0/21"),
+						VpcId:     aws.String("test"),
 					},
 				},
+				testName: "AWS_VPC_001",
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			CheckIfVolumesTypeGP3(tt.args.checkConfig, tt.args.volumes, tt.args.testName)
+			checkCIDR20(tt.args.checkConfig, tt.args.vpcs, tt.args.testName)
 			tt.args.checkConfig.Wg.Add(1)
 			go func() {
 				for check := range tt.args.checkConfig.Queue {
 					if check.Status != "FAIL" {
-						t.Errorf("CheckIfVolumesTypeGP3() = %v, want %v", check.Status, "FAIL")
+						t.Errorf("checkCIDR21() = %v, expected : %s", t, "FAIL")
 					}
 					tt.args.checkConfig.Wg.Done()
 				}
+
 			}()
 			tt.args.checkConfig.Wg.Wait()
 		})
