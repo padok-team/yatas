@@ -15,15 +15,26 @@ func CheckIfLoggingEnabled(checkConfig yatas.CheckConfig, instances []types.DBIn
 	check.InitCheck("RDS Logging", "Check if RDS logging is enabled", testName)
 	for _, instance := range instances {
 		if instance.EnabledCloudwatchLogsExports != nil {
+			found := false
 			for _, export := range instance.EnabledCloudwatchLogsExports {
 				if export == "audit" {
 					Message := "RDS logging is enabled on " + *instance.DBInstanceIdentifier
 					result := results.Result{Status: "OK", Message: Message, ResourceID: *instance.DBInstanceArn}
 					check.AddResult(result)
+					found = true
+
 					break
+
 				}
 			}
+			if !found {
+				Message := "RDS logging is not enabled on " + *instance.DBInstanceIdentifier
+				result := results.Result{Status: "FAIL", Message: Message, ResourceID: *instance.DBInstanceArn}
+				check.AddResult(result)
+				continue
+			}
 		} else {
+			fmt.Println("not found 2")
 			Message := "RDS logging is not enabled on " + *instance.DBInstanceIdentifier
 			result := results.Result{Status: "FAIL", Message: Message, ResourceID: *instance.DBInstanceArn}
 			check.AddResult(result)
