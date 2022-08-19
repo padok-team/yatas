@@ -14,7 +14,7 @@ func CheckIfHTTPSOnly(checkConfig yatas.CheckConfig, d []types.DistributionSumma
 	var check results.Check
 	check.InitCheck("Cloudfront HTTPS Only", "Check if all cloudfront distributions are HTTPS only", testName)
 	for _, cloudfront := range d {
-		if cloudfront.DefaultCacheBehavior != nil && cloudfront.DefaultCacheBehavior.ViewerProtocolPolicy == "https-only" || cloudfront.DefaultCacheBehavior.ViewerProtocolPolicy == "redirect-to-https" {
+		if cloudfront.DefaultCacheBehavior != nil && (cloudfront.DefaultCacheBehavior.ViewerProtocolPolicy == "https-only" || cloudfront.DefaultCacheBehavior.ViewerProtocolPolicy == "redirect-to-https") {
 			Message := "Cloudfront distribution is HTTPS only on " + *cloudfront.Id
 			result := results.Result{Status: "OK", Message: Message, ResourceID: *cloudfront.Id}
 			check.AddResult(result)

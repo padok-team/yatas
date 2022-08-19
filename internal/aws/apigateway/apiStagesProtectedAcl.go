@@ -14,7 +14,7 @@ func CheckIfStagesProtectedByAcl(checkConfig yatas.CheckConfig, stages []types.S
 	var check results.Check
 	check.InitCheck("APIGateway stages protected, by ACL", "Check if all stages are protected by ACL", testName)
 	for _, stage := range stages {
-		if *stage.WebAclArn != "" {
+		if stage.WebAclArn != nil && *stage.WebAclArn != "" {
 			Message := "Stage " + *stage.StageName + " is protected by ACL"
 			result := results.Result{Status: "OK", Message: Message, ResourceID: *stage.StageName}
 			check.AddResult(result)

@@ -14,7 +14,7 @@ func CheckIfACLUsed(checkConfig yatas.CheckConfig, d []SummaryToConfig, testName
 	check.InitCheck("ACL Used", "Check if all cloudfront distributions have an ACL used", testName)
 	for _, cc := range d {
 
-		if *cc.config.WebACLId != "" {
+		if cc.config.WebACLId != nil && *cc.config.WebACLId != "" {
 			Message := "ACL is used on " + *cc.summary.Id
 			result := results.Result{Status: "OK", Message: Message, ResourceID: *cc.summary.Id}
 			check.AddResult(result)
