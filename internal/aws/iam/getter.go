@@ -2,6 +2,7 @@ package iam
 
 import (
 	"context"
+	"sync"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/iam"
@@ -60,4 +61,44 @@ func GetAccessKeysForUsers(s aws.Config, u []types.User) []AccessKeysForUser {
 		})
 	}
 	return accessKeysForUsers
+}
+
+func GetUserPolicies(users []types.User, s aws.Config) []UserPolicies {
+	var wgPolicyForUser sync.WaitGroup
+	wgPolicyForUser.Add(len(users))
+	queue := make(chan UserPolicies, 10)
+	for _, user := range users {
+		go GetAllPolicyForUser(&wgPolicyForUser, queue, s, user)
+	}
+	var userPolicies []UserPolicies
+	go func() {
+		for user := range queue {
+			userPolicies = append(userPolicies, user)
+			wgPolicyForUser.Done()
+		}
+
+	}()
+	wgPolicyForUser.Wait()
+	return userPolicies
+}
+
+type UserToPoliciesElevate struct {
+	UserName string
+	Policies [][]string
+}
+
+func GetUserToPoliciesElevate(userPolicies []UserPolicies) []UserToPoliciesElevate {
+	var usersElevatedPolicies []UserToPoliciesElevate
+	for _, user := range userPolicies {
+		elevation := CheckPolicyForAllowInRequiredPermission(user.Policies, requiredPermissions)
+		if elevation != nil {
+			usersElevatedPolicies = append(usersElevatedPolicies, UserToPoliciesElevate{
+				UserName: user.UserName,
+				Policies: elevation,
+			})
+		}
+
+	}
+
+	return usersElevatedPolicies
 }
