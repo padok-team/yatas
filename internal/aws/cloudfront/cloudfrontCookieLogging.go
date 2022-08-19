@@ -13,7 +13,7 @@ func CheckIfCookieLogginEnabled(checkConfig yatas.CheckConfig, d []SummaryToConf
 	var check results.Check
 	check.InitCheck("Cookies Logging Enabled", "Check if all cloudfront distributions have cookies logging enabled", testName)
 	for _, cc := range d {
-		if cc.config.Logging != nil && *cc.config.Logging.Enabled && *cc.config.Logging.IncludeCookies {
+		if cc.config.Logging != nil && *cc.config.Logging.Enabled && cc.config.Logging.IncludeCookies != nil && *cc.config.Logging.IncludeCookies {
 			Message := "Cookie logging is enabled on " + *cc.summary.Id
 			result := results.Result{Status: "OK", Message: Message, ResourceID: *cc.summary.Id}
 			check.AddResult(result)

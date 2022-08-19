@@ -14,7 +14,7 @@ func CheckIfStandardLogginEnabled(checkConfig yatas.CheckConfig, d []SummaryToCo
 	check.InitCheck("Standard Logging Enabled", "Check if all cloudfront distributions have standard logging enabled", testName)
 	for _, cc := range d {
 
-		if cc.config.Logging != nil && *cc.config.Logging.Enabled {
+		if cc.config.Logging != nil && cc.config.Logging.Enabled != nil && *cc.config.Logging.Enabled {
 			Message := "Standard logging is enabled on " + *cc.summary.Id
 			result := results.Result{Status: "OK", Message: Message, ResourceID: *cc.summary.Id}
 			check.AddResult(result)
