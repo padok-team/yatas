@@ -6,7 +6,7 @@
   ],
   "platformAutomerge": true,
   "automergeType": "branch",
-  "postUpdateOptions": ["gomodTidy"],
+  "postUpdateOptions": ["gomodTidy", "gomodUpdateImportPaths"],
   "packageRules": [
     {
       "matchPackagePatterns": [
