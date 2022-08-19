@@ -26,6 +26,8 @@ github.com/aws/aws-sdk-go-v2/service/cloudtrail v1.16.8 h1:8y6EWV7zcggA+1mhI4And
 github.com/aws/aws-sdk-go-v2/service/cloudtrail v1.16.8/go.mod h1:DAYVFTQuWYLg/8haillTZEi0k1w/QAFEahIkreT4DMY=
 github.com/aws/aws-sdk-go-v2/service/dynamodb v1.15.13 h1:x8pzEpqNoX56iN8d7Pjtda8RRZNOOcGbqkRYsCUZ/Xg=
 github.com/aws/aws-sdk-go-v2/service/dynamodb v1.15.13/go.mod h1:nDZhoTDS8glO/h5JZEfa9wIvgynUTVUCOJQCuChvQH8=
+github.com/aws/aws-sdk-go-v2/service/dynamodb v1.16.0 h1:ksj63LdkxB0PbZS2yv5o1aKlZmsBXjHgzeD3UGo2iR4=
+github.com/aws/aws-sdk-go-v2/service/dynamodb v1.16.0/go.mod h1:nDZhoTDS8glO/h5JZEfa9wIvgynUTVUCOJQCuChvQH8=
 github.com/aws/aws-sdk-go-v2/service/ec2 v1.53.0 h1:ykXBf42stQW1SyoLCuhd405kyTq440+3TIOkqhsETMs=
 github.com/aws/aws-sdk-go-v2/service/ec2 v1.53.0/go.mod h1:YbPg6ou7dlvFTJMmbV3zhec+A22S1Ow+ZB6k6xUs9oY=
 github.com/aws/aws-sdk-go-v2/service/ecr v1.17.12 h1:qBuF6exFzbKurzWqBR+7ptvnuKuWipm9LclsB7A/AUo=
@@ -48,6 +50,8 @@ github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.13.12 h1:QFjSOmHSb77qR
 github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.13.12/go.mod h1:MADjAN0GHFDuc5lRa5Y5ki+oIO/w7X4qczHy+OUx0IA=
 github.com/aws/aws-sdk-go-v2/service/lambda v1.23.8 h1:Pnw9C7lC3fkz4rhjLA6MxG4QD1XrSlpCgt+YWEymlAY=
 github.com/aws/aws-sdk-go-v2/service/lambda v1.23.8/go.mod h1:H2hKxv0SIV9+AQtxpiYWyonfWIVuR8ssAaBWLQSIXZg=
+github.com/aws/aws-sdk-go-v2/service/lambda v1.24.0 h1:Mzj2I0wbDY3nZZT1NSoR3/DQdAGp3F/4d70cwbNJhDY=
+github.com/aws/aws-sdk-go-v2/service/lambda v1.24.0/go.mod h1:H2hKxv0SIV9+AQtxpiYWyonfWIVuR8ssAaBWLQSIXZg=
 github.com/aws/aws-sdk-go-v2/service/rds v1.24.0 h1:MdkVN+IfOrMdcD4fhoHOVabXqsN1fyiTWMIKJhGnLzQ=
 github.com/aws/aws-sdk-go-v2/service/rds v1.24.0/go.mod h1:0+TdWzMBupUemfH+AlJ55BSD/KNPKyIcf5X3++cJOTA=
 github.com/aws/aws-sdk-go-v2/service/s3 v1.27.5 h1:h9qqTedYnA9JcWjKyLV6UYIMSdp91ExLCUbjbpDLH7A=
