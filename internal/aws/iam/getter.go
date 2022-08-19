@@ -39,3 +39,25 @@ func GetMfaForUsers(s aws.Config, u []types.User) []MFAForUser {
 	}
 	return mfaForUsers
 }
+
+type AccessKeysForUser struct {
+	UserName   string
+	AccessKeys []types.AccessKeyMetadata
+}
+
+func GetAccessKeysForUsers(s aws.Config, u []types.User) []AccessKeysForUser {
+	svc := iam.NewFromConfig(s)
+	input := &iam.ListAccessKeysInput{}
+	result, err := svc.ListAccessKeys(context.TODO(), input)
+	if err != nil {
+		panic(err)
+	}
+	var accessKeysForUsers []AccessKeysForUser
+	for _, user := range u {
+		accessKeysForUsers = append(accessKeysForUsers, AccessKeysForUser{
+			UserName:   *user.UserName,
+			AccessKeys: result.AccessKeyMetadata,
+		})
+	}
+	return accessKeysForUsers
+}
