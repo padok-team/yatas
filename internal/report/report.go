@@ -61,7 +61,6 @@ func RemoveIgnored(c *yatas.Config, tests []results.Tests) []results.Tests {
 			var checkTmp results.Check
 			checkTmp.InitCheck(check.Name, check.Description, check.Id)
 			for _, result := range check.Results {
-				fmt.Println("Check ", check.Id, " result ", result.Message)
 				if !IsIgnored(c, result, check) {
 					checkTmp.AddResult(result)
 				}
