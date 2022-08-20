@@ -127,3 +127,28 @@ func GetS3ToVersioning(s aws.Config, b []types.Bucket) []S3ToVersioning {
 	logger.Debug(fmt.Sprintf("%v", s3toVersioning))
 	return s3toVersioning
 }
+
+type S3ToObjectLock struct {
+	BucketName string
+	ObjectLock bool
+}
+
+func GetS3ToObjectLock(s aws.Config, b []types.Bucket) []S3ToObjectLock {
+	logger.Debug("Getting list of S3 buckets not in region")
+	svc := s3.NewFromConfig(s)
+
+	var s3toObjectLock []S3ToObjectLock
+	for _, bucket := range b {
+		params := &s3.GetObjectLockConfigurationInput{
+			Bucket: aws.String(*bucket.Name),
+		}
+		resp, err := svc.GetObjectLockConfiguration(context.TODO(), params)
+		if err != nil || (resp.ObjectLockConfiguration != nil && resp.ObjectLockConfiguration.ObjectLockEnabled != "Enabled") {
+			s3toObjectLock = append(s3toObjectLock, S3ToObjectLock{*bucket.Name, false})
+		} else {
+			s3toObjectLock = append(s3toObjectLock, S3ToObjectLock{*bucket.Name, true})
+		}
+	}
+	logger.Debug(fmt.Sprintf("%v", s3toObjectLock))
+	return s3toObjectLock
+}
