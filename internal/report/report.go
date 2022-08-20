@@ -51,27 +51,27 @@ func IsIgnored(c *yatas.Config, r results.Result, check results.Check) bool {
 }
 
 func RemoveIgnored(c *yatas.Config, tests []results.Tests) []results.Tests {
-	for _, checks := range tests {
-		var newChecks []results.Check
-		for _, check := range checks.Checks {
-			var checktmp results.Check
-			checktmp.Id = check.Id
-			checktmp.Name = check.Name
-			checktmp.Status = "OK"
-			checktmp.Results = []results.Result{}
+	resultsTmp := []results.Tests{}
+	for _, test := range tests {
+		var testTpm results.Tests
+		testTpm.Account = test.Account
+		testTpm.Checks = []results.Check{}
+
+		for _, check := range test.Checks {
+			var checkTmp results.Check
+			checkTmp.InitCheck(check.Name, check.Description, check.Id)
 			for _, result := range check.Results {
+				fmt.Println("Check ", check.Id, " result ", result.Message)
 				if !IsIgnored(c, result, check) {
-					if result.Status == "FAIL" {
-						checktmp.Status = "FAIL"
-					}
-					checktmp.Results = append(checktmp.Results, result)
+					checkTmp.AddResult(result)
 				}
 			}
-			newChecks = append(newChecks, checktmp)
+			testTpm.Checks = append(testTpm.Checks, checkTmp)
 		}
-		checks.Checks = newChecks
+		resultsTmp = append(resultsTmp, testTpm)
 	}
-	return tests
+
+	return resultsTmp
 }
 
 func CountChecksPassedOverall(checks []results.Check) (int, int) {
