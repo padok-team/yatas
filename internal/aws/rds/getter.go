@@ -4,15 +4,17 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/rds"
 	"github.com/aws/aws-sdk-go-v2/service/rds/types"
 	"github.com/stangirard/yatas/internal/logger"
 )
 
-func GetListRDS(s aws.Config) []types.DBInstance {
+type RDSGetObjectAPI interface {
+	DescribeDBInstances(ctx context.Context, input *rds.DescribeDBInstancesInput, optFns ...func(*rds.Options)) (*rds.DescribeDBInstancesOutput, error)
+}
+
+func GetListRDS(svc RDSGetObjectAPI) []types.DBInstance {
 	logger.Debug("Getting list of RDS instances")
-	svc := rds.NewFromConfig(s)
 
 	params := &rds.DescribeDBInstancesInput{}
 	resp, err := svc.DescribeDBInstances(context.TODO(), params)

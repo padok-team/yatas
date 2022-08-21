@@ -4,6 +4,7 @@ import (
 	"sync"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/rds"
 	"github.com/stangirard/yatas/internal/results"
 	"github.com/stangirard/yatas/internal/yatas"
 )
@@ -13,7 +14,9 @@ func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []r
 	var checkConfig yatas.CheckConfig
 	checkConfig.Init(s, c)
 	var checks []results.Check
-	instances := GetListRDS(s)
+	svc := rds.NewFromConfig(s)
+
+	instances := GetListRDS(svc)
 
 	go yatas.CheckTest(checkConfig.Wg, c, "AWS_RDS_001", checkIfEncryptionEnabled)(checkConfig, instances, "AWS_RDS_001")
 	go yatas.CheckTest(checkConfig.Wg, c, "AWS_RDS_002", checkIfBackupEnabled)(checkConfig, instances, "AWS_RDS_002")
