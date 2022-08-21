@@ -3,14 +3,17 @@ package apigateway
 import (
 	"context"
 
-	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/apigateway"
 	"github.com/aws/aws-sdk-go-v2/service/apigateway/types"
-	"github.com/stangirard/yatas/internal/yatas"
 )
 
-func GetApiGateways(s aws.Config) []types.RestApi {
-	svc := apigateway.NewFromConfig(s)
+type APIGatewayGetObjectAPI interface {
+	GetRestApis(ctx context.Context, params *apigateway.GetRestApisInput, optFns ...func(*apigateway.Options)) (*apigateway.GetRestApisOutput, error)
+	GetResources(ctx context.Context, params *apigateway.GetResourcesInput, optFns ...func(*apigateway.Options)) (*apigateway.GetResourcesOutput, error)
+	GetStages(ctx context.Context, params *apigateway.GetStagesInput, optFns ...func(*apigateway.Options)) (*apigateway.GetStagesOutput, error)
+}
+
+func GetApiGateways(svc APIGatewayGetObjectAPI) []types.RestApi {
 	input := &apigateway.GetRestApisInput{}
 	result, err := svc.GetRestApis(context.TODO(), input)
 	if err != nil {
@@ -19,8 +22,7 @@ func GetApiGateways(s aws.Config) []types.RestApi {
 	return result.Items
 }
 
-func GetAllResourcesApiGateway(checkConfig yatas.CheckConfig, apiId string) []types.Resource {
-	svc := apigateway.NewFromConfig(checkConfig.ConfigAWS)
+func GetAllResourcesApiGateway(svc APIGatewayGetObjectAPI, apiId string) []types.Resource {
 	input := &apigateway.GetResourcesInput{
 		RestApiId: &apiId,
 	}
@@ -31,10 +33,9 @@ func GetAllResourcesApiGateway(checkConfig yatas.CheckConfig, apiId string) []ty
 	return result.Items
 }
 
-func GetAllStagesApiGateway(s aws.Config, apis []types.RestApi) []types.Stage {
+func GetAllStagesApiGateway(svc APIGatewayGetObjectAPI, apis []types.RestApi) []types.Stage {
 	var stages []types.Stage
 	for _, api := range apis {
-		svc := apigateway.NewFromConfig(s)
 		input := &apigateway.GetStagesInput{
 			RestApiId: api.Id,
 		}
