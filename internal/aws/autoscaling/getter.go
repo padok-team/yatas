@@ -3,13 +3,15 @@ package autoscaling
 import (
 	"context"
 
-	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/autoscaling"
 	"github.com/aws/aws-sdk-go-v2/service/autoscaling/types"
 )
 
-func GetAutoscalingGroups(s aws.Config) []types.AutoScalingGroup {
-	svc := autoscaling.NewFromConfig(s)
+type AutoscalingGroupApi interface {
+	DescribeAutoScalingGroups(ctx context.Context, params *autoscaling.DescribeAutoScalingGroupsInput, optFns ...func(*autoscaling.Options)) (*autoscaling.DescribeAutoScalingGroupsOutput, error)
+}
+
+func GetAutoscalingGroups(svc AutoscalingGroupApi) []types.AutoScalingGroup {
 	input := &autoscaling.DescribeAutoScalingGroupsInput{}
 	result, err := svc.DescribeAutoScalingGroups(context.TODO(), input)
 	if err != nil {

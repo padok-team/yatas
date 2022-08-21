@@ -26,13 +26,16 @@ type MFAForUser struct {
 
 func GetMfaForUsers(s aws.Config, u []types.User) []MFAForUser {
 	svc := iam.NewFromConfig(s)
-	input := &iam.ListMFADevicesInput{}
-	result, err := svc.ListMFADevices(context.TODO(), input)
-	if err != nil {
-		panic(err)
-	}
+
 	var mfaForUsers []MFAForUser
 	for _, user := range u {
+		input := &iam.ListMFADevicesInput{
+			UserName: user.UserName,
+		}
+		result, err := svc.ListMFADevices(context.TODO(), input)
+		if err != nil {
+			panic(err)
+		}
 		mfaForUsers = append(mfaForUsers, MFAForUser{
 			UserName: *user.UserName,
 			MFAs:     result.MFADevices,
@@ -48,13 +51,16 @@ type AccessKeysForUser struct {
 
 func GetAccessKeysForUsers(s aws.Config, u []types.User) []AccessKeysForUser {
 	svc := iam.NewFromConfig(s)
-	input := &iam.ListAccessKeysInput{}
-	result, err := svc.ListAccessKeys(context.TODO(), input)
-	if err != nil {
-		panic(err)
-	}
+
 	var accessKeysForUsers []AccessKeysForUser
 	for _, user := range u {
+		input := &iam.ListAccessKeysInput{
+			UserName: user.UserName,
+		}
+		result, err := svc.ListAccessKeys(context.TODO(), input)
+		if err != nil {
+			panic(err)
+		}
 		accessKeysForUsers = append(accessKeysForUsers, AccessKeysForUser{
 			UserName:   *user.UserName,
 			AccessKeys: result.AccessKeyMetadata,
