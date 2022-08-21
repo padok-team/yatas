@@ -72,6 +72,7 @@ func TestCheckIfDesiredCapacityMaxCapacityBelow80percentFail(t *testing.T) {
 		groups      []types.AutoScalingGroup
 		testName    string
 	}
+	mockAutoScaling := mockAutoScaling(nil)
 	tests := []struct {
 		name string
 		args args
@@ -102,6 +103,14 @@ func TestCheckIfDesiredCapacityMaxCapacityBelow80percentFail(t *testing.T) {
 					},
 				},
 				testName: "AWS_ASG_001",
+			},
+		},
+		{
+			name: "TestCheckIfDesiredCapacityMaxCapacityBelow80percent",
+			args: args{
+				checkConfig: yatas.CheckConfig{Queue: make(chan results.Check, 1), Wg: &sync.WaitGroup{}},
+				groups:      GetAutoscalingGroups(mockAutoScaling),
+				testName:    "AWS_ASG_001",
 			},
 		},
 	}
