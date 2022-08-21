@@ -3,7 +3,6 @@ package cloudfront
 import (
 	"context"
 
-	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/cloudfront"
 	"github.com/aws/aws-sdk-go-v2/service/cloudfront/types"
 )
@@ -13,8 +12,12 @@ type SummaryToConfig struct {
 	config  types.DistributionConfig
 }
 
-func GetAllCloudfront(s aws.Config) []types.DistributionSummary {
-	svc := cloudfront.NewFromConfig(s)
+type CloudfrontGetObjectApi interface {
+	GetDistributionConfig(ctx context.Context, params *cloudfront.GetDistributionConfigInput, optFns ...func(*cloudfront.Options)) (*cloudfront.GetDistributionConfigOutput, error)
+	ListDistributions(ctx context.Context, params *cloudfront.ListDistributionsInput, optFns ...func(*cloudfront.Options)) (*cloudfront.ListDistributionsOutput, error)
+}
+
+func GetAllCloudfront(svc CloudfrontGetObjectApi) []types.DistributionSummary {
 	input := &cloudfront.ListDistributionsInput{}
 	result, err := svc.ListDistributions(context.TODO(), input)
 	if err != nil {
@@ -23,8 +26,7 @@ func GetAllCloudfront(s aws.Config) []types.DistributionSummary {
 	return result.DistributionList.Items
 }
 
-func GetAllDistributionConfig(s aws.Config, ds []types.DistributionSummary) []SummaryToConfig {
-	svc := cloudfront.NewFromConfig(s)
+func GetAllDistributionConfig(svc CloudfrontGetObjectApi, ds []types.DistributionSummary) []SummaryToConfig {
 	var d []SummaryToConfig
 	for _, cc := range ds {
 		input := &cloudfront.GetDistributionConfigInput{
