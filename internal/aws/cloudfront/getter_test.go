@@ -58,13 +58,21 @@ func TestGetAllCloudfront(t *testing.T) {
 			args: args{
 				svc: mockGetCloudfront(nil),
 			},
-			want: []types.DistributionSummary{},
+			want: []types.DistributionSummary{
+				{
+					Id: aws.String("123"),
+					DefaultCacheBehavior: &types.DefaultCacheBehavior{
+						TargetOriginId: aws.String("123"),
+					},
+					IsIPV6Enabled: aws.Bool(true),
+				},
+			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := GetAllCloudfront(tt.args.svc); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("GetAllCloudfront() = %v, want %v", got, tt.want)
+				t.Errorf("GetAllCloudfront() = %+v, want %+v", got, tt.want)
 			}
 		})
 	}
