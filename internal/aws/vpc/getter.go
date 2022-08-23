@@ -10,12 +10,25 @@ import (
 
 func GetListVPC(s aws.Config) []types.Vpc {
 	svc := ec2.NewFromConfig(s)
+	var vpcs []types.Vpc
 	input := &ec2.DescribeVpcsInput{}
 	result, err := svc.DescribeVpcs(context.TODO(), input)
 	if err != nil {
 		panic(err)
 	}
-	return result.Vpcs
+	vpcs = append(vpcs, result.Vpcs...)
+	for {
+		if result.NextToken == nil {
+			break
+		}
+		input.NextToken = result.NextToken
+		result, err = svc.DescribeVpcs(context.TODO(), input)
+		if err != nil {
+			panic(err)
+		}
+		vpcs = append(vpcs, result.Vpcs...)
+	}
+	return vpcs
 }
 
 type VPCToSubnet struct {
@@ -43,6 +56,20 @@ func GetSubnetForVPCS(s aws.Config, vpcs []types.Vpc) []VPCToSubnet {
 			VpcID:   *vpc.VpcId,
 			Subnets: result.Subnets,
 		})
+		for {
+			if result.NextToken == nil {
+				break
+			}
+			input.NextToken = result.NextToken
+			result, err = svc.DescribeSubnets(context.TODO(), input)
+			if err != nil {
+				panic(err)
+			}
+			vpcSubnets = append(vpcSubnets, VPCToSubnet{
+				VpcID:   *vpc.VpcId,
+				Subnets: result.Subnets,
+			})
+		}
 	}
 	return vpcSubnets
 }
@@ -72,6 +99,20 @@ func GetInternetGatewaysForVpc(s aws.Config, vpcs []types.Vpc) []VpcToInternetGa
 			VpcID:            *vpc.VpcId,
 			InternetGateways: result.InternetGateways,
 		})
+		for {
+			if result.NextToken == nil {
+				break
+			}
+			input.NextToken = result.NextToken
+			result, err = svc.DescribeInternetGateways(context.TODO(), input)
+			if err != nil {
+				panic(err)
+			}
+			vpcInternetGateways = append(vpcInternetGateways, VpcToInternetGateway{
+				VpcID:            *vpc.VpcId,
+				InternetGateways: result.InternetGateways,
+			})
+		}
 	}
 	return vpcInternetGateways
 }
@@ -101,6 +142,20 @@ func GetFlowLogsForVpc(s aws.Config, vpcs []types.Vpc) []VpcToFlowLogs {
 			VpcID:    *vpc.VpcId,
 			FlowLogs: result.FlowLogs,
 		})
+		for {
+			if result.NextToken == nil {
+				break
+			}
+			input.NextToken = result.NextToken
+			result, err = svc.DescribeFlowLogs(context.TODO(), input)
+			if err != nil {
+				panic(err)
+			}
+			vpcFlowLogs = append(vpcFlowLogs, VpcToFlowLogs{
+				VpcID:    *vpc.VpcId,
+				FlowLogs: result.FlowLogs,
+			})
+		}
 	}
 	return vpcFlowLogs
 }

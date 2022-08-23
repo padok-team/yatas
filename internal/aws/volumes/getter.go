@@ -15,6 +15,7 @@ type couple struct {
 
 func GetSnapshots(s aws.Config) []types.Snapshot {
 	svc := ec2.NewFromConfig(s)
+	var snapshots []types.Snapshot
 	input := &ec2.DescribeSnapshotsInput{
 		OwnerIds: []string{*aws.String("self")},
 	}
@@ -22,15 +23,43 @@ func GetSnapshots(s aws.Config) []types.Snapshot {
 	if err != nil {
 		panic(err)
 	}
-	return result.Snapshots
+	snapshots = append(snapshots, result.Snapshots...)
+	for {
+		if result.NextToken != nil {
+			input.NextToken = result.NextToken
+			result, err = svc.DescribeSnapshots(context.TODO(), input)
+			snapshots = append(snapshots, result.Snapshots...)
+			if err != nil {
+				panic(err)
+			}
+		} else {
+			break
+		}
+	}
+	return snapshots
 }
 
 func GetVolumes(s aws.Config) []types.Volume {
 	svc := ec2.NewFromConfig(s)
+	var volumes []types.Volume
 	input := &ec2.DescribeVolumesInput{}
 	result, err := svc.DescribeVolumes(context.TODO(), input)
 	if err != nil {
 		panic(err)
 	}
-	return result.Volumes
+	volumes = append(volumes, result.Volumes...)
+	for {
+		if result.NextToken != nil {
+			input.NextToken = result.NextToken
+			result, err = svc.DescribeVolumes(context.TODO(), input)
+			volumes = append(volumes, result.Volumes...)
+			if err != nil {
+				panic(err)
+			}
+		} else {
+			break
+		}
+
+	}
+	return volumes
 }

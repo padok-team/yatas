@@ -36,6 +36,7 @@ func GetLoadBalancersAttributes(s aws.Config, loadbalancers []types.LoadBalancer
 
 func GetElasticLoadBalancers(s aws.Config) []types.LoadBalancer {
 	svc := elasticloadbalancingv2.NewFromConfig(s)
+	var loadBalancers []types.LoadBalancer
 	input := &elasticloadbalancingv2.DescribeLoadBalancersInput{
 		PageSize: aws.Int32(100),
 	}
@@ -43,5 +44,18 @@ func GetElasticLoadBalancers(s aws.Config) []types.LoadBalancer {
 	if err != nil {
 		panic(err)
 	}
-	return result.LoadBalancers
+	loadBalancers = append(loadBalancers, result.LoadBalancers...)
+	for {
+		if result.NextMarker != nil {
+			input.Marker = result.NextMarker
+			result, err = svc.DescribeLoadBalancers(context.TODO(), input)
+			if err != nil {
+				panic(err)
+			}
+			loadBalancers = append(loadBalancers, result.LoadBalancers...)
+		} else {
+			break
+		}
+	}
+	return loadBalancers
 }
