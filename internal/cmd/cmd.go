@@ -52,6 +52,7 @@ func Execute() error {
 		checksCompare := report.ComparePreviousWithNew(previous, checks)
 		report.PrettyPrintChecks(checksCompare, &config)
 		report.WriteChecksToFile(checks, &config)
+		checks = checksCompare
 	} else {
 		report.PrettyPrintChecks(checks, &config)
 		report.WriteChecksToFile(checks, &config)
