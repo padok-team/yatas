@@ -1,3 +1,7 @@
+<p align="center">
+<img src="docs/auditory.png" alt="yatas-logo" width="20%">
+<p align="center">
+
 # YATAS
 [![codecov](https://codecov.io/gh/StanGirard/YATAS/branch/main/graph/badge.svg?token=OFGny8Za4x)](https://codecov.io/gh/StanGirard/YATAS) [![goreport](https://goreportcard.com/badge/github.com/stangirard/yatas)](https://goreportcard.com/badge/github.com/stangirard/yatas)
 
