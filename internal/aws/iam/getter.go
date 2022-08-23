@@ -11,12 +11,26 @@ import (
 
 func GetAllUsers(s aws.Config) []types.User {
 	svc := iam.NewFromConfig(s)
+	var users []types.User
 	input := &iam.ListUsersInput{}
 	result, err := svc.ListUsers(context.TODO(), input)
+	users = append(users, result.Users...)
 	if err != nil {
 		panic(err)
 	}
-	return result.Users
+	for {
+		if result.IsTruncated {
+			input.Marker = result.Marker
+			result, err = svc.ListUsers(context.TODO(), input)
+			users = append(users, result.Users...)
+			if err != nil {
+				panic(err)
+			}
+		} else {
+			break
+		}
+	}
+	return users
 }
 
 type MFAForUser struct {
@@ -40,6 +54,21 @@ func GetMfaForUsers(s aws.Config, u []types.User) []MFAForUser {
 			UserName: *user.UserName,
 			MFAs:     result.MFADevices,
 		})
+		for {
+			if result.IsTruncated {
+				input.Marker = result.Marker
+				result, err = svc.ListMFADevices(context.TODO(), input)
+				mfaForUsers = append(mfaForUsers, MFAForUser{
+					UserName: *user.UserName,
+					MFAs:     result.MFADevices,
+				})
+				if err != nil {
+					panic(err)
+				}
+			} else {
+				break
+			}
+		}
 	}
 	return mfaForUsers
 }
@@ -65,6 +94,21 @@ func GetAccessKeysForUsers(s aws.Config, u []types.User) []AccessKeysForUser {
 			UserName:   *user.UserName,
 			AccessKeys: result.AccessKeyMetadata,
 		})
+		for {
+			if result.IsTruncated {
+				input.Marker = result.Marker
+				result, err = svc.ListAccessKeys(context.TODO(), input)
+				accessKeysForUsers = append(accessKeysForUsers, AccessKeysForUser{
+					UserName:   *user.UserName,
+					AccessKeys: result.AccessKeyMetadata,
+				})
+				if err != nil {
+					panic(err)
+				}
+			} else {
+				break
+			}
+		}
 	}
 	return accessKeysForUsers
 }

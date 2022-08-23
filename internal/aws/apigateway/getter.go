@@ -19,6 +19,7 @@ func GetApiGateways(svc APIGatewayGetObjectAPI) []types.RestApi {
 	if err != nil {
 		return nil
 	}
+
 	return result.Items
 }
 
