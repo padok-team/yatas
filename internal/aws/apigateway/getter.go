@@ -15,23 +15,50 @@ type APIGatewayGetObjectAPI interface {
 
 func GetApiGateways(svc APIGatewayGetObjectAPI) []types.RestApi {
 	input := &apigateway.GetRestApisInput{}
+	var apis []types.RestApi
 	result, err := svc.GetRestApis(context.TODO(), input)
+	apis = append(apis, result.Items...)
 	if err != nil {
 		return nil
 	}
+	for {
+		if result.Position == nil {
+			break
+		}
+		input.Position = result.Position
+		result, err = svc.GetRestApis(context.TODO(), input)
+		if err != nil {
+			return nil
+		}
+		apis = append(apis, result.Items...)
+	}
 
-	return result.Items
+	return apis
 }
 
 func GetAllResourcesApiGateway(svc APIGatewayGetObjectAPI, apiId string) []types.Resource {
 	input := &apigateway.GetResourcesInput{
 		RestApiId: &apiId,
 	}
+	var resources []types.Resource
 	result, err := svc.GetResources(context.TODO(), input)
+	resources = append(resources, result.Items...)
 	if err != nil {
 		return nil
 	}
-	return result.Items
+
+	for {
+		if result.Position == nil {
+			break
+		}
+		input.Position = result.Position
+		result, err = svc.GetResources(context.TODO(), input)
+		if err != nil {
+			return nil
+		}
+		resources = append(resources, result.Items...)
+	}
+	return resources
 }
 
 func GetAllStagesApiGateway(svc APIGatewayGetObjectAPI, apis []types.RestApi) []types.Stage {
@@ -45,6 +72,7 @@ func GetAllStagesApiGateway(svc APIGatewayGetObjectAPI, apis []types.RestApi) []
 			return nil
 		}
 		stages = append(stages, result.Item...)
+
 	}
 	return stages
 }

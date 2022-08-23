@@ -21,6 +21,19 @@ func GetEC2s(svc EC2GetObjectAPI) []types.Instance {
 	for _, r := range result.Reservations {
 		instances = append(instances, r.Instances...)
 	}
+	for {
+		if result.NextToken == nil {
+			break
+		}
+		input.NextToken = result.NextToken
+		result, err = svc.DescribeInstances(context.TODO(), input)
+		if err != nil {
+			panic(err)
+		}
+		for _, r := range result.Reservations {
+			instances = append(instances, r.Instances...)
+		}
+	}
 
 	return instances
 }

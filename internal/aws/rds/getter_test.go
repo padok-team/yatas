@@ -2,7 +2,6 @@ package rds
 
 import (
 	"context"
-	"reflect"
 	"testing"
 
 	"github.com/aws/aws-sdk-go-v2/service/rds"
@@ -34,8 +33,8 @@ func TestGetListRDS(t *testing.T) {
 	mockGetRdsAPI := mockGetRdsAPI(nil)
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := GetListRDS(mockGetRdsAPI); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("GetListRDS() = %v, want %v", got, tt.want)
+			if got := GetListRDS(mockGetRdsAPI); len(got) != 0 {
+				t.Errorf("GetListRDS() = %+v, want %+v", got, tt.want)
 			}
 		})
 	}
