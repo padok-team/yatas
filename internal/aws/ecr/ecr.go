@@ -15,6 +15,8 @@ func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []r
 	var checks []results.Check
 	ecr := GetECRs(s)
 	go yatas.CheckTest(checkConfig.Wg, c, "AWS_ECR_001", CheckIfImageScanningEnabled)(checkConfig, ecr, "AWS_ECR_001")
+	go yatas.CheckTest(checkConfig.Wg, c, "AWS_ECR_002", CheckIfEncrypted)(checkConfig, ecr, "AWS_ECR_002")
+	go yatas.CheckTest(checkConfig.Wg, c, "AWS_ECR_003", CheckIfTagImmutable)(checkConfig, ecr, "AWS_ECR_003")
 	go func() {
 		for t := range checkConfig.Queue {
 			checks = append(checks, t)
