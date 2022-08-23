@@ -85,7 +85,7 @@ plugins:
       - "AWS_VPC_004"
 ```
 
-## AWS - 45 Checks
+## AWS - 47 Checks
 
 ### APIGateway
 - AWS_APG_001 Apigateway Cloudwatch Logs enabled
@@ -120,12 +120,14 @@ plugins:
 
 ### ECR
 - AWS_ECR_001 Image Scanning Enabled
+- AWS_ECR_002 Encrypted
+- AWS_ECR_003 TagImmutable
 
 ### LoadBalancer
 - AWS_ELB_001 ELB Access Logs Enabled
 
-### GD
-- AWS_GD_001 GuardDuty Enabled
+### GuardDuty
+- AWS_GDT_001 GuardDuty Enabled
 
 ### IAM
 - AWS_IAM_001 IAM 2FA
