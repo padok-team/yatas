@@ -1,5 +1,5 @@
 # YATAS
-[![codecov](https://codecov.io/gh/StanGirard/YATAS/branch/main/graph/badge.svg?token=OFGny8Za4x)](https://codecov.io/gh/StanGirard/YATAS)
+[![codecov](https://codecov.io/gh/StanGirard/YATAS/branch/main/graph/badge.svg?token=OFGny8Za4x)](https://codecov.io/gh/StanGirard/YATAS) [![goreport](https://goreportcard.com/badge/github.com/stangirard/yatas)](https://goreportcard.com/badge/github.com/stangirard/yatas)
 
 Yet Another Testing &amp; Auditing Solution 
 
