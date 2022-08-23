@@ -18,6 +18,7 @@ func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []r
 	stages := GetAllStagesApiGateway(svc, apis)
 	go yatas.CheckTest(checkConfig.Wg, c, "AWS_APG_001", CheckIfStagesCloudwatchLogsExist)(checkConfig, stages, "AWS_APG_001")
 	go yatas.CheckTest(checkConfig.Wg, c, "AWS_APG_002", CheckIfStagesProtectedByAcl)(checkConfig, stages, "AWS_APG_002")
+	go yatas.CheckTest(checkConfig.Wg, c, "AWS_APG_003", CheckIfTracingEnabled)(checkConfig, stages, "AWS_APG_003")
 
 	go func() {
 		for t := range checkConfig.Queue {
