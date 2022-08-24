@@ -7,7 +7,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/config v1.17.1
 	github.com/aws/aws-sdk-go-v2/service/apigateway v1.15.14
 	github.com/aws/aws-sdk-go-v2/service/autoscaling v1.23.10
-	github.com/aws/aws-sdk-go-v2/service/cloudfront v1.19.0
+	github.com/aws/aws-sdk-go-v2/service/cloudfront v1.20.0
 	github.com/aws/aws-sdk-go-v2/service/cloudtrail v1.16.8
 	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.16.0
 	github.com/aws/aws-sdk-go-v2/service/ec2 v1.54.0
