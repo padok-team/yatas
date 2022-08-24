@@ -24,6 +24,7 @@ func createSessionWithCredentials(c yatas.AWS_Account) aws.Config {
 	if c.Profile == "" {
 		s, err := config.LoadDefaultConfig(context.TODO(),
 			config.WithRegion(c.Region),
+			config.WithRetryMode(aws.RetryMode(aws.RetryModeAdaptive)),
 		)
 		if err != nil {
 			panic(err)
@@ -33,6 +34,7 @@ func createSessionWithCredentials(c yatas.AWS_Account) aws.Config {
 		s, err := config.LoadDefaultConfig(context.TODO(),
 			config.WithRegion(c.Region),
 			config.WithSharedConfigProfile(c.Profile),
+			config.WithRetryMode(aws.RetryMode(aws.RetryModeAdaptive)),
 		)
 		if err != nil {
 			panic(err)
@@ -49,6 +51,7 @@ func createSessionWithSSO(c yatas.AWS_Account) aws.Config {
 	if c.Profile == "" {
 		s, err := config.LoadDefaultConfig(context.Background(),
 			config.WithRegion(c.Region),
+			config.WithRetryMode(aws.RetryMode(aws.RetryModeAdaptive)),
 		)
 		if err != nil {
 			panic(err)
@@ -58,6 +61,7 @@ func createSessionWithSSO(c yatas.AWS_Account) aws.Config {
 		s, err := config.LoadDefaultConfig(context.Background(),
 			config.WithRegion(c.Region),
 			config.WithSharedConfigProfile(c.Profile),
+			config.WithRetryMode(aws.RetryMode(aws.RetryModeAdaptive)),
 		)
 		if err != nil {
 			panic(err)
