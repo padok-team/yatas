@@ -12,7 +12,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.16.0
 	github.com/aws/aws-sdk-go-v2/service/ec2 v1.54.0
 	github.com/aws/aws-sdk-go-v2/service/ecr v1.17.12
-	github.com/aws/aws-sdk-go-v2/service/elasticloadbalancingv2 v1.18.12
+	github.com/aws/aws-sdk-go-v2/service/elasticloadbalancingv2 v1.18.13
 	github.com/aws/aws-sdk-go-v2/service/guardduty v1.15.4
 	github.com/aws/aws-sdk-go-v2/service/iam v1.18.14
 	github.com/aws/aws-sdk-go-v2/service/lambda v1.24.0
