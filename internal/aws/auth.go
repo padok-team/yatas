@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/aws/retry"
 	"github.com/aws/aws-sdk-go-v2/config"
 
 	"github.com/stangirard/yatas/internal/logger"
@@ -24,6 +25,9 @@ func createSessionWithCredentials(c yatas.AWS_Account) aws.Config {
 	if c.Profile == "" {
 		s, err := config.LoadDefaultConfig(context.TODO(),
 			config.WithRegion(c.Region),
+			config.WithRetryer(func() aws.Retryer {
+				return retry.AddWithMaxAttempts(retry.NewStandard(), 10)
+			}),
 			config.WithRetryMode(aws.RetryMode(aws.RetryModeAdaptive)),
 		)
 		if err != nil {
@@ -34,6 +38,9 @@ func createSessionWithCredentials(c yatas.AWS_Account) aws.Config {
 		s, err := config.LoadDefaultConfig(context.TODO(),
 			config.WithRegion(c.Region),
 			config.WithSharedConfigProfile(c.Profile),
+			config.WithRetryer(func() aws.Retryer {
+				return retry.AddWithMaxAttempts(retry.NewStandard(), 10)
+			}),
 			config.WithRetryMode(aws.RetryMode(aws.RetryModeAdaptive)),
 		)
 		if err != nil {
@@ -51,6 +58,9 @@ func createSessionWithSSO(c yatas.AWS_Account) aws.Config {
 	if c.Profile == "" {
 		s, err := config.LoadDefaultConfig(context.Background(),
 			config.WithRegion(c.Region),
+			config.WithRetryer(func() aws.Retryer {
+				return retry.AddWithMaxAttempts(retry.NewStandard(), 10)
+			}),
 			config.WithRetryMode(aws.RetryMode(aws.RetryModeAdaptive)),
 		)
 		if err != nil {
@@ -61,6 +71,9 @@ func createSessionWithSSO(c yatas.AWS_Account) aws.Config {
 		s, err := config.LoadDefaultConfig(context.Background(),
 			config.WithRegion(c.Region),
 			config.WithSharedConfigProfile(c.Profile),
+			config.WithRetryer(func() aws.Retryer {
+				return retry.AddWithMaxAttempts(retry.NewStandard(), 10)
+			}),
 			config.WithRetryMode(aws.RetryMode(aws.RetryModeAdaptive)),
 		)
 		if err != nil {
