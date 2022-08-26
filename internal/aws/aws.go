@@ -4,6 +4,7 @@ import (
 	"sync"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/stangirard/yatas/internal/aws/acm"
 	"github.com/stangirard/yatas/internal/aws/apigateway"
 	"github.com/stangirard/yatas/internal/aws/autoscaling"
 	"github.com/stangirard/yatas/internal/aws/cloudfront"
@@ -71,6 +72,7 @@ func initTest(s aws.Config, c *yatas.Config, a yatas.AWS_Account) results.Tests 
 	go yatas.CheckMacroTest(&wg, c, autoscaling.RunChecks)(&wg, s, c, queue)
 	go yatas.CheckMacroTest(&wg, c, loadbalancers.RunChecks)(&wg, s, c, queue)
 	go yatas.CheckMacroTest(&wg, c, guardduty.RunChecks)(&wg, s, c, queue)
+	go yatas.CheckMacroTest(&wg, c, acm.RunChecks)(&wg, s, c, queue)
 
 	go func() {
 		for t := range queue {
@@ -79,6 +81,7 @@ func initTest(s aws.Config, c *yatas.Config, a yatas.AWS_Account) results.Tests 
 			wg.Done()
 			if c.Progress != nil {
 				c.Progress.Add(1)
+				c.Progress.RenderBlank()
 			}
 		}
 	}()

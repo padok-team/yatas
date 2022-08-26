@@ -23,7 +23,7 @@ func Execute() error {
 		return err
 	}
 	if !*progressflag {
-		config.Progress = progressbar.Default(14 * int64(len(config.AWS)))
+		config.Progress = progressbar.Default(1)
 	}
 	checks, err := plugins.Execute(&config)
 	if err != nil {
@@ -43,6 +43,7 @@ func Execute() error {
 			return check.Checks[i].Id < check.Checks[j].Id
 		})
 	}
+	config.Progress.Add(1)
 
 	if *compare {
 		previous := report.ReadPreviousResults()
