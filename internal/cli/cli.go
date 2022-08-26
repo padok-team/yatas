@@ -32,6 +32,7 @@ func Execute() error {
 	checks = report.RemoveIgnored(&config, checks)
 
 	if !*progressflag {
+		config.Progress.Add(1)
 		config.Progress.Finish()
 	}
 	// Sort checks by ID
@@ -43,7 +44,6 @@ func Execute() error {
 			return check.Checks[i].Id < check.Checks[j].Id
 		})
 	}
-	config.Progress.Add(1)
 
 	if *compare {
 		previous := report.ReadPreviousResults()
