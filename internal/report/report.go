@@ -7,7 +7,6 @@ import (
 	"regexp"
 
 	"github.com/fatih/color"
-	"github.com/stangirard/yatas/internal/results"
 	"github.com/stangirard/yatas/internal/yatas"
 	"gopkg.in/yaml.v3"
 )
@@ -23,7 +22,7 @@ var (
 	resume  = flag.Bool("resume", false, "print resume results")
 )
 
-func countResultOkOverall(results []results.Result) (int, int) {
+func countResultOkOverall(results []yatas.Result) (int, int) {
 	var ok int
 	var all int
 	for _, result := range results {
@@ -35,7 +34,7 @@ func countResultOkOverall(results []results.Result) (int, int) {
 	return ok, all
 }
 
-func IsIgnored(c *yatas.Config, r results.Result, check results.Check) bool {
+func IsIgnored(c *yatas.Config, r yatas.Result, check yatas.Check) bool {
 	for _, ignored := range c.Ignore {
 		if ignored.ID == check.Id {
 			for i := range ignored.Values {
@@ -50,15 +49,15 @@ func IsIgnored(c *yatas.Config, r results.Result, check results.Check) bool {
 	return false
 }
 
-func RemoveIgnored(c *yatas.Config, tests []results.Tests) []results.Tests {
-	resultsTmp := []results.Tests{}
+func RemoveIgnored(c *yatas.Config, tests []yatas.Tests) []yatas.Tests {
+	resultsTmp := []yatas.Tests{}
 	for _, test := range tests {
-		var testTpm results.Tests
+		var testTpm yatas.Tests
 		testTpm.Account = test.Account
-		testTpm.Checks = []results.Check{}
+		testTpm.Checks = []yatas.Check{}
 
 		for _, check := range test.Checks {
-			var checkTmp results.Check
+			var checkTmp yatas.Check
 			checkTmp.InitCheck(check.Name, check.Description, check.Id)
 			for _, result := range check.Results {
 				if !IsIgnored(c, result, check) {
@@ -73,7 +72,7 @@ func RemoveIgnored(c *yatas.Config, tests []results.Tests) []results.Tests {
 	return resultsTmp
 }
 
-func CountChecksPassedOverall(checks []results.Check) (int, int) {
+func CountChecksPassedOverall(checks []yatas.Check) (int, int) {
 	var ok int
 	var all int
 	for _, check := range checks {
@@ -85,7 +84,7 @@ func CountChecksPassedOverall(checks []results.Check) (int, int) {
 	return ok, all
 }
 
-func PrettyPrintChecks(checks []results.Tests, c *yatas.Config) {
+func PrettyPrintChecks(checks []yatas.Tests, c *yatas.Config) {
 	flag.Parse()
 	for _, tests := range checks {
 		fmt.Println("\n🔥 Account:", tests.Account, "🔥")
@@ -116,11 +115,11 @@ func PrettyPrintChecks(checks []results.Tests, c *yatas.Config) {
 	}
 }
 
-func ComparePreviousWithNew(previous []results.Tests, new []results.Tests) []results.Tests {
-	returnedResults := []results.Tests{}
+func ComparePreviousWithNew(previous []yatas.Tests, new []yatas.Tests) []yatas.Tests {
+	returnedResults := []yatas.Tests{}
 	for _, tests := range new {
 
-		var checks []results.Check
+		var checks []yatas.Check
 		for _, check := range tests.Checks {
 			found := false
 			for _, previousTests := range previous {
@@ -150,12 +149,12 @@ func ComparePreviousWithNew(previous []results.Tests, new []results.Tests) []res
 	return returnedResults
 }
 
-func ReadPreviousResults() []results.Tests {
+func ReadPreviousResults() []yatas.Tests {
 	d, err := ioutil.ReadFile("results.yaml")
 	if err != nil {
-		return []results.Tests{}
+		return []yatas.Tests{}
 	}
-	var checks []results.Tests
+	var checks []yatas.Tests
 	err = yaml.Unmarshal(d, &checks)
 	if err != nil {
 		panic(err)
@@ -163,9 +162,9 @@ func ReadPreviousResults() []results.Tests {
 	return checks
 }
 
-func WriteChecksToFile(checks []results.Tests, c *yatas.Config) {
+func WriteChecksToFile(checks []yatas.Tests, c *yatas.Config) {
 	for _, tests := range checks {
-		var checksToWrite []results.Check
+		var checksToWrite []yatas.Check
 
 		for _, check := range tests.Checks {
 			if !c.CheckExclude(check.Id) {
@@ -188,7 +187,7 @@ func WriteChecksToFile(checks []results.Tests, c *yatas.Config) {
 
 }
 
-func ExitCode(checks []results.Tests) int {
+func ExitCode(checks []yatas.Tests) int {
 	var exitCode int
 	for _, tests := range checks {
 		for _, check := range tests.Checks {

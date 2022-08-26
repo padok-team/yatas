@@ -7,7 +7,6 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/schollz/progressbar/v3"
 	"github.com/stangirard/yatas/internal/helpers"
-	"github.com/stangirard/yatas/internal/results"
 	"gopkg.in/yaml.v3"
 )
 
@@ -119,13 +118,13 @@ func CheckMacroTest[A, B, C, D any](wg *sync.WaitGroup, config *Config, test fun
 type CheckConfig struct {
 	Wg          *sync.WaitGroup
 	ConfigAWS   aws.Config
-	Queue       chan results.Check
+	Queue       chan Check
 	ConfigYatas *Config
 }
 
 func (c *CheckConfig) Init(s aws.Config, config *Config) {
 	c.Wg = &sync.WaitGroup{}
 	c.ConfigAWS = s
-	c.Queue = make(chan results.Check, 10)
+	c.Queue = make(chan Check, 10)
 	c.ConfigYatas = config
 }

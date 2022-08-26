@@ -7,12 +7,12 @@ import (
 	"strings"
 
 	"github.com/stangirard/yatas/internal/helpers"
-	"github.com/stangirard/yatas/internal/results"
+	"github.com/stangirard/yatas/internal/yatas"
 	"gopkg.in/yaml.v3"
 )
 
-func parseReportYaml(filename string) ([]results.Tests, error) {
-	var report []results.Tests
+func parseReportYaml(filename string) ([]yatas.Tests, error) {
+	var report []yatas.Tests
 	data, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return report, err

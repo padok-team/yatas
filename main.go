@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/stangirard/yatas/internal/cmd"
+	"github.com/stangirard/yatas/internal/cli"
 	"github.com/stangirard/yatas/internal/report"
 )
 
@@ -28,7 +28,7 @@ func run() error {
 	if *generateReadme {
 		return report.WriteReadme("README.md", "results.yaml")
 	}
-	if err := cmd.Execute(); err != nil {
+	if err := cli.Execute(); err != nil {
 		return err
 	}
 	return nil

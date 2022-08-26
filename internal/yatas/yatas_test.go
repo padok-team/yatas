@@ -6,7 +6,6 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/schollz/progressbar/v3"
-	"github.com/stangirard/yatas/internal/results"
 )
 
 func TestConfig_CheckExclude(t *testing.T) {
@@ -163,7 +162,7 @@ func TestCheckConfig_Init(t *testing.T) {
 	type fields struct {
 		Wg          *sync.WaitGroup
 		ConfigAWS   aws.Config
-		Queue       chan results.Check
+		Queue       chan Check
 		ConfigYatas *Config
 	}
 	type args struct {
@@ -180,7 +179,7 @@ func TestCheckConfig_Init(t *testing.T) {
 			fields: fields{
 				Wg:          &sync.WaitGroup{},
 				ConfigAWS:   aws.Config{},
-				Queue:       make(chan results.Check),
+				Queue:       make(chan Check),
 				ConfigYatas: &Config{},
 			},
 			args: args{
