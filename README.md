@@ -1,5 +1,5 @@
 <p align="center">
-<img src="docs/auditory.png" alt="yatas-logo" width="20%">
+<img src="docs/auditory.png" alt="yatas-logo" width="30%">
 <p align="center">
 
 # YATAS
