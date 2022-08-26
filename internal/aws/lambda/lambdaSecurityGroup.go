@@ -12,7 +12,7 @@ import (
 func CheckIfLambdaInSecurityGroup(checkConfig yatas.CheckConfig, lambdas []types.FunctionConfiguration, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.InitCheck("Lambda In Security Group", "Check if all Lambdas are in a security group", testName)
+	check.InitCheck("Lambdas are in a security group", "Check if all Lambdas are in a security group", testName)
 	for _, lambda := range lambdas {
 		if lambda.VpcConfig == nil || lambda.VpcConfig.SecurityGroupIds == nil {
 			Message := "Lambda " + *lambda.FunctionName + " is not in a security group"

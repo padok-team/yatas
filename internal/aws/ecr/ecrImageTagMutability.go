@@ -12,7 +12,7 @@ import (
 func CheckIfTagImmutable(checkConfig yatas.CheckConfig, ecr []types.Repository, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.InitCheck("TagImmutable", "Check if all ECRs are tag immutable", testName)
+	check.InitCheck("ECRs tags are immutable", "Check if all ECRs are tag immutable", testName)
 	for _, ecr := range ecr {
 		if ecr.ImageTagMutability == types.ImageTagMutabilityMutable {
 			Message := "ECR " + *ecr.RepositoryName + " is not tag immutable"

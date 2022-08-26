@@ -11,7 +11,7 @@ import (
 func CheckIfObjectLockConfigurationEnabled(checkConfig yatas.CheckConfig, buckets []S3ToObjectLock, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.InitCheck("S3 Bucket retention policy", "Check if S3 buckets are using retention policy", testName)
+	check.InitCheck("S3 buckets have a retention policy", "Check if S3 buckets are using retention policy", testName)
 	for _, bucket := range buckets {
 		if !bucket.ObjectLock {
 			Message := "S3 bucket " + bucket.BucketName + " is not using retention policy"

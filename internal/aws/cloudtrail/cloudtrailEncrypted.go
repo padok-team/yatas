@@ -13,7 +13,7 @@ func CheckIfCloudtrailsEncrypted(checkConfig yatas.CheckConfig, cloudtrails []ty
 	logger.Info(fmt.Sprint("Running ", testName))
 
 	var check results.Check
-	check.InitCheck("Cloudtrails Encryption", "check if all cloudtrails are encrypted", testName)
+	check.InitCheck("Cloudtrails are encrypted", "check if all cloudtrails are encrypted", testName)
 	for _, cloudtrail := range cloudtrails {
 		if cloudtrail.KmsKeyId == nil || *cloudtrail.KmsKeyId == "" {
 			Message := "Cloudtrail " + *cloudtrail.Name + " is not encrypted"

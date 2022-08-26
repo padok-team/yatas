@@ -14,7 +14,7 @@ import (
 func checkCIDR20(checkConfig yatas.CheckConfig, vpcs []types.Vpc, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.InitCheck("VPC CIDR", "Check if VPC CIDR is /20 or bigger", testName)
+	check.InitCheck("VPC CIDRs are bigger than /20", "Check if VPC CIDR is /20 or bigger", testName)
 	for _, vpc := range vpcs {
 		cidr := *vpc.CidrBlock
 		// split the cidr to / and get the last part as an int

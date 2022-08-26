@@ -12,7 +12,7 @@ import (
 func CheckIfACMValid(checkConfig yatas.CheckConfig, certificates []types.CertificateDetail, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.InitCheck("ACM Valid", "Check if certificate is valid", testName)
+	check.InitCheck("ACM certificates are valid", "Check if certificate is valid", testName)
 	for _, certificate := range certificates {
 		if certificate.Status == types.CertificateStatusIssued || certificate.Status == types.CertificateStatusInactive {
 			Message := "Certificate " + *certificate.CertificateArn + " is valid"

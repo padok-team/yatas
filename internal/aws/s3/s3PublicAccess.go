@@ -11,7 +11,7 @@ import (
 func CheckIfS3PublicAccessBlockEnabled(checkConfig yatas.CheckConfig, s3toPublicBlockAccess []S3toPublicBlockAccess, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.InitCheck("S3 Public Access Block", "Check if S3 buckets are using Public Access Block", testName)
+	check.InitCheck("S3 bucket have public access block enabled", "Check if S3 buckets are using Public Access Block", testName)
 	for _, bucket := range s3toPublicBlockAccess {
 		if !bucket.Config {
 			Message := "S3 bucket " + bucket.BucketName + " is not using Public Access Block"

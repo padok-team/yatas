@@ -11,7 +11,7 @@ import (
 func checkIfOnlyOneGateway(checkConfig yatas.CheckConfig, vpcInternetGateways []VpcToInternetGateway, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.InitCheck("VPC Gateway", "Check if VPC has only one gateway", testName)
+	check.InitCheck("VPC only have one Gateway", "Check if VPC has only one gateway", testName)
 	for _, vpcInternetGateway := range vpcInternetGateways {
 		if len(vpcInternetGateway.InternetGateways) > 1 {
 			Message := "VPC has more than one gateway on " + vpcInternetGateway.VpcID

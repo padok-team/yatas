@@ -12,7 +12,7 @@ import (
 func CheckIfStagesCloudwatchLogsExist(checkConfig yatas.CheckConfig, stages []types.Stage, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.InitCheck("Apigateway Cloudwatch Logs enabled", "Check if all cloudwatch logs are enabled for all stages", testName)
+	check.InitCheck("ApiGateways logs are sent to Cloudwatch", "Check if all cloudwatch logs are enabled for all stages", testName)
 	for _, stage := range stages {
 		if stage.AccessLogSettings != nil && stage.AccessLogSettings.DestinationArn != nil {
 			Message := "Cloudwatch logs are enabled on stage" + *stage.StageName

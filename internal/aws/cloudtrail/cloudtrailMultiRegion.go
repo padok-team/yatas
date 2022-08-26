@@ -12,7 +12,7 @@ import (
 func CheckIfCloudtrailsMultiRegion(checkConfig yatas.CheckConfig, cloudtrails []types.Trail, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.InitCheck("Cloudtrails Multi Region", "check if all cloudtrails are multi region", testName)
+	check.InitCheck("Cloudtrails are in multiple regions", "check if all cloudtrails are multi region", testName)
 	for _, cloudtrail := range cloudtrails {
 		if !*cloudtrail.IsMultiRegionTrail {
 			Message := "Cloudtrail " + *cloudtrail.Name + " is not multi region"

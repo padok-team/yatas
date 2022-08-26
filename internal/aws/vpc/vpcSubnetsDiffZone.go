@@ -11,7 +11,7 @@ import (
 func CheckIfSubnetInDifferentZone(checkConfig yatas.CheckConfig, vpcToSubnets []VPCToSubnet, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.InitCheck("Subnets in different zone", "Check if Subnet are in different zone", testName)
+	check.InitCheck("VPC's Subnets are in different zones", "Check if Subnet are in different zone", testName)
 	for _, vpcToSubnet := range vpcToSubnets {
 		subnetsAZ := make(map[string]int)
 		for _, subnet := range vpcToSubnet.Subnets {

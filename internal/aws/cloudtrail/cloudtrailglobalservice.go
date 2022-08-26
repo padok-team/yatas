@@ -12,7 +12,7 @@ import (
 func CheckIfCloudtrailsGlobalServiceEventsEnabled(checkConfig yatas.CheckConfig, cloudtrails []types.Trail, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.InitCheck("Cloudtrails Global Service Events Activated", "check if all cloudtrails have global service events enabled", testName)
+	check.InitCheck("Cloudtrails have Global Service Events Activated", "check if all cloudtrails have global service events enabled", testName)
 	for _, cloudtrail := range cloudtrails {
 		if !*cloudtrail.IncludeGlobalServiceEvents {
 			Message := "Cloudtrail " + *cloudtrail.Name + " has global service events disabled"

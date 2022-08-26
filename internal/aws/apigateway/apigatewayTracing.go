@@ -12,7 +12,7 @@ import (
 func CheckIfTracingEnabled(checkConfig yatas.CheckConfig, stages []types.Stage, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.InitCheck("Apigateway Tracing enabled", "Check if all stages are enabled for tracing", testName)
+	check.InitCheck("ApiGateways have tracing enabled", "Check if all stages are enabled for tracing", testName)
 	for _, stage := range stages {
 		if stage.TracingEnabled {
 			Message := "Tracing is enabled on stage" + *stage.StageName

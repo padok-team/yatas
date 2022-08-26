@@ -11,7 +11,7 @@ import (
 func CheckIfDynamodbContinuousBackupsEnabled(checkConfig yatas.CheckConfig, dynamodbs []TableBackups, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.InitCheck("Dynamodb Continuous Backups", "Check if DynamoDB continuous backups are enabled", testName)
+	check.InitCheck("Dynamodb have continuous backup enabled with PITR", "Check if DynamoDB continuous backups are enabled", testName)
 	for _, d := range dynamodbs {
 		if d.Backups.ContinuousBackupsStatus != "ENABLED" {
 			Message := "Dynamodb continuous backups are not enabled on " + d.TableName

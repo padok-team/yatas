@@ -12,7 +12,7 @@ import (
 func CheckIfLoggingEnabled(checkConfig yatas.CheckConfig, instances []types.DBInstance, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.InitCheck("RDS Logging", "Check if RDS logging is enabled", testName)
+	check.InitCheck("RDS logs are exported to cloudwatch", "Check if RDS logging is enabled", testName)
 	for _, instance := range instances {
 		if instance.EnabledCloudwatchLogsExports != nil {
 			found := false

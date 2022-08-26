@@ -11,7 +11,7 @@ import (
 func CheckIfAtLeast2Subnets(checkConfig yatas.CheckConfig, vpcToSubnets []VPCToSubnet, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.InitCheck("At least 2 subnets", "Check if VPC has at least 2 subnets", testName)
+	check.InitCheck("VPC have at least 2 subnets", "Check if VPC has at least 2 subnets", testName)
 	for _, vpcToSubnet := range vpcToSubnets {
 
 		if len(vpcToSubnet.Subnets) < 2 {

@@ -11,7 +11,7 @@ import (
 func CheckIfGuarddutyEnabled(checkConfig yatas.CheckConfig, testName string, detectors []string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.InitCheck("GuardDuty Enabled", "Check if GuardDuty is enabled", testName)
+	check.InitCheck("GuardDuty is enabled in the account", "Check if GuardDuty is enabled", testName)
 
 	if len(detectors) == 0 {
 		Message := "GuardDuty is not enabled"

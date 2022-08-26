@@ -13,7 +13,7 @@ import (
 func CheckIfCertificateExpiresIn90Days(checkConfig yatas.CheckConfig, certificates []types.CertificateDetail, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.InitCheck("Certificate Expires in 90 Days", "Check if certificate expires in 90 days", testName)
+	check.InitCheck("ACM certificate expires in more than 90 days", "Check if certificate expires in 90 days", testName)
 	for _, certificate := range certificates {
 		if certificate.Status == types.CertificateStatusIssued || certificate.Status == types.CertificateStatusInactive {
 			if time.Until(*certificate.NotAfter).Hours() > 24*90 {

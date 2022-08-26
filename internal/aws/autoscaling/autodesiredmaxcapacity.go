@@ -12,7 +12,7 @@ import (
 func CheckIfDesiredCapacityMaxCapacityBelow80percent(checkConfig yatas.CheckConfig, groups []types.AutoScalingGroup, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.InitCheck("Autoscaling Desired Capacity vs Max Capacity below 80%", "Check if all autoscaling groups have a desired capacity below 80%", testName)
+	check.InitCheck("Autoscaling maximum capacity is below 80%", "Check if all autoscaling groups have a desired capacity below 80%", testName)
 	for _, group := range groups {
 		if group.DesiredCapacity != nil && group.MaxSize != nil && float64(*group.DesiredCapacity) > float64(*group.MaxSize)*0.8 {
 			Message := "Autoscaling group " + *group.AutoScalingGroupName + " has a desired capacity above 80%"

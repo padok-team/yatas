@@ -12,7 +12,7 @@ import (
 func CheckIfImageScanningEnabled(checkConfig yatas.CheckConfig, ecr []types.Repository, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.InitCheck("Image Scanning Enabled", "Check if all ECRs have image scanning enabled", testName)
+	check.InitCheck("ECRs image are scanned on push", "Check if all ECRs have image scanning enabled", testName)
 	for _, ecr := range ecr {
 		if !ecr.ImageScanningConfiguration.ScanOnPush {
 			Message := "ECR " + *ecr.RepositoryName + " has image scanning disabled"

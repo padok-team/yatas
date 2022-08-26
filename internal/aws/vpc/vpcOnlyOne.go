@@ -12,7 +12,7 @@ import (
 func checkIfOnlyOneVPC(checkConfig yatas.CheckConfig, vpcs []types.Vpc, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.InitCheck("VPC Only One", "Check if VPC has only one VPC", testName)
+	check.InitCheck("VPC can't be in the same account", "Check if VPC has only one VPC", testName)
 	for _, vpc := range vpcs {
 		if len(vpcs) > 1 {
 			Message := "VPC Id:" + *vpc.VpcId

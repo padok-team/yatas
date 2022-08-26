@@ -13,7 +13,7 @@ import (
 func CheckIfCloudfrontTLS1_2Minimum(checkConfig yatas.CheckConfig, d []types.DistributionSummary, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.InitCheck("TLS 1.2 Minimum", "Check if all cloudfront distributions have TLS 1.2 minimum", testName)
+	check.InitCheck("Cloudfronts enforce TLS 1.2 at least", "Check if all cloudfront distributions have TLS 1.2 minimum", testName)
 	for _, cloudfront := range d {
 		if cloudfront.ViewerCertificate != nil && strings.Contains(string(cloudfront.ViewerCertificate.MinimumProtocolVersion), "TLSv1.2") {
 			Message := "TLS 1.2 minimum is set on " + *cloudfront.Id

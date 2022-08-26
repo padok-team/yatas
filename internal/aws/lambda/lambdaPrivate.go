@@ -12,7 +12,7 @@ import (
 func CheckIfLambdaPrivate(checkConfig yatas.CheckConfig, lambdas []types.FunctionConfiguration, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.InitCheck("Lambda Private", "Check if all Lambdas are private", testName)
+	check.InitCheck("Lambdas are private", "Check if all Lambdas are private", testName)
 	for _, lambda := range lambdas {
 		if lambda.VpcConfig == nil {
 			Message := "Lambda " + *lambda.FunctionName + " is public"

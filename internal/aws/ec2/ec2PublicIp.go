@@ -12,7 +12,7 @@ import (
 func CheckIfEC2PublicIP(checkConfig yatas.CheckConfig, instances []types.Instance, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.InitCheck("EC2 Public IP", "Check if all instances have a public IP", testName)
+	check.InitCheck("EC2s don't have a public IP", "Check if all instances have a public IP", testName)
 	for _, instance := range instances {
 		if instance.PublicIpAddress != nil {
 			Message := "EC2 instance " + *instance.InstanceId + " has a public IP" + *instance.PublicIpAddress

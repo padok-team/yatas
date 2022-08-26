@@ -12,7 +12,7 @@ import (
 func CheckIfDeleteProtectionEnabled(checkConfig yatas.CheckConfig, instances []types.DBInstance, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.InitCheck("RDS Delete Protection", "Check if RDS delete protection is enabled", testName)
+	check.InitCheck("RDS have the deletion protection enabled", "Check if RDS delete protection is enabled", testName)
 	for _, instance := range instances {
 		if instance.DeletionProtection {
 			Message := "RDS delete protection is enabled on " + *instance.DBInstanceIdentifier

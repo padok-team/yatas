@@ -96,89 +96,89 @@ plugins:
 ## AWS - 51 Checks
 
 ### AWS Certificate Manager
-- AWS_ACM_001 ACM Valid
-- AWS_ACM_002 Certificate Expires in 90 Days
-- AWS_ACM_003 ACM In Use
+- AWS_ACM_001 ACM certificates are valid
+- AWS_ACM_002 ACM certificate expires in more than 90 days
+- AWS_ACM_003 ACM certificates are used
 
 ### APIGateway
-- AWS_APG_001 Apigateway Cloudwatch Logs enabled
-- AWS_APG_002 APIGateway stages protected, by ACL
-- AWS_APG_003 Apigateway Tracing enabled
+- AWS_APG_001 ApiGateways logs are sent to Cloudwatch
+- AWS_APG_002 ApiGateways are protected by an ACL
+- AWS_APG_003 ApiGateways have tracing enabled
 
 ### AutoScaling
-- AWS_ASG_001 Autoscaling Desired Capacity vs Max Capacity below 80%
+- AWS_ASG_001 Autoscaling maximum capacity is below 80%
 
 ### Backup
-- AWS_BAK_001 EC2 Snapshots Encryption
-- AWS_BAK_002 EC2 Snapshots Age
+- AWS_BAK_001 EC2's Snapshots are encrypted
+- AWS_BAK_002 EC2's snapshots are younger than a day old
 
 ### Cloudfront
-- AWS_CFT_001 TLS 1.2 Minimum
-- AWS_CFT_002 Cloudfront HTTPS Only
-- AWS_CFT_003 Standard Logging Enabled
-- AWS_CFT_004 Cookies Logging Enabled
-- AWS_CFT_005 ACL Used
+- AWS_CFT_001 Cloudfronts enforce TLS 1.2 at least
+- AWS_CFT_002 Cloudfronts only allow HTTPS or redirect to HTTPS
+- AWS_CFT_003 Cloudfronts queries are logged
+- AWS_CFT_004 Cloudfronts are logging Cookies
+- AWS_CFT_005 Cloudfronts are protected by an ACL
 
 ### CloudTrail
-- AWS_CLD_001 Cloudtrails Encryption
-- AWS_CLD_002 Cloudtrails Global Service Events Activated
-- AWS_CLD_003 Cloudtrails Multi Region
+- AWS_CLD_001 Cloudtrails are encrypted
+- AWS_CLD_002 Cloudtrails have Global Service Events Activated
+- AWS_CLD_003 Cloudtrails are in multiple regions
 
 ### DynamoDB
-- AWS_DYN_001 Dynamodb Encryption
-- AWS_DYN_002 Dynamodb Continuous Backups
+- AWS_DYN_001 Dynamodbs are encrypted
+- AWS_DYN_002 Dynamodb have continuous backup enabled with PITR
 
 ### EC2
-- AWS_EC2_001 EC2 Public IP
-- AWS_EC2_002 Monitoring Enabled
+- AWS_EC2_001 EC2s don't have a public IP
+- AWS_EC2_002 EC2s have the monitoring option enabled
 
 ### ECR
-- AWS_ECR_001 Image Scanning Enabled
-- AWS_ECR_002 Encrypted
-- AWS_ECR_003 TagImmutable
+- AWS_ECR_001 ECRs image are scanned on push
+- AWS_ECR_002 ECRs are encrypted
+- AWS_ECR_003 ECRs tags are immutable
 
 ### LoadBalancer
-- AWS_ELB_001 ELB Access Logs Enabled
+- AWS_ELB_001 ELB have access logs enabled
 
 ### GuardDuty
-- AWS_GDT_001 GuardDuty Enabled
+- AWS_GDT_001 GuardDuty is enabled in the account
 
 ### IAM
-- AWS_IAM_001 IAM 2FA
-- AWS_IAM_002 IAM Access Key Age
-- AWS_IAM_003 IAM User Can Elevate Rights
+- AWS_IAM_001 IAM Users have 2FA activated
+- AWS_IAM_002 IAM access key younger than 90 days
+- AWS_IAM_003 IAM User can't elevate rights
 
 ### Lambda
-- AWS_LMD_001 Lambda Private
-- AWS_LMD_002 Lambda In Security Group
+- AWS_LMD_001 Lambdas are private
+- AWS_LMD_002 Lambdas are in a security group
 
 ### RDS
-- AWS_RDS_001 RDS Encryption
-- AWS_RDS_002 RDS Backup
-- AWS_RDS_003 RDS Minor Auto Upgrade
-- AWS_RDS_004 RDS Private
-- AWS_RDS_005 RDS Logging
-- AWS_RDS_006 RDS Delete Protection
+- AWS_RDS_001 RDS are encrypted
+- AWS_RDS_002 RDS are backedup automatically with PITR
+- AWS_RDS_003 RDS have minor versions automatically updated
+- AWS_RDS_004 RDS aren't publicly accessible
+- AWS_RDS_005 RDS logs are exported to cloudwatch
+- AWS_RDS_006 RDS have the deletion protection enabled
 
 ### S3 Bucket
-- AWS_S3_001 S3 Encryption
-- AWS_S3_002 S3 Bucket in one zone
-- AWS_S3_003 S3 Bucket object versioning
-- AWS_S3_004 S3 Bucket retention policy
-- AWS_S3_005 S3 Public Access Block
+- AWS_S3_001 S3 are encrypted
+- AWS_S3_002 S3 buckets are not global but in one zone
+- AWS_S3_003 S3 buckets are versioned
+- AWS_S3_004 S3 buckets have a retention policy
+- AWS_S3_005 S3 bucket have public access block enabled
 
 ### Volume
-- AWS_VOL_001 EC2 Volumes Encryption
-- AWS_VOL_002 EC2 Volumes Type
-- AWS_VOL_003 EC2 Volumes Snapshots
+- AWS_VOL_001 EC2's volumes are encrypted
+- AWS_VOL_002 EC2 are using GP3
+- AWS_VOL_003 EC2 have snapshots
 
 ### VPC
-- AWS_VPC_001 VPC CIDR
-- AWS_VPC_002 VPC Only One
-- AWS_VPC_003 VPC Gateway
-- AWS_VPC_004 VPC Flow Logs
-- AWS_VPC_005 At least 2 subnets
-- AWS_VPC_006 Subnets in different zone
+- AWS_VPC_001 VPC CIDRs are bigger than /20
+- AWS_VPC_002 VPC can't be in the same account
+- AWS_VPC_003 VPC only have one Gateway
+- AWS_VPC_004 VPC Flow Logs are activated
+- AWS_VPC_005 VPC have at least 2 subnets
+- AWS_VPC_006 VPC's Subnets are in different zones
 
 <!-- END_YATAS -->
 

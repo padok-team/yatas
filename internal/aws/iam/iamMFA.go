@@ -11,7 +11,7 @@ import (
 func CheckIf2FAActivated(checkConfig yatas.CheckConfig, mfaForUsers []MFAForUser, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.InitCheck("IAM 2FA", "Check if all users have 2FA activated", testName)
+	check.InitCheck("IAM Users have 2FA activated", "Check if all users have 2FA activated", testName)
 	for _, mfaForUser := range mfaForUsers {
 		if len(mfaForUser.MFAs) == 0 {
 			Message := "2FA is not activated on " + mfaForUser.UserName

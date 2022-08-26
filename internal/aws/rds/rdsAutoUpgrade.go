@@ -12,7 +12,7 @@ import (
 func checkIfAutoUpgradeEnabled(checkConfig yatas.CheckConfig, instances []types.DBInstance, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.InitCheck("RDS Minor Auto Upgrade", "Check if RDS minor auto upgrade is enabled", testName)
+	check.InitCheck("RDS have minor versions automatically updated", "Check if RDS minor auto upgrade is enabled", testName)
 	for _, instance := range instances {
 		if !instance.AutoMinorVersionUpgrade {
 			Message := "RDS auto upgrade is not enabled on " + *instance.DBInstanceIdentifier

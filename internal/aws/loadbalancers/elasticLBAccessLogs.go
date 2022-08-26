@@ -11,7 +11,7 @@ import (
 func CheckIfAccessLogsEnabled(checkConfig yatas.CheckConfig, loadBalancers []LoadBalancerAttributes, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.InitCheck("ELB Access Logs Enabled", "Check if all load balancers have access logs enabled", testName)
+	check.InitCheck("ELB have access logs enabled", "Check if all load balancers have access logs enabled", testName)
 	for _, loadBalancer := range loadBalancers {
 		for _, attributes := range loadBalancer.Output.Attributes {
 

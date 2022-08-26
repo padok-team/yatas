@@ -11,7 +11,7 @@ import (
 func checkIfEncryptionEnabled(checkConfig yatas.CheckConfig, buckets []S3ToEncryption, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.InitCheck("S3 Encryption", "Check if S3 encryption is enabled", testName)
+	check.InitCheck("S3 are encrypted", "Check if S3 encryption is enabled", testName)
 	for _, bucket := range buckets {
 		if !bucket.Encrypted {
 			Message := "S3 bucket " + bucket.BucketName + " is not using encryption"

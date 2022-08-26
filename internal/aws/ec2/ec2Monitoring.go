@@ -12,7 +12,7 @@ import (
 func CheckIfMonitoringEnabled(checkConfig yatas.CheckConfig, instances []types.Instance, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.InitCheck("Monitoring Enabled", "Check if all instances have monitoring enabled", testName)
+	check.InitCheck("EC2s have the monitoring option enabled", "Check if all instances have monitoring enabled", testName)
 	for _, instance := range instances {
 		if instance.Monitoring.State != types.MonitoringStateEnabled {
 			Message := "EC2 instance " + *instance.InstanceId + " has no monitoring enabled"

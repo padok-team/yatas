@@ -12,7 +12,7 @@ import (
 func CheckIfSnapshotYoungerthan24h(checkConfig yatas.CheckConfig, vs couple, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.InitCheck("EC2 Snapshots Age", "Check if all snapshots are younger than 24h", testName)
+	check.InitCheck("EC2's snapshots are younger than a day old", "Check if all snapshots are younger than 24h", testName)
 	for _, volume := range vs.Volume {
 		snapshotYoungerThan24h := false
 		for _, snapshot := range vs.Snapshot {

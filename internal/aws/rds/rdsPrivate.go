@@ -12,7 +12,7 @@ import (
 func checkIfRDSPrivateEnabled(checkConfig yatas.CheckConfig, instances []types.DBInstance, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.InitCheck("RDS Private", "Check if RDS private is enabled", testName)
+	check.InitCheck("RDS aren't publicly accessible", "Check if RDS private is enabled", testName)
 	for _, instance := range instances {
 		if instance.PubliclyAccessible {
 			Message := "RDS private is not enabled on " + *instance.DBInstanceIdentifier

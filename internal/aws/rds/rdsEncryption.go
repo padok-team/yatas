@@ -12,7 +12,7 @@ import (
 func checkIfEncryptionEnabled(checkConfig yatas.CheckConfig, instances []types.DBInstance, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.InitCheck("RDS Encryption", "Check if RDS encryption is enabled", testName)
+	check.InitCheck("RDS are encrypted", "Check if RDS encryption is enabled", testName)
 	for _, instance := range instances {
 		if !instance.StorageEncrypted {
 			Message := "RDS encryption is not enabled on " + *instance.DBInstanceIdentifier

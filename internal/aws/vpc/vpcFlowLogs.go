@@ -11,7 +11,7 @@ import (
 func checkIfVPCFLowLogsEnabled(checkConfig yatas.CheckConfig, VpcFlowLogs []VpcToFlowLogs, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.InitCheck("VPC Flow Logs", "Check if VPC Flow Logs are enabled", testName)
+	check.InitCheck("VPC Flow Logs are activated", "Check if VPC Flow Logs are enabled", testName)
 	for _, vpcFlowLog := range VpcFlowLogs {
 
 		if len(vpcFlowLog.FlowLogs) == 0 {

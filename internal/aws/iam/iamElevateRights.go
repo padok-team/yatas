@@ -13,7 +13,7 @@ import (
 func CheckIfUserCanElevateRights(checkConfig yatas.CheckConfig, userToPolociesElevated []UserToPoliciesElevate, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.InitCheck("IAM User Can Elevate Rights", "Check if  users can elevate rights", testName)
+	check.InitCheck("IAM User can't elevate rights", "Check if  users can elevate rights", testName)
 	for _, userPol := range userToPolociesElevated {
 		if len(userPol.Policies) > 0 {
 			var Message string

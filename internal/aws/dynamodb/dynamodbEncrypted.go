@@ -12,7 +12,7 @@ import (
 func CheckIfDynamodbEncrypted(checkConfig yatas.CheckConfig, dynamodbs []*dynamodb.DescribeTableOutput, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.InitCheck("Dynamodb Encryption", "Check if DynamoDB encryption is enabled", testName)
+	check.InitCheck("Dynamodbs are encrypted", "Check if DynamoDB encryption is enabled", testName)
 	for _, d := range dynamodbs {
 		if d.Table != nil && d.Table.SSEDescription != nil && d.Table.SSEDescription.Status == "ENABLED" {
 			Message := "Dynamodb encryption is enabled on " + *d.Table.TableName

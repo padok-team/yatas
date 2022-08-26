@@ -12,7 +12,7 @@ import (
 func CheckAgeAccessKeyLessThan90Days(checkConfig yatas.CheckConfig, accessKeysForUsers []AccessKeysForUser, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.InitCheck("IAM Access Key Age", "Check if all users have access key less than 90 days", testName)
+	check.InitCheck("IAM access key younger than 90 days", "Check if all users have access key less than 90 days", testName)
 	for _, accesskeyforuser := range accessKeysForUsers {
 		now := time.Now()
 		for _, accessKey := range accesskeyforuser.AccessKeys {

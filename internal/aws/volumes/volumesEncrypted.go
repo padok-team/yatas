@@ -12,7 +12,7 @@ import (
 func checkIfEncryptionEnabled(checkConfig yatas.CheckConfig, volumes []types.Volume, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.InitCheck("EC2 Volumes Encryption", "Check if EC2 encryption is enabled", testName)
+	check.InitCheck("EC2's volumes are encrypted", "Check if EC2 encryption is enabled", testName)
 	for _, volume := range volumes {
 		if volume.Encrypted != nil && *volume.Encrypted {
 			Message := "EC2 encryption is enabled on " + *volume.VolumeId

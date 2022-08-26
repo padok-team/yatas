@@ -12,7 +12,7 @@ import (
 func checkIfBackupEnabled(checkConfig yatas.CheckConfig, instances []types.DBInstance, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.InitCheck("RDS Backup", "Check if RDS backup is enabled", testName)
+	check.InitCheck("RDS are backedup automatically with PITR", "Check if RDS backup is enabled", testName)
 	for _, instance := range instances {
 		if instance.BackupRetentionPeriod == 0 {
 			Message := "RDS backup is not enabled on " + *instance.DBInstanceIdentifier

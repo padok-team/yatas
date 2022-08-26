@@ -11,7 +11,7 @@ import (
 func CheckIfBucketObjectVersioningEnabled(checkConfig yatas.CheckConfig, buckets []S3ToVersioning, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.InitCheck("S3 Bucket object versioning", "Check if S3 buckets are using object versioning", testName)
+	check.InitCheck("S3 buckets are versioned", "Check if S3 buckets are using object versioning", testName)
 	for _, bucket := range buckets {
 		if !bucket.Versioning {
 			Message := "S3 bucket " + bucket.BucketName + " is not using object versioning"

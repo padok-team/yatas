@@ -12,7 +12,7 @@ import (
 func CheckIfACMInUse(checkConfig yatas.CheckConfig, certificates []types.CertificateDetail, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check results.Check
-	check.InitCheck("ACM In Use", "Check if certificate is in use", testName)
+	check.InitCheck("ACM certificates are used", "Check if certificate is in use", testName)
 	for _, certificate := range certificates {
 		if len(certificate.InUseBy) > 0 {
 			Message := "Certificate " + *certificate.CertificateArn + " is in use"
