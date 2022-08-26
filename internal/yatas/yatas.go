@@ -3,10 +3,11 @@ package yatas
 import (
 	"strings"
 	"sync"
+	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/schollz/progressbar/v3"
 	"github.com/stangirard/yatas/internal/helpers"
+	"github.com/vbauerster/mpb/v7"
 	"gopkg.in/yaml.v3"
 )
 
@@ -36,10 +37,16 @@ type AWS_Account struct {
 }
 
 type Config struct {
-	Plugins  []Plugin      `yaml:"plugins"`
-	AWS      []AWS_Account `yaml:"aws"`
-	Ignore   []Ignore      `yaml:"ignore"`
-	Progress *progressbar.ProgressBar
+	sync.Mutex
+
+	Plugins               []Plugin      `yaml:"plugins"`
+	AWS                   []AWS_Account `yaml:"aws"`
+	Ignore                []Ignore      `yaml:"ignore"`
+	Progress              *mpb.Bar
+	ProgressValue         int
+	CheckProgress         *mpb.Bar
+	ProgressDetailed      *mpb.Bar
+	ProgressDetailedValue int
 }
 
 func (c *Config) CheckExclude(id string) bool {
@@ -74,22 +81,22 @@ func (c *Config) CheckInclude(id string) bool {
 	return true
 }
 
-func ParseConfig(configFile string) (Config, error) {
+func ParseConfig(configFile string) (*Config, error) {
 	// Read the file .yatas.yml
 	// File to array of bytes
 	data, err := helpers.ReadFile(configFile)
 	if err != nil {
-		return Config{}, err
+		return &Config{}, err
 	}
 
 	// Parse the yaml file
 	config := Config{}
 	err = unmarshalYAML(data, &config)
 	if err != nil {
-		return Config{}, err
+		return &Config{}, err
 	}
 
-	return config, nil
+	return &config, nil
 }
 
 func unmarshalYAML(data []byte, config *Config) error {
@@ -101,6 +108,12 @@ func unmarshalYAML(data []byte, config *Config) error {
 func CheckTest[A, B, C any](wg *sync.WaitGroup, config *Config, id string, test func(A, B, C)) func(A, B, C) {
 	if !config.CheckExclude(id) && config.CheckInclude(id) {
 		wg.Add(1)
+		if config.ProgressDetailed != nil {
+			config.Lock()
+			config.ProgressDetailedValue++
+			config.ProgressDetailed.SetTotal(int64(config.ProgressDetailedValue), false)
+			config.Unlock()
+		}
 		return test
 	} else {
 		return func(A, B, C) {}
@@ -110,7 +123,14 @@ func CheckTest[A, B, C any](wg *sync.WaitGroup, config *Config, id string, test 
 
 func CheckMacroTest[A, B, C, D any](wg *sync.WaitGroup, config *Config, test func(A, B, C, D)) func(A, B, C, D) {
 	wg.Add(1)
-	config.Progress.ChangeMax(config.Progress.GetMax() + 1)
+	// TODO check
+	if config.Progress != nil {
+		config.Lock()
+		config.ProgressValue++
+		config.Progress.SetTotal(int64(config.ProgressValue), false)
+		config.Unlock()
+	}
+	time.Sleep(time.Millisecond * 100)
 
 	return test
 }

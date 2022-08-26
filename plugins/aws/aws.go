@@ -2,6 +2,7 @@ package aws
 
 import (
 	"sync"
+	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/stangirard/yatas/internal/logger"
@@ -56,6 +57,7 @@ func initTest(s aws.Config, c *yatas.Config, a yatas.AWS_Account) yatas.Tests {
 	checks.Account = a.Name
 	var wg sync.WaitGroup
 	queue := make(chan []yatas.Check)
+	go yatas.CheckMacroTest(&wg, c, acm.RunChecks)(&wg, s, c, queue)
 	go yatas.CheckMacroTest(&wg, c, s3.RunChecks)(&wg, s, c, queue)
 	go yatas.CheckMacroTest(&wg, c, volumes.RunChecks)(&wg, s, c, queue)
 	go yatas.CheckMacroTest(&wg, c, rds.RunChecks)(&wg, s, c, queue)
@@ -65,23 +67,23 @@ func initTest(s aws.Config, c *yatas.Config, a yatas.AWS_Account) yatas.Tests {
 	go yatas.CheckMacroTest(&wg, c, lambda.RunChecks)(&wg, s, c, queue)
 	go yatas.CheckMacroTest(&wg, c, dynamodb.RunChecks)(&wg, s, c, queue)
 	go yatas.CheckMacroTest(&wg, c, ec2.RunChecks)(&wg, s, c, queue)
-	go yatas.CheckMacroTest(&wg, c, iam.RunChecks)(&wg, s, c, queue)
 	go yatas.CheckMacroTest(&wg, c, cloudfront.RunChecks)(&wg, s, c, queue)
 	go yatas.CheckMacroTest(&wg, c, apigateway.RunChecks)(&wg, s, c, queue)
 	go yatas.CheckMacroTest(&wg, c, autoscaling.RunChecks)(&wg, s, c, queue)
 	go yatas.CheckMacroTest(&wg, c, loadbalancers.RunChecks)(&wg, s, c, queue)
 	go yatas.CheckMacroTest(&wg, c, guardduty.RunChecks)(&wg, s, c, queue)
-	go yatas.CheckMacroTest(&wg, c, acm.RunChecks)(&wg, s, c, queue)
+	go yatas.CheckMacroTest(&wg, c, iam.RunChecks)(&wg, s, c, queue)
 
 	go func() {
 		for t := range queue {
 
 			checks.Checks = append(checks.Checks, t...)
-			wg.Done()
 			if c.Progress != nil {
-				c.Progress.Add(1)
-				c.Progress.RenderBlank()
+				c.Progress.Increment()
+				time.Sleep(time.Millisecond * 100)
 			}
+			wg.Done()
+
 		}
 	}()
 	wg.Wait()

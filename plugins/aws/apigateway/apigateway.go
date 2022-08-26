@@ -2,6 +2,7 @@ package apigateway
 
 import (
 	"sync"
+	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/apigateway"
@@ -22,7 +23,12 @@ func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []y
 	go func() {
 		for t := range checkConfig.Queue {
 			checks = append(checks, t)
+			if c.ProgressDetailed != nil {
+				c.ProgressDetailed.Increment()
+				time.Sleep(time.Millisecond * 100)
+			}
 			checkConfig.Wg.Done()
+
 		}
 	}()
 

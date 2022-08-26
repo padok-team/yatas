@@ -4,11 +4,13 @@ import (
 	"flag"
 	"os"
 	"sort"
+	"time"
 
-	"github.com/schollz/progressbar/v3"
 	"github.com/stangirard/yatas/internal/report"
 	"github.com/stangirard/yatas/internal/yatas"
 	"github.com/stangirard/yatas/plugins"
+	"github.com/vbauerster/mpb/v7"
+	"github.com/vbauerster/mpb/v7/decor"
 )
 
 var (
@@ -22,19 +24,44 @@ func Execute() error {
 	if err != nil {
 		return err
 	}
+
 	if !*progressflag {
-		config.Progress = progressbar.Default(1)
+		p := mpb.New(mpb.WithWidth(64))
+		bar := p.AddBar(0, mpb.PrependDecorators(
+			decor.Name("Looking at Services: "),
+			decor.CountersNoUnit(" %d / %d")),
+			mpb.AppendDecorators(
+
+				decor.Percentage(),
+			),
+		)
+		config.Progress = bar
+
+		bar2 := p.AddBar(0,
+
+			mpb.PrependDecorators(
+				decor.Name("Running Checks: "),
+				decor.CountersNoUnit("%d / %d")),
+			mpb.AppendDecorators(
+				decor.Percentage(),
+			),
+		)
+
+		config.ProgressDetailed = bar2
+
 	}
-	checks, err := plugins.Execute(&config)
+	checks, err := plugins.Execute(config)
+	config.Lock()
+	config.Progress.SetTotal(config.Progress.Current(), true)
+	config.Unlock()
+	time.Sleep(time.Millisecond * 100)
 	if err != nil {
 		return err
 	}
-	checks = report.RemoveIgnored(&config, checks)
+	checks = report.RemoveIgnored(config, checks)
+	// if !*progressflag {
 
-	if !*progressflag {
-		config.Progress.Add(1)
-		config.Progress.Finish()
-	}
+	// }
 	// Sort checks by ID
 	sort.Slice(checks, func(i, j int) bool {
 		return checks[i].Account < checks[j].Account
@@ -51,12 +78,12 @@ func Execute() error {
 			return err
 		}
 		checksCompare := report.ComparePreviousWithNew(previous, checks)
-		report.PrettyPrintChecks(checksCompare, &config)
-		report.WriteChecksToFile(checks, &config)
+		report.PrettyPrintChecks(checksCompare, config)
+		report.WriteChecksToFile(checks, config)
 		checks = checksCompare
 	} else {
-		report.PrettyPrintChecks(checks, &config)
-		report.WriteChecksToFile(checks, &config)
+		report.PrettyPrintChecks(checks, config)
+		report.WriteChecksToFile(checks, config)
 
 	}
 	if *ci {

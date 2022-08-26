@@ -5,15 +5,16 @@ import (
 	"testing"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/schollz/progressbar/v3"
+	"github.com/vbauerster/mpb/v7"
 )
 
 func TestConfig_CheckExclude(t *testing.T) {
 	type fields struct {
-		Plugins  []Plugin
-		AWS      []AWS_Account
-		Ignore   []Ignore
-		Progress *progressbar.ProgressBar
+		Plugins       []Plugin
+		AWS           []AWS_Account
+		Ignore        []Ignore
+		Progress      *mpb.Bar
+		CheckProgress *mpb.Bar
 	}
 	type args struct {
 		id string
@@ -73,7 +74,7 @@ func TestConfig_CheckInclude(t *testing.T) {
 		Plugins  []Plugin
 		AWS      []AWS_Account
 		Ignore   []Ignore
-		Progress *progressbar.ProgressBar
+		Progress *mpb.Bar
 	}
 	type args struct {
 		id string
