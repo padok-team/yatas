@@ -91,11 +91,17 @@ plugins:
       - "AWS_VPC_004"
 ```
 
-## AWS - 47 Checks
+## AWS - 51 Checks
+
+### ACM
+- AWS_ACM_001 ACM Valid
+- AWS_ACM_002 Certificate Expires in 90 Days
+- AWS_ACM_003 ACM In Use
 
 ### APIGateway
 - AWS_APG_001 Apigateway Cloudwatch Logs enabled
 - AWS_APG_002 APIGateway stages protected, by ACL
+- AWS_APG_003 Apigateway Tracing enabled
 
 ### AutoScaling
 - AWS_ASG_001 Autoscaling Desired Capacity vs Max Capacity below 80%
