@@ -37,10 +37,7 @@ func TestGenerateReadme(t *testing.T) {
 	old := os.Stdout
 	r, w, _ := os.Pipe()
 	os.Stdout = w
-	err := GenerateReadme("../testdata/results_data.yaml")
-	if err != nil {
-		t.Error(err)
-	}
+	readme := GenerateReadme("../testdata/results_data.yaml")
 
 	w.Close()
 	os.Stdout = old
@@ -53,9 +50,9 @@ func TestGenerateReadme(t *testing.T) {
 	// Replace all \n and space with nothing in data and out variables
 	data = []byte(strings.Replace(string(data), "\n", "", -1))
 	data = []byte(strings.Replace(string(data), " ", "", -1))
-	out = []byte(strings.Replace(string(out), "\n", "", -1))
-	out = []byte(strings.Replace(string(out), " ", "", -1))
-	if string(out) != string(data) {
+	readme = strings.Replace(readme, "\n", "", -1)
+	readme = strings.Replace(readme, " ", "", -1)
+	if string(data) != string(readme) {
 		t.Error("Expected:\n", string(data), "\nGot:\n", string(out))
 	}
 

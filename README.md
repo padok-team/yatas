@@ -91,9 +91,11 @@ plugins:
       - "AWS_VPC_004"
 ```
 
+<!-- BEGIN_YATAS -->
+
 ## AWS - 51 Checks
 
-### ACM
+### AWS Certificate Manager
 - AWS_ACM_001 ACM Valid
 - AWS_ACM_002 Certificate Expires in 90 Days
 - AWS_ACM_003 ACM In Use
@@ -178,6 +180,7 @@ plugins:
 - AWS_VPC_005 At least 2 subnets
 - AWS_VPC_006 Subnets in different zone
 
+<!-- END_YATAS -->
 
 ## How to add a new test ?
 

@@ -26,7 +26,7 @@ func run() error {
 	flag.Parse()
 
 	if *generateReadme {
-		return report.GenerateReadme("results.yaml")
+		return report.WriteReadme("README.md", "results.yaml")
 	}
 	if err := cmd.Execute(); err != nil {
 		return err
