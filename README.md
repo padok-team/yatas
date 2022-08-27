@@ -93,7 +93,7 @@ plugins:
 
 <!-- BEGIN_YATAS -->
 
-## AWS - 51 Checks
+## AWS - 52 Checks
 
 ### AWS Certificate Manager
 - AWS_ACM_001 ACM certificates are valid
@@ -136,6 +136,9 @@ plugins:
 - AWS_ECR_001 ECRs image are scanned on push
 - AWS_ECR_002 ECRs are encrypted
 - AWS_ECR_003 ECRs tags are immutable
+
+### EKS
+- AWS_EKS_001 EKS clusters have logging enabled
 
 ### LoadBalancer
 - AWS_ELB_001 ELB have access logs enabled
