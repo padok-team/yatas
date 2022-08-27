@@ -1,6 +1,8 @@
 package yatas
 
-import "time"
+import (
+	"time"
+)
 
 type T Check
 type Result struct {
@@ -16,6 +18,8 @@ type Check struct {
 	Id          string        `yaml:"id"`
 	Results     []Result      `yaml:"results"`
 	Duration    time.Duration `yaml:"duration"`
+	StartTime   time.Time
+	EndTime     time.Time
 }
 
 type Tests struct {
@@ -35,4 +39,10 @@ func (c *Check) InitCheck(name, description, id string) {
 	c.Description = description
 	c.Status = "OK"
 	c.Id = id
+	c.StartTime = time.Now()
+}
+
+func (c *Check) EndCheck() {
+	c.EndTime = time.Now()
+	c.Duration = c.EndTime.Sub(c.StartTime)
 }

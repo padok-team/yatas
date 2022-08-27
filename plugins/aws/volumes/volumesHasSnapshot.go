@@ -10,10 +10,7 @@ import (
 func CheckIfAllVolumesHaveSnapshots(checkConfig yatas.CheckConfig, snapshot2Volumes couple, testName string) {
 	logger.Info(fmt.Sprint("Running ", testName))
 	var check yatas.Check
-	check.Name = "EC2 have snapshots"
-	check.Id = testName
-	check.Description = "Check if all volumes have snapshots"
-	check.Status = "OK"
+	check.InitCheck("EC2 have snapshots", "Check if all volumes have snapshots", testName)
 	for _, volume := range snapshot2Volumes.Volume {
 		ok := false
 		for _, snapshot := range snapshot2Volumes.Snapshot {

@@ -18,8 +18,9 @@ var status = map[string]string{
 }
 
 var (
-	details = flag.Bool("details", false, "print detailed results")
-	resume  = flag.Bool("resume", false, "print resume results")
+	details   = flag.Bool("details", false, "print detailed results")
+	resume    = flag.Bool("resume", false, "print resume results")
+	timeTaken = flag.Bool("time", false, "print time taken for each check")
 )
 
 func countResultOkOverall(results []yatas.Result) (int, int) {
@@ -57,7 +58,8 @@ func RemoveIgnored(c *yatas.Config, tests []yatas.Tests) []yatas.Tests {
 		testTpm.Checks = []yatas.Check{}
 
 		for _, check := range test.Checks {
-			var checkTmp yatas.Check
+			checkTmp := check
+			checkTmp.Results = []yatas.Result{}
 			checkTmp.InitCheck(check.Name, check.Description, check.Id)
 			for _, result := range check.Results {
 				if !IsIgnored(c, result, check) {
@@ -68,7 +70,6 @@ func RemoveIgnored(c *yatas.Config, tests []yatas.Tests) []yatas.Tests {
 		}
 		resultsTmp = append(resultsTmp, testTpm)
 	}
-
 	return resultsTmp
 }
 
@@ -98,7 +99,12 @@ func PrettyPrintChecks(checks []yatas.Tests, c *yatas.Config) {
 				}
 				ok, all := countResultOkOverall(check.Results)
 				count := fmt.Sprintf("%d/%d", ok, all)
+				duration := fmt.Sprintf("%.2fs", check.Duration.Seconds())
+				if *timeTaken {
+					fmt.Println(status[check.Status], check.Id, check.Name, "-", duration, "-", count)
+				}
 				fmt.Println(status[check.Status], check.Id, check.Name, "-", count)
+
 				if *details {
 					for _, result := range check.Results {
 

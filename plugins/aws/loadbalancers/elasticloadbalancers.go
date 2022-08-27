@@ -18,11 +18,13 @@ func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []y
 	go yatas.CheckTest(checkConfig.Wg, c, "AWS_LB_001", CheckIfAccessLogsEnabled)(checkConfig, la, "AWS_ELB_001")
 	go func() {
 		for t := range checkConfig.Queue {
+			t.EndCheck()
 			checks = append(checks, t)
 			if c.CheckProgress.Bar != nil {
 				c.CheckProgress.Bar.Increment()
 				time.Sleep(time.Millisecond * 100)
 			}
+
 			checkConfig.Wg.Done()
 
 		}

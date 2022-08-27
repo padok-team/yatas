@@ -63,7 +63,7 @@ func initTest(s aws.Config, c *yatas.Config, a yatas.AWS_Account) yatas.Tests {
 	var checks yatas.Tests
 	checks.Account = a.Name
 	var wg sync.WaitGroup
-	queue := make(chan []yatas.Check)
+	queue := make(chan []yatas.Check, 100)
 	go yatas.CheckMacroTest(&wg, c, acm.RunChecks)(&wg, s, c, queue)
 	go yatas.CheckMacroTest(&wg, c, s3.RunChecks)(&wg, s, c, queue)
 	go yatas.CheckMacroTest(&wg, c, volumes.RunChecks)(&wg, s, c, queue)

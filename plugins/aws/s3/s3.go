@@ -67,11 +67,13 @@ func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []y
 
 	go func() {
 		for t := range checkConfig.Queue {
+			t.EndCheck()
 			checks = append(checks, t)
 			if c.CheckProgress.Bar != nil {
 				c.CheckProgress.Bar.Increment()
 				time.Sleep(time.Millisecond * 100)
 			}
+
 			checkConfig.Wg.Done()
 
 		}
