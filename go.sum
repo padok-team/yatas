@@ -54,8 +54,8 @@ github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.13.12 h1:QFjSOmHSb77qR
 github.com/aws/aws-sdk-go-v2/service/internal/s3shared v1.13.12/go.mod h1:MADjAN0GHFDuc5lRa5Y5ki+oIO/w7X4qczHy+OUx0IA=
 github.com/aws/aws-sdk-go-v2/service/lambda v1.24.0 h1:Mzj2I0wbDY3nZZT1NSoR3/DQdAGp3F/4d70cwbNJhDY=
 github.com/aws/aws-sdk-go-v2/service/lambda v1.24.0/go.mod h1:H2hKxv0SIV9+AQtxpiYWyonfWIVuR8ssAaBWLQSIXZg=
-github.com/aws/aws-sdk-go-v2/service/rds v1.25.0 h1:+LC2gMTpKO9m4/KwHouTEVBgie07+K3+QmIwimS2OP8=
-github.com/aws/aws-sdk-go-v2/service/rds v1.25.0/go.mod h1:0+TdWzMBupUemfH+AlJ55BSD/KNPKyIcf5X3++cJOTA=
+github.com/aws/aws-sdk-go-v2/service/rds v1.25.1 h1:pegpYPM/zEC12PAq40MqMzDR87I+LROAQSlLPs98uhI=
+github.com/aws/aws-sdk-go-v2/service/rds v1.25.1/go.mod h1:0+TdWzMBupUemfH+AlJ55BSD/KNPKyIcf5X3++cJOTA=
 github.com/aws/aws-sdk-go-v2/service/s3 v1.27.5 h1:h9qqTedYnA9JcWjKyLV6UYIMSdp91ExLCUbjbpDLH7A=
 github.com/aws/aws-sdk-go-v2/service/s3 v1.27.5/go.mod h1:J8SS5Tp/zeLxaubB0xGfKnVrvssNBNLwTipreTKLhjQ=
 github.com/aws/aws-sdk-go-v2/service/sso v1.11.17 h1:pXxu9u2z1UqSbjO9YA8kmFJBhFc1EVTDaf7A+S+Ivq8=
@@ -101,8 +101,6 @@ github.com/rs/zerolog v1.27.0/go.mod h1:7frBqO0oezxmnO7GF86FY++uy8I0Tk/If5ni1G9Q
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/testify v1.7.2 h1:4jaiDzPyXQvSd7D0EjG45355tLlV3VOECpq10pLC+8s=
 github.com/stretchr/testify v1.7.2/go.mod h1:R6va5+xMeoiuVRoj+gSkQ7d3FALtqAAGI1FQKckRals=
-github.com/vbauerster/mpb v3.4.0+incompatible h1:mfiiYw87ARaeRW6x5gWwYRUawxaW1tLAD8IceomUCNw=
-github.com/vbauerster/mpb v3.4.0+incompatible/go.mod h1:zAHG26FUhVKETRu+MWqYXcI70POlC6N8up9p1dID7SU=
 github.com/vbauerster/mpb/v7 v7.5.2 h1:Ph3JvpBcoIwzIG1QwbUq97KQifrTRbKcMXN9rN5BYAs=
 github.com/vbauerster/mpb/v7 v7.5.2/go.mod h1:UmOiIUI8aPqWXIps0ciik3RKMdzx7+ooQpq+fBcXwBA=
 golang.org/x/sys v0.0.0-20200116001909-b77594299b42/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=

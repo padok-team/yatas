@@ -17,13 +17,12 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/guardduty v1.15.4
 	github.com/aws/aws-sdk-go-v2/service/iam v1.18.14
 	github.com/aws/aws-sdk-go-v2/service/lambda v1.24.0
-	github.com/aws/aws-sdk-go-v2/service/rds v1.25.0
+	github.com/aws/aws-sdk-go-v2/service/rds v1.25.1
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.27.5
 	github.com/fatih/color v1.13.0
 	github.com/hashicorp/go-hclog v1.2.2
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/rs/zerolog v1.27.0
-	github.com/vbauerster/mpb v3.4.0+incompatible
 	github.com/vbauerster/mpb/v7 v7.5.2
 	gopkg.in/yaml.v3 v3.0.1
 )
