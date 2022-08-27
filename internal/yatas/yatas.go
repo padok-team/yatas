@@ -113,6 +113,7 @@ func CheckTest[A, B, C any](wg *sync.WaitGroup, config *Config, id string, test 
 			config.ProgressDetailedValue++
 			config.ProgressDetailed.SetTotal(int64(config.ProgressDetailedValue), false)
 			config.Unlock()
+			time.Sleep(time.Millisecond * 100)
 		}
 		return test
 	} else {
