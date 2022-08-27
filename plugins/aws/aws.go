@@ -27,7 +27,9 @@ import (
 
 func Run(c *yatas.Config) ([]yatas.Tests, error) {
 	logger.Info("Launching AWS checks")
-	c.AddBar("AWS Accounts : ", "AWS", len(c.AWS), 2, c.Progress)
+	if c.Progress != nil {
+		c.AddBar("AWS Accounts : ", "AWS", len(c.AWS), 2, c.Progress)
+	}
 	var wg sync.WaitGroup
 	var queue = make(chan yatas.Tests, 10)
 	var checks []yatas.Tests
@@ -38,7 +40,9 @@ func Run(c *yatas.Config) ([]yatas.Tests, error) {
 	go func() {
 		for t := range queue {
 			checks = append(checks, t)
-			c.PluginsProgress["AWS"].Bar.Increment()
+			if c.Progress != nil {
+				c.PluginsProgress["AWS"].Bar.Increment()
+			}
 			wg.Done()
 		}
 	}()
