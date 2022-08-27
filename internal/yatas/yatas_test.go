@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/vbauerster/mpb/v7"
 )
 
 func TestConfig_CheckExclude(t *testing.T) {
@@ -13,8 +12,8 @@ func TestConfig_CheckExclude(t *testing.T) {
 		Plugins       []Plugin
 		AWS           []AWS_Account
 		Ignore        []Ignore
-		Progress      *mpb.Bar
-		CheckProgress *mpb.Bar
+		Progress      Progress
+		CheckProgress Progress
 	}
 	type args struct {
 		id string
@@ -57,10 +56,9 @@ func TestConfig_CheckExclude(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := &Config{
-				Plugins:  tt.fields.Plugins,
-				AWS:      tt.fields.AWS,
-				Ignore:   tt.fields.Ignore,
-				Progress: tt.fields.Progress,
+				Plugins: tt.fields.Plugins,
+				AWS:     tt.fields.AWS,
+				Ignore:  tt.fields.Ignore,
 			}
 			if got := c.CheckExclude(tt.args.id); got != tt.want {
 				t.Errorf("Config.CheckExclude() = %v, want %v", got, tt.want)
@@ -74,7 +72,7 @@ func TestConfig_CheckInclude(t *testing.T) {
 		Plugins  []Plugin
 		AWS      []AWS_Account
 		Ignore   []Ignore
-		Progress *mpb.Bar
+		Progress Progress
 	}
 	type args struct {
 		id string
@@ -119,10 +117,9 @@ func TestConfig_CheckInclude(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			c := &Config{
-				Plugins:  tt.fields.Plugins,
-				AWS:      tt.fields.AWS,
-				Ignore:   tt.fields.Ignore,
-				Progress: tt.fields.Progress,
+				Plugins: tt.fields.Plugins,
+				AWS:     tt.fields.AWS,
+				Ignore:  tt.fields.Ignore,
 			}
 			if got := c.CheckInclude(tt.args.id); got != tt.want {
 				t.Errorf("Config.CheckInclude() = %v, want %v", got, tt.want)

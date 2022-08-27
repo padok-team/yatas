@@ -24,6 +24,7 @@ func Execute(c *yatas.Config) ([]yatas.Tests, error) {
 
 func runPlugins(c *yatas.Config, plugins []string) ([]yatas.Tests, error) {
 	var checksAll []yatas.Tests
+	c.AddBar("Plugins : ", "Plugins", len(plugins), 1, c.Progress)
 	for _, plugin := range plugins {
 		logger.Debug(fmt.Sprint("Running plugin: ", plugin))
 		var commandPat = regexp.MustCompile(`custom.*`)
@@ -44,6 +45,7 @@ func runPlugins(c *yatas.Config, plugins []string) ([]yatas.Tests, error) {
 		default:
 			logger.Error(fmt.Sprint("Plugin not found: ", plugin))
 		}
+		c.PluginsProgress["Plugins"].Bar.Increment()
 	}
 	return checksAll, nil
 }

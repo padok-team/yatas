@@ -35,18 +35,21 @@ type AWS_Account struct {
 	SSO     bool   `yaml:"sso"`
 	Region  string `yaml:"region"`
 }
+type Progress struct {
+	Bar   *mpb.Bar
+	Value int
+}
 
 type Config struct {
 	sync.Mutex
 
-	Plugins               []Plugin      `yaml:"plugins"`
-	AWS                   []AWS_Account `yaml:"aws"`
-	Ignore                []Ignore      `yaml:"ignore"`
-	Progress              *mpb.Bar
-	ProgressValue         int
-	CheckProgress         *mpb.Bar
-	ProgressDetailed      *mpb.Bar
-	ProgressDetailedValue int
+	Plugins         []Plugin      `yaml:"plugins"`
+	AWS             []AWS_Account `yaml:"aws"`
+	Ignore          []Ignore      `yaml:"ignore"`
+	Progress        *mpb.Progress
+	ServiceProgress Progress
+	CheckProgress   Progress
+	PluginsProgress map[string]Progress
 }
 
 func (c *Config) CheckExclude(id string) bool {
@@ -108,10 +111,10 @@ func unmarshalYAML(data []byte, config *Config) error {
 func CheckTest[A, B, C any](wg *sync.WaitGroup, config *Config, id string, test func(A, B, C)) func(A, B, C) {
 	if !config.CheckExclude(id) && config.CheckInclude(id) {
 		wg.Add(1)
-		if config.ProgressDetailed != nil {
+		if config.CheckProgress.Bar != nil {
 			config.Lock()
-			config.ProgressDetailedValue++
-			config.ProgressDetailed.SetTotal(int64(config.ProgressDetailedValue), false)
+			config.CheckProgress.Value++
+			config.CheckProgress.Bar.SetTotal(int64(config.CheckProgress.Value), false)
 			config.Unlock()
 			time.Sleep(time.Millisecond * 100)
 		}
@@ -125,10 +128,10 @@ func CheckTest[A, B, C any](wg *sync.WaitGroup, config *Config, id string, test 
 func CheckMacroTest[A, B, C, D any](wg *sync.WaitGroup, config *Config, test func(A, B, C, D)) func(A, B, C, D) {
 	wg.Add(1)
 	// TODO check
-	if config.Progress != nil {
+	if config.ServiceProgress.Bar != nil {
 		config.Lock()
-		config.ProgressValue++
-		config.Progress.SetTotal(int64(config.ProgressValue), false)
+		config.ServiceProgress.Value++
+		config.ServiceProgress.Bar.SetTotal(int64(config.ServiceProgress.Value), false)
 		config.Unlock()
 	}
 	time.Sleep(time.Millisecond * 100)

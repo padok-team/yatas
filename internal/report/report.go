@@ -87,7 +87,7 @@ func CountChecksPassedOverall(checks []yatas.Check) (int, int) {
 func PrettyPrintChecks(checks []yatas.Tests, c *yatas.Config) {
 	flag.Parse()
 	for _, tests := range checks {
-		fmt.Println("\nAccount:", tests.Account)
+		fmt.Println("\nName:", tests.Account)
 		if *resume {
 			ok, all := CountChecksPassedOverall(tests.Checks)
 			fmt.Printf("\t%d/%d checks passed\n", ok, all)

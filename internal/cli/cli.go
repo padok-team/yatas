@@ -26,34 +26,34 @@ func Execute() error {
 	}
 
 	if !*progressflag {
-		p := mpb.New(mpb.WithWidth(64))
-		bar := p.AddBar(0, mpb.PrependDecorators(
-			decor.Name("Looking at Services: "),
+		config.Progress = mpb.New(mpb.WithWidth(64))
+		bar := config.Progress.AddBar(0, mpb.PrependDecorators(
+			decor.Name("Categories : "),
 			decor.CountersNoUnit(" %d / %d")),
 			mpb.AppendDecorators(
 
 				decor.Percentage(),
 			),
 		)
-		config.Progress = bar
+		bar.SetPriority(10)
+		config.ServiceProgress.Bar = bar
 
-		bar2 := p.AddBar(0,
+		bar2 := config.Progress.AddBar(0,
 
 			mpb.PrependDecorators(
-				decor.Name("Running Checks: "),
+				decor.Name("Checks : "),
 				decor.CountersNoUnit("%d / %d")),
 			mpb.AppendDecorators(
 				decor.Percentage(),
 			),
 		)
+		bar2.SetPriority(11)
 
-		config.ProgressDetailed = bar2
+		config.CheckProgress.Bar = bar2
 
 	}
 	checks, err := plugins.Execute(config)
-	config.Lock()
-	config.Progress.SetTotal(config.Progress.Current(), true)
-	config.Unlock()
+	config.ServiceProgress.Bar.SetTotal(config.ServiceProgress.Bar.Current(), true)
 	time.Sleep(time.Millisecond * 100)
 	if err != nil {
 		return err
