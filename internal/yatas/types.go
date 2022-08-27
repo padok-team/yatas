@@ -1,5 +1,7 @@
 package yatas
 
+import "time"
+
 type T Check
 type Result struct {
 	Message    string `yaml:"message"`
@@ -8,11 +10,12 @@ type Result struct {
 }
 
 type Check struct {
-	Name        string   `yaml:"name"`
-	Description string   `yaml:"description"`
-	Status      string   `yaml:"status"`
-	Id          string   `yaml:"id"`
-	Results     []Result `yaml:"results"`
+	Name        string        `yaml:"name"`
+	Description string        `yaml:"description"`
+	Status      string        `yaml:"status"`
+	Id          string        `yaml:"id"`
+	Results     []Result      `yaml:"results"`
+	Duration    time.Duration `yaml:"duration"`
 }
 
 type Tests struct {

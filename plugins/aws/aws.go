@@ -15,6 +15,7 @@ import (
 	"github.com/stangirard/yatas/plugins/aws/dynamodb"
 	"github.com/stangirard/yatas/plugins/aws/ec2"
 	"github.com/stangirard/yatas/plugins/aws/ecr"
+	"github.com/stangirard/yatas/plugins/aws/eks"
 	"github.com/stangirard/yatas/plugins/aws/guardduty"
 	"github.com/stangirard/yatas/plugins/aws/iam"
 	"github.com/stangirard/yatas/plugins/aws/lambda"
@@ -79,6 +80,7 @@ func initTest(s aws.Config, c *yatas.Config, a yatas.AWS_Account) yatas.Tests {
 	go yatas.CheckMacroTest(&wg, c, loadbalancers.RunChecks)(&wg, s, c, queue)
 	go yatas.CheckMacroTest(&wg, c, guardduty.RunChecks)(&wg, s, c, queue)
 	go yatas.CheckMacroTest(&wg, c, iam.RunChecks)(&wg, s, c, queue)
+	go yatas.CheckMacroTest(&wg, c, eks.RunChecks)(&wg, s, c, queue)
 
 	go func() {
 		for t := range queue {
