@@ -13,7 +13,7 @@ The goal of YATAS is to help you create a secure AWS environment without too muc
 YATAS is a simple and easy to use tool to audit your infrastructure for misconfiguration or potential security issues.
 
 <p align="center">
-<img src="docs/demo.png" alt="demo" width="60%">
+<img src="docs/demo.gif" alt="demo" width="50%">
 <p align="center">
 
 ## Installation
