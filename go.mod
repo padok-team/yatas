@@ -25,6 +25,7 @@ require (
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/rs/zerolog v1.27.0
 	github.com/vbauerster/mpb/v7 v7.5.2
+	golang.org/x/exp v0.0.0-20220827204233-334a2380cb91
 	gopkg.in/yaml.v3 v3.0.1
 )
 

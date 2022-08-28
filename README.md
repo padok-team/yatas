@@ -94,7 +94,7 @@ plugins:
 
 <!-- BEGIN_YATAS -->
 
-## AWS - 52 Checks
+## AWS - 53 Checks
 
 ### AWS Certificate Manager
 - AWS_ACM_001 ACM certificates are valid
@@ -140,6 +140,7 @@ plugins:
 
 ### EKS
 - AWS_EKS_001 EKS clusters have logging enabled
+- AWS_EKS_002 EKS clusters have private endpoint or strict public access
 
 ### LoadBalancer
 - AWS_ELB_001 ELB have access logs enabled

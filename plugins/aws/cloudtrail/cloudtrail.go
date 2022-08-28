@@ -2,7 +2,6 @@ package cloudtrail
 
 import (
 	"sync"
-	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/stangirard/yatas/internal/yatas"
@@ -24,7 +23,6 @@ func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []y
 			checks = append(checks, t)
 			if c.CheckProgress.Bar != nil {
 				c.CheckProgress.Bar.Increment()
-				time.Sleep(time.Millisecond * 100)
 			}
 
 			checkConfig.Wg.Done()

@@ -56,6 +56,7 @@ func Execute() error {
 	if config.Progress != nil {
 		config.ServiceProgress.Bar.SetTotal(config.ServiceProgress.Bar.Current(), true)
 		time.Sleep(time.Millisecond * 100)
+
 	}
 	if err != nil {
 		return err

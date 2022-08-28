@@ -116,7 +116,8 @@ func CheckTest[A, B, C any](wg *sync.WaitGroup, config *Config, id string, test 
 			config.CheckProgress.Value++
 			config.CheckProgress.Bar.SetTotal(int64(config.CheckProgress.Value), false)
 			config.Unlock()
-			time.Sleep(time.Millisecond * 100)
+			time.Sleep(time.Millisecond * 10)
+
 		}
 		return test
 	} else {
@@ -133,8 +134,9 @@ func CheckMacroTest[A, B, C, D any](wg *sync.WaitGroup, config *Config, test fun
 		config.ServiceProgress.Value++
 		config.ServiceProgress.Bar.SetTotal(int64(config.ServiceProgress.Value), false)
 		config.Unlock()
+		time.Sleep(time.Millisecond * 10)
+
 	}
-	time.Sleep(time.Millisecond * 100)
 
 	return test
 }

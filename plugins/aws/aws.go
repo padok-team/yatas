@@ -88,7 +88,7 @@ func initTest(s aws.Config, c *yatas.Config, a yatas.AWS_Account) yatas.Tests {
 			checks.Checks = append(checks.Checks, t...)
 			if c.ServiceProgress.Bar != nil {
 				c.ServiceProgress.Bar.Increment()
-				time.Sleep(time.Millisecond * 100)
+				time.Sleep(time.Millisecond * 10)
 			}
 			wg.Done()
 
