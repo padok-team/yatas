@@ -100,7 +100,7 @@ plugins:
 
 <!-- BEGIN_YATAS -->
 
-## AWS - 53 Checks
+## AWS - 54 Checks
 
 ### AWS Certificate Manager
 - AWS_ACM_001 ACM certificates are valid
@@ -114,6 +114,7 @@ plugins:
 
 ### AutoScaling
 - AWS_ASG_001 Autoscaling maximum capacity is below 80%
+- AWS_ASG_002 Autoscaling group are in two availability zones
 
 ### Backup
 - AWS_BAK_001 EC2's Snapshots are encrypted

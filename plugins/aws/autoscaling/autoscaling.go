@@ -16,6 +16,7 @@ func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []y
 	groups := GetAutoscalingGroups(svc)
 
 	go yatas.CheckTest(checkConfig.Wg, c, "AWS_ASG_001", CheckIfDesiredCapacityMaxCapacityBelow80percent)(checkConfig, groups, "AWS_ASG_001")
+	go yatas.CheckTest(checkConfig.Wg, c, "AWS_ASG_002", CheckIfInTwoAvailibilityZones)(checkConfig, groups, "AWS_ASG_002")
 
 	go func() {
 		for t := range checkConfig.Queue {
