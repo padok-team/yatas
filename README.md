@@ -100,7 +100,7 @@ plugins:
 
 <!-- BEGIN_YATAS -->
 
-## AWS - 54 Checks
+## AWS - 55 Checks
 
 ### AWS Certificate Manager
 - AWS_ACM_001 ACM certificates are valid
@@ -159,6 +159,7 @@ plugins:
 - AWS_IAM_001 IAM Users have 2FA activated
 - AWS_IAM_002 IAM access key younger than 90 days
 - AWS_IAM_003 IAM User can't elevate rights
+- AWS_IAM_004 IAM Users have not used their password for 120 days
 
 ### Lambda
 - AWS_LMD_001 Lambdas are private

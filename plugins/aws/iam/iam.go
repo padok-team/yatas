@@ -21,6 +21,7 @@ func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []y
 	go yatas.CheckTest(checkConfig.Wg, c, "AWS_IAM_001", CheckIf2FAActivated)(checkConfig, mfaForUsers, "AWS_IAM_001")
 	go yatas.CheckTest(checkConfig.Wg, c, "AWS_IAM_002", CheckAgeAccessKeyLessThan90Days)(checkConfig, accessKeysForUsers, "AWS_IAM_002")
 	go yatas.CheckTest(checkConfig.Wg, c, "AWS_IAM_003", CheckIfUserCanElevateRights)(checkConfig, UserToPoliciesElevated, "AWS_IAM_003")
+	go yatas.CheckTest(checkConfig.Wg, c, "AWS_IAM_004", CheckIfUserLastPasswordUse120Days)(checkConfig, users, "AWS_IAM_004")
 	go func() {
 		for t := range checkConfig.Queue {
 			t.EndCheck()
