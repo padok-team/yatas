@@ -2,7 +2,8 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:base",
-    ":automergePatch"
+    ":automergePatch",
+    ":semanticCommitTypeAll(chore)"
   ],
   "platformAutomerge": true,
   "postUpdateOptions": ["gomodTidy", "gomodUpdateImportPaths"],
@@ -27,6 +28,5 @@
       "groupName": "all minor aws dependencies",
       "groupSlug": "all-minor-aws"
     }
-  ],
-  "semanticCommits": "enabled"
+  ]
 }
