@@ -26,6 +26,7 @@ import (
 	"github.com/stangirard/yatas/plugins/aws/vpc"
 )
 
+// Public Functin used to run the AWS tests
 func Run(c *yatas.Config) ([]yatas.Tests, error) {
 	logger.Info("Launching AWS checks")
 	if c.Progress != nil {
@@ -36,7 +37,7 @@ func Run(c *yatas.Config) ([]yatas.Tests, error) {
 	var checks []yatas.Tests
 	wg.Add(len(c.AWS))
 	for _, account := range c.AWS {
-		go RunTestsForAccount(account, c, queue)
+		go runTestsForAccount(account, c, queue)
 	}
 	go func() {
 		for t := range queue {
@@ -52,12 +53,14 @@ func Run(c *yatas.Config) ([]yatas.Tests, error) {
 	return checks, nil
 }
 
-func RunTestsForAccount(account yatas.AWS_Account, c *yatas.Config, queue chan yatas.Tests) {
+// For each account we run the tests. We use a queue to store the results and a waitgroup to wait for all the tests to be done. This allows to run all tests asynchronously.
+func runTestsForAccount(account yatas.AWS_Account, c *yatas.Config, queue chan yatas.Tests) {
 	s := initAuth(account)
 	checks := initTest(s, c, account)
 	queue <- checks
 }
 
+// Main function that launched all the test for a given account. If a new category is added, it needs to be added here.
 func initTest(s aws.Config, c *yatas.Config, a yatas.AWS_Account) yatas.Tests {
 
 	var checks yatas.Tests

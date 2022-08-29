@@ -8,6 +8,7 @@ import (
 	"github.com/stangirard/yatas/internal/yatas"
 )
 
+// Main function that runs all the tests and returns the results
 func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []yatas.Check) {
 
 	var checkConfig yatas.CheckConfig

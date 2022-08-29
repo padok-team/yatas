@@ -10,6 +10,7 @@ import (
 	"github.com/stangirard/yatas/plugins/custom"
 )
 
+// Runs all the plugins that are enabled in the config
 func Execute(c *yatas.Config) ([]yatas.Tests, error) {
 
 	plugins := findPlugins(c)
@@ -22,6 +23,7 @@ func Execute(c *yatas.Config) ([]yatas.Tests, error) {
 	return checks, nil
 }
 
+// Run the plugins that are enabled in the config with a switch based on the name of the plugin
 func runPlugins(c *yatas.Config, plugins []string) ([]yatas.Tests, error) {
 	var checksAll []yatas.Tests
 	if c.Progress != nil {
@@ -55,6 +57,7 @@ func runPlugins(c *yatas.Config, plugins []string) ([]yatas.Tests, error) {
 	return checksAll, nil
 }
 
+// Returns a list of plugins that are enabled in the config
 func findPlugins(c *yatas.Config) []string {
 	var plugins []string
 	for _, plugin := range c.Plugins {

@@ -11,17 +11,19 @@ import (
 	"github.com/stangirard/yatas/internal/yatas"
 )
 
+// Create a new session that the SDK will use to load
+// credentials from. With either SSO or credentials
 func initAuth(a yatas.AWS_Account) aws.Config {
-	// Create a new session that the SDK will use to load
-	// credentials from. With either SSO or credentials
+
 	s := initSession(a)
 	return s
 
 }
 
+// Create a new session that the SDK will use to load
+// credentials from credentials
 func createSessionWithCredentials(c yatas.AWS_Account) aws.Config {
-	// Create a new session that the SDK will use to load
-	// credentials from credentials
+
 	if c.Profile == "" {
 		s, err := config.LoadDefaultConfig(context.TODO(),
 			config.WithRegion(c.Region),
@@ -51,10 +53,11 @@ func createSessionWithCredentials(c yatas.AWS_Account) aws.Config {
 
 }
 
+// Create a new session that the SDK will use to load
+// credentials from the shared credentials file.
+// Usefull for SSO
 func createSessionWithSSO(c yatas.AWS_Account) aws.Config {
-	// Create a new session that the SDK will use to load
-	// credentials from the shared credentials file.
-	// Usefull for SSO
+
 	if c.Profile == "" {
 		s, err := config.LoadDefaultConfig(context.Background(),
 			config.WithRegion(c.Region),
@@ -85,9 +88,10 @@ func createSessionWithSSO(c yatas.AWS_Account) aws.Config {
 
 }
 
+// Create a new session that the SDK will use to load
+// credentials from. With either SSO or credentials
 func initSession(c yatas.AWS_Account) aws.Config {
-	// Create a new session that the SDK will use to load
-	// credentials from. With either SSO or credentials
+
 	if c.SSO {
 		logger.Debug("Using AWS SSO")
 		return createSessionWithSSO(c)

@@ -13,6 +13,7 @@ type couple struct {
 	Snapshot []types.Snapshot
 }
 
+// GetSnapshots returns all snapshots for an aws config
 func GetSnapshots(s aws.Config) []types.Snapshot {
 	svc := ec2.NewFromConfig(s)
 	var snapshots []types.Snapshot
@@ -39,6 +40,7 @@ func GetSnapshots(s aws.Config) []types.Snapshot {
 	return snapshots
 }
 
+// GetVolumesAndSnapshots returns all volumes  for an aws config
 func GetVolumes(s aws.Config) []types.Volume {
 	svc := ec2.NewFromConfig(s)
 	var volumes []types.Volume

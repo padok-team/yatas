@@ -108,6 +108,8 @@ func unmarshalYAML(data []byte, config *Config) error {
 	return err
 }
 
+// Check test if a wrapper around a check that allows to verify if the check is included or excluded and add some custom logic.
+// It allows for a simpler integration of new tests without bloating the code.
 func CheckTest[A, B, C any](wg *sync.WaitGroup, config *Config, id string, test func(A, B, C)) func(A, B, C) {
 	if !config.CheckExclude(id) && config.CheckInclude(id) {
 		wg.Add(1)
@@ -126,6 +128,8 @@ func CheckTest[A, B, C any](wg *sync.WaitGroup, config *Config, id string, test 
 
 }
 
+// Check Macro test is a wrapper around a category that runs all the checks in the category.
+// It allows for a simpler integration of new categories without bloating the code.
 func CheckMacroTest[A, B, C, D any](wg *sync.WaitGroup, config *Config, test func(A, B, C, D)) func(A, B, C, D) {
 	wg.Add(1)
 	// TODO check
@@ -141,6 +145,7 @@ func CheckMacroTest[A, B, C, D any](wg *sync.WaitGroup, config *Config, test fun
 	return test
 }
 
+// CheckConfig is a struct that contains all the information needed to run a check.
 type CheckConfig struct {
 	Wg          *sync.WaitGroup
 	ConfigAWS   aws.Config
@@ -148,6 +153,8 @@ type CheckConfig struct {
 	ConfigYatas *Config
 }
 
+// Init the check config struct. Particularly useful in the categories. It allows to pass the config to the checks and allows
+// them to be run in parallel by adding the results to the queue.
 func (c *CheckConfig) Init(s aws.Config, config *Config) {
 	c.Wg = &sync.WaitGroup{}
 	c.ConfigAWS = s
