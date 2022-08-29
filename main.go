@@ -19,11 +19,32 @@ func main() {
 
 var (
 	generateReadme = flag.Bool("readme", false, "generate README.md checks")
+	initFlag       = flag.Bool("init", false, "init yatas")
 )
+
+//go:embed .yatas.yml.example
+var exampleConfig string
+
+func WriteExampleConfig() error {
+	err := os.WriteFile(".yatas.yml", []byte(exampleConfig), 0644)
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
 // Run YATAS
 func run() error {
 	flag.Parse()
+
+	if *initFlag {
+		err := WriteExampleConfig()
+		if err != nil {
+			return err
+		}
+		fmt.Println("Config file created in current directory ✅")
+		return nil
+	}
 
 	if *generateReadme {
 		return report.WriteReadme("README.md", "results.yaml")

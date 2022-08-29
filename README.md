@@ -13,8 +13,12 @@ The goal of YATAS is to help you create a secure AWS environment without too muc
 YATAS is a simple and easy to use tool to audit your infrastructure for misconfiguration or potential security issues.
 
 <p align="center">
-<img src="docs/demo.gif" alt="demo" width="50%">
+<img src="docs/demo.gif" alt="demo" width="60%">
 <p align="center">
+
+| No details                | Details
+|:-------------------------:|:-------------------------:
+|![](./docs/demo.png)       |  ![](./docs/details.png)
 
 ## Installation
 
@@ -24,7 +28,7 @@ brew install yatas
 ```
 
 ```bash
-cp .yatas.yml.example .yatas.yml
+yatas --init
 ```
 
 Modify .yatas.yml to your needs.
@@ -32,7 +36,7 @@ Modify .yatas.yml to your needs.
 ## Usage
 
 ```bash
-yatas ## --details 
+yatas -h
 ```
 
 Flags:
@@ -41,6 +45,8 @@ Flags:
 - `--ci`: Exit code 1 if there are issues found, 0 otherwise.
 - `--resume`: Only shows the number of tests passing and failing.
 - `--time`: Shows the time each test took to run in order to help you find bottlenecks.
+- `--init`: Creates a .yatas.yml file in the current directory.
+- `--progress`: Don't show the progress bar.
 
 ## Plugins
 
