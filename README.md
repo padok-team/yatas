@@ -100,7 +100,7 @@ plugins:
 
 <!-- BEGIN_YATAS -->
 
-## AWS - 55 Checks
+## AWS - 56 Checks
 
 ### AWS Certificate Manager
 - AWS_ACM_001 ACM certificates are valid
@@ -184,6 +184,7 @@ plugins:
 - AWS_VOL_001 EC2's volumes are encrypted
 - AWS_VOL_002 EC2 are using GP3
 - AWS_VOL_003 EC2 have snapshots
+- AWS_VOL_004 EC2's volumes are unused
 
 ### VPC
 - AWS_VPC_001 VPC CIDRs are bigger than /20
