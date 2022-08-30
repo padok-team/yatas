@@ -21,7 +21,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/rds v1.25.2
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.27.6
 	github.com/fatih/color v1.13.0
-	github.com/hashicorp/go-hclog v1.2.2
+	github.com/hashicorp/go-hclog v1.3.0
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/rs/zerolog v1.28.0
 	github.com/vbauerster/mpb/v7 v7.5.2
