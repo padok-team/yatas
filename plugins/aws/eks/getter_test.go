@@ -26,6 +26,20 @@ func (m mocksvc) DescribeCluster(ctx context.Context, params *eks.DescribeCluste
 	}, nil
 }
 
+func (m mocksvc) ListUpdates(ctx context.Context, params *eks.ListUpdatesInput, optFns ...func(*eks.Options)) (*eks.ListUpdatesOutput, error) {
+	return &eks.ListUpdatesOutput{
+		UpdateIds: []string{"test"},
+	}, nil
+}
+
+func (m mocksvc) DescribeUpdate(ctx context.Context, params *eks.DescribeUpdateInput, optFns ...func(*eks.Options)) (*eks.DescribeUpdateOutput, error) {
+	return &eks.DescribeUpdateOutput{
+		Update: &types.Update{
+			Id: aws.String("test"),
+		},
+	}, nil
+}
+
 func TestGetClusters(t *testing.T) {
 	type args struct {
 		svc EKSGetObjectAPI

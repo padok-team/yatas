@@ -14,8 +14,10 @@ func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []y
 	var checks []yatas.Check
 	svc := eks.NewFromConfig(s)
 	clusters := GetClusters(svc)
+	clusterToUpdate := GetUpdates(svc, clusters)
 	go yatas.CheckTest(checkConfig.Wg, c, "AWS_EKS_001", CheckIfLoggingIsEnabled)(checkConfig, clusters, "AWS_EKS_001")
 	go yatas.CheckTest(checkConfig.Wg, c, "AWS_EKS_002", CheckIfEksEndpointPrivate)(checkConfig, clusters, "AWS_EKS_002")
+	go yatas.CheckTest(checkConfig.Wg, c, "AWS_EKS_003", CheckIfEKSUpdateAvailable)(checkConfig, clusterToUpdate, "AWS_EKS_003")
 	go func() {
 		for t := range checkConfig.Queue {
 			t.EndCheck()
