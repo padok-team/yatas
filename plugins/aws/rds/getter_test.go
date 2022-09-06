@@ -18,9 +18,15 @@ func (m mockGetRdsAPI) DescribeDBInstances(ctx context.Context, input *rds.Descr
 
 }
 
+func (m mockGetRdsAPI) DescribeDBClusters(ctx context.Context, input *rds.DescribeDBClustersInput, optFns ...func(*rds.Options)) (*rds.DescribeDBClustersOutput, error) {
+	// Return an empty list of RDS clusters
+	return &rds.DescribeDBClustersOutput{
+		DBClusters: []types.DBCluster{},
+	}, nil
+
+}
+
 func TestGetListRDS(t *testing.T) {
-	type args struct {
-	}
 	tests := []struct {
 		name string
 		want []types.DBInstance
@@ -35,6 +41,9 @@ func TestGetListRDS(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := GetListRDS(mockGetRdsAPI); len(got) != 0 {
 				t.Errorf("GetListRDS() = %+v, want %+v", got, tt.want)
+			}
+			if got := GetListDBClusters(mockGetRdsAPI); len(got) != 0 {
+				t.Errorf("GetListDBClusters() = %+v, want %+v", got, tt.want)
 			}
 		})
 	}
