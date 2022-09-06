@@ -18,9 +18,10 @@ var status = map[string]string{
 }
 
 var (
-	details   = flag.Bool("details", false, "print detailed results")
-	resume    = flag.Bool("resume", false, "print resume results")
-	timeTaken = flag.Bool("time", false, "print time taken for each check")
+	details     = flag.Bool("details", false, "print detailed results")
+	resume      = flag.Bool("resume", false, "print resume results")
+	timeTaken   = flag.Bool("time", false, "print time taken for each check")
+	onlyFailure = flag.Bool("only-failure", false, "print only failed checks")
 )
 
 func countResultOkOverall(results []yatas.Result) (int, int) {
@@ -88,11 +89,10 @@ func CountChecksPassedOverall(checks []yatas.Check) (int, int) {
 func PrettyPrintChecks(checks []yatas.Tests, c *yatas.Config) {
 	flag.Parse()
 	for _, tests := range checks {
-		fmt.Println("\nName:", tests.Account)
-		if *resume {
-			ok, all := CountChecksPassedOverall(tests.Checks)
-			fmt.Printf("\t%d/%d checks passed\n", ok, all)
-		} else {
+		ok, all := CountChecksPassedOverall(tests.Checks)
+
+		fmt.Printf("\nName: %s (%d/%d)\n", tests.Account, ok, all)
+		if !*resume {
 			for _, check := range tests.Checks {
 				if c.CheckExclude(check.Id) {
 					continue
@@ -100,6 +100,9 @@ func PrettyPrintChecks(checks []yatas.Tests, c *yatas.Config) {
 				ok, all := countResultOkOverall(check.Results)
 				count := fmt.Sprintf("%d/%d", ok, all)
 				duration := fmt.Sprintf("%.2fs", check.Duration.Seconds())
+				if *onlyFailure && check.Status == "OK" {
+					continue
+				}
 				if *timeTaken {
 					fmt.Println(status[check.Status], check.Id, check.Name, "-", duration, "-", count)
 				} else {
@@ -108,7 +111,9 @@ func PrettyPrintChecks(checks []yatas.Tests, c *yatas.Config) {
 
 				if *details {
 					for _, result := range check.Results {
-
+						if *onlyFailure && result.Status == "OK" {
+							continue
+						}
 						if result.Status == "FAIL" {
 							color.Red("\t" + result.Message)
 						} else {

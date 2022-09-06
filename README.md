@@ -47,6 +47,7 @@ Flags:
 - `--time`: Shows the time each test took to run in order to help you find bottlenecks.
 - `--init`: Creates a .yatas.yml file in the current directory.
 - `--no-progress`: Don't show the progress bar.
+- `--only-failure`: Only show the tests that failed.
 
 ## Plugins
 
