@@ -100,7 +100,7 @@ plugins:
 
 <!-- BEGIN_YATAS -->
 
-## AWS - 56 Checks
+## AWS - 61 Checks
 
 ### AWS Certificate Manager
 - AWS_ACM_001 ACM certificates are valid
@@ -172,6 +172,12 @@ plugins:
 - AWS_RDS_004 RDS aren't publicly accessible
 - AWS_RDS_005 RDS logs are exported to cloudwatch
 - AWS_RDS_006 RDS have the deletion protection enabled
+- AWS_RDS_007 Aurora Clusters have minor versions automatically updated
+- AWS_RDS_008 Aurora RDS are backedup automatically with PITR
+- AWS_RDS_009 Aurora RDS have the deletion protection enabled
+- AWS_RDS_010 Aurora RDS are encrypted
+- AWS_RDS_011 Aurora RDS logs are exported to cloudwatch
+- AWS_RDS_012 Aurora RDS aren't publicly accessible
 
 ### S3 Bucket
 - AWS_S3_001 S3 are encrypted
@@ -192,7 +198,6 @@ plugins:
 - AWS_VPC_003 VPC only have one Gateway
 - AWS_VPC_004 VPC Flow Logs are activated
 - AWS_VPC_005 VPC have at least 2 subnets
-- AWS_VPC_006 VPC's Subnets are in different zones
 
 <!-- END_YATAS -->
 
