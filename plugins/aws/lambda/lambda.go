@@ -16,6 +16,7 @@ func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []y
 
 	go yatas.CheckTest(checkConfig.Wg, c, "AWS_LMD_001", CheckIfLambdaPrivate)(checkConfig, lambdas, "AWS_LMD_001")
 	go yatas.CheckTest(checkConfig.Wg, c, "AWS_LMD_002", CheckIfLambdaInSecurityGroup)(checkConfig, lambdas, "AWS_LMD_002")
+	go yatas.CheckTest(checkConfig.Wg, c, "AWS_LMD_003", CheckIfLambdaNoErrors)(checkConfig, lambdas, "AWS_LMD_003")
 	go func() {
 		for t := range checkConfig.Queue {
 			t.EndCheck()
