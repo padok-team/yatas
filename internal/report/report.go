@@ -102,8 +102,9 @@ func PrettyPrintChecks(checks []yatas.Tests, c *yatas.Config) {
 				duration := fmt.Sprintf("%.2fs", check.Duration.Seconds())
 				if *timeTaken {
 					fmt.Println(status[check.Status], check.Id, check.Name, "-", duration, "-", count)
+				} else {
+					fmt.Println(status[check.Status], check.Id, check.Name, "-", count)
 				}
-				fmt.Println(status[check.Status], check.Id, check.Name, "-", count)
 
 				if *details {
 					for _, result := range check.Results {
