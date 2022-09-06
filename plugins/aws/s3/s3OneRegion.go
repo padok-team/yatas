@@ -15,7 +15,7 @@ func CheckIfBucketInOneZone(checkConfig yatas.CheckConfig, buckets BucketAndNotI
 		found := false
 		for _, region := range buckets.NotInRegion {
 			if *bucket.Name == *region.Name {
-				Message := "S3 bucket " + *bucket.Name + " but should be in " + checkConfig.ConfigAWS.Region
+				Message := "S3 bucket " + *bucket.Name + " is global but should be in " + checkConfig.ConfigAWS.Region
 				result := yatas.Result{Status: "FAIL", Message: Message, ResourceID: *bucket.Name}
 				check.AddResult(result)
 				found = true
