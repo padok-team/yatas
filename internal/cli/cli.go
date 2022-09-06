@@ -15,7 +15,7 @@ import (
 
 var (
 	compare      = flag.Bool("compare", false, "compare with previous report")
-	progressflag = flag.Bool("progress", false, "show progress bar")
+	progressflag = flag.Bool("no-progress", false, "don't show the progress bar")
 	ci           = flag.Bool("ci", false, "run in CI with exit code")
 )
 
