@@ -61,8 +61,8 @@ func GetAllResourcesApiGateway(svc APIGatewayGetObjectAPI, apiId string) []types
 	return resources
 }
 
-func GetAllStagesApiGateway(svc APIGatewayGetObjectAPI, apis []types.RestApi) []types.Stage {
-	var stages []types.Stage
+func GetAllStagesApiGateway(svc APIGatewayGetObjectAPI, apis []types.RestApi) map[string][]types.Stage {
+	stages := make(map[string][]types.Stage)
 	for _, api := range apis {
 		input := &apigateway.GetStagesInput{
 			RestApiId: api.Id,
@@ -71,7 +71,7 @@ func GetAllStagesApiGateway(svc APIGatewayGetObjectAPI, apis []types.RestApi) []
 		if err != nil {
 			return nil
 		}
-		stages = append(stages, result.Item...)
+		stages[*api.Id] = result.Item
 
 	}
 	return stages

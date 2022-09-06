@@ -137,7 +137,7 @@ func TestGetAllStagesApiGateway(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want []types.Stage
+		want map[string][]types.Stage
 	}{
 		{
 			name: "Empty list of API Gateway stages",
@@ -149,15 +149,18 @@ func TestGetAllStagesApiGateway(t *testing.T) {
 					},
 				},
 			},
-			want: []types.Stage{
-				{
-					DeploymentId: aws.String("deploymentId"),
-					AccessLogSettings: &types.AccessLogSettings{
-						DestinationArn: aws.String("destinationArn"),
-						Format:         aws.String("format"),
+			want: map[string][]types.Stage{
+				"test": {
+
+					{
+						DeploymentId: aws.String("deploymentId"),
+						AccessLogSettings: &types.AccessLogSettings{
+							DestinationArn: aws.String("destinationArn"),
+							Format:         aws.String("format"),
+						},
+						TracingEnabled: true,
+						WebAclArn:      aws.String("webAclArn"),
 					},
-					TracingEnabled: true,
-					WebAclArn:      aws.String("webAclArn"),
 				},
 			},
 		},

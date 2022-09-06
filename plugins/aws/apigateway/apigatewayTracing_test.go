@@ -12,7 +12,7 @@ import (
 func TestCheckIfTracingEnabled(t *testing.T) {
 	type args struct {
 		checkConfig yatas.CheckConfig
-		stages      []types.Stage
+		stages      map[string][]types.Stage
 		testName    string
 	}
 	tests := []struct {
@@ -23,10 +23,12 @@ func TestCheckIfTracingEnabled(t *testing.T) {
 			name: "Check if all stages are tracing enabled",
 			args: args{
 				checkConfig: yatas.CheckConfig{Queue: make(chan yatas.Check, 1), Wg: &sync.WaitGroup{}},
-				stages: []types.Stage{
-					{
-						TracingEnabled: true,
-						StageName:      aws.String("test"),
+				stages: map[string][]types.Stage{
+					"test-api": {
+						{
+							TracingEnabled: true,
+							StageName:      aws.String("test"),
+						},
 					},
 				},
 				testName: "CheckIfTracingEnabled",

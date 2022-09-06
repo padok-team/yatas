@@ -12,7 +12,7 @@ import (
 func TestCheckIfStagesProtectedByAcl(t *testing.T) {
 	type args struct {
 		checkConfig yatas.CheckConfig
-		stages      []types.Stage
+		stages      map[string][]types.Stage
 		testName    string
 	}
 	tests := []struct {
@@ -26,14 +26,11 @@ func TestCheckIfStagesProtectedByAcl(t *testing.T) {
 					Wg:    &sync.WaitGroup{},
 					Queue: make(chan yatas.Check, 1),
 				},
-				stages: []types.Stage{
-					{
-						AccessLogSettings: &types.AccessLogSettings{
-							DestinationArn: aws.String("arn:aws:logs:us-east-1:123456789012:log-group:apigateway-access-logs:log-stream:test-api-stages-cloudwatch-logs"),
-						},
+				stages: map[string][]types.Stage{
+					"test-api": {{
 						StageName: aws.String("test-stage"),
 						WebAclArn: aws.String("arn:aws:execute-api:us-east-1:123456789012:test-api/test-stage/GET/test-path"),
-					},
+					}},
 				},
 				testName: "test-name",
 			},
@@ -62,7 +59,7 @@ func TestCheckIfStagesProtectedByAcl(t *testing.T) {
 func TestCheckIfStagesProtectedByAclFail(t *testing.T) {
 	type args struct {
 		checkConfig yatas.CheckConfig
-		stages      []types.Stage
+		stages      map[string][]types.Stage
 		testName    string
 	}
 	tests := []struct {
@@ -76,12 +73,13 @@ func TestCheckIfStagesProtectedByAclFail(t *testing.T) {
 					Wg:    &sync.WaitGroup{},
 					Queue: make(chan yatas.Check, 1),
 				},
-				stages: []types.Stage{
-					{
+				stages: map[string][]types.Stage{
+					"test-api": {{
 						AccessLogSettings: &types.AccessLogSettings{
 							DestinationArn: aws.String("arn:aws:logs:us-east-1:123456789012:log-group:apigateway-access-logs:log-stream:test-api-stages-cloudwatch-logs"),
 						},
 						StageName: aws.String("test-stage"),
+					},
 					},
 				},
 				testName: "test-name",

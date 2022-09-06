@@ -12,7 +12,7 @@ import (
 func TestCheckIfStagesCloudwatchLogsExist(t *testing.T) {
 	type args struct {
 		checkConfig yatas.CheckConfig
-		stages      []types.Stage
+		stages      map[string][]types.Stage
 		testName    string
 	}
 	tests := []struct {
@@ -26,12 +26,14 @@ func TestCheckIfStagesCloudwatchLogsExist(t *testing.T) {
 					Wg:    &sync.WaitGroup{},
 					Queue: make(chan yatas.Check, 1),
 				},
-				stages: []types.Stage{
-					{
-						AccessLogSettings: &types.AccessLogSettings{
-							DestinationArn: aws.String("arn:aws:logs:us-east-1:123456789012:log-group:apigateway-access-logs:log-stream:test-api-stages-cloudwatch-logs"),
+				stages: map[string][]types.Stage{
+					"test-api": {
+						{
+							AccessLogSettings: &types.AccessLogSettings{
+								DestinationArn: aws.String("arn:aws:logs:us-east-1:123456789012:log-group:apigateway-access-logs:log-stream:test-api-stages-cloudwatch-logs"),
+							},
+							StageName: aws.String("test-stage"),
 						},
-						StageName: aws.String("test-stage"),
 					},
 				},
 				testName: "test-name",
@@ -61,7 +63,7 @@ func TestCheckIfStagesCloudwatchLogsExist(t *testing.T) {
 func TestCheckIfStagesCloudwatchLogsExistFail(t *testing.T) {
 	type args struct {
 		checkConfig yatas.CheckConfig
-		stages      []types.Stage
+		stages      map[string][]types.Stage
 		testName    string
 	}
 	tests := []struct {
@@ -75,9 +77,11 @@ func TestCheckIfStagesCloudwatchLogsExistFail(t *testing.T) {
 					Wg:    &sync.WaitGroup{},
 					Queue: make(chan yatas.Check, 1),
 				},
-				stages: []types.Stage{
-					{
-						StageName: aws.String("test-stage"),
+				stages: map[string][]types.Stage{
+					"test-api": {
+						{
+							StageName: aws.String("test-stage"),
+						},
 					},
 				},
 				testName: "test-name",
