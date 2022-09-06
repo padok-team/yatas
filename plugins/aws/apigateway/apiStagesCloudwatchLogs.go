@@ -15,7 +15,7 @@ func CheckIfStagesCloudwatchLogsExist(checkConfig yatas.CheckConfig, stages map[
 	for apigateway, id := range stages {
 		for _, stage := range id {
 			if stage.AccessLogSettings != nil && stage.AccessLogSettings.DestinationArn != nil {
-				Message := "Cloudwatch logs are enabled on stage" + *stage.StageName + " of ApiGateway " + apigateway
+				Message := "Cloudwatch logs are enabled on stage " + *stage.StageName + " of ApiGateway " + apigateway
 				result := yatas.Result{Status: "OK", Message: Message, ResourceID: *stage.StageName}
 				check.AddResult(result)
 			} else {
