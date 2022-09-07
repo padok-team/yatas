@@ -3,7 +3,6 @@ package yatas
 import (
 	"strings"
 	"sync"
-	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/stangirard/yatas/internal/helpers"
@@ -41,15 +40,9 @@ type Progress struct {
 }
 
 type Config struct {
-	sync.Mutex
-
-	Plugins         []Plugin      `yaml:"plugins"`
-	AWS             []AWS_Account `yaml:"aws"`
-	Ignore          []Ignore      `yaml:"ignore"`
-	Progress        *mpb.Progress
-	ServiceProgress Progress
-	CheckProgress   Progress
-	PluginsProgress map[string]Progress
+	Plugins []Plugin      `yaml:"plugins"`
+	AWS     []AWS_Account `yaml:"aws"`
+	Ignore  []Ignore      `yaml:"ignore"`
 }
 
 func (c *Config) CheckExclude(id string) bool {
@@ -113,14 +106,13 @@ func unmarshalYAML(data []byte, config *Config) error {
 func CheckTest[A, B, C any](wg *sync.WaitGroup, config *Config, id string, test func(A, B, C)) func(A, B, C) {
 	if !config.CheckExclude(id) && config.CheckInclude(id) {
 		wg.Add(1)
-		if config.CheckProgress.Bar != nil {
-			config.Lock()
-			config.CheckProgress.Value++
-			config.CheckProgress.Bar.SetTotal(int64(config.CheckProgress.Value), false)
-			config.Unlock()
-			time.Sleep(time.Millisecond * 10)
+		// if config.CheckProgress.Bar != nil {
 
-		}
+		// 	config.CheckProgress.Value++
+		// 	config.CheckProgress.Bar.SetTotal(int64(config.CheckProgress.Value), false)
+		// 	time.Sleep(time.Millisecond * 10)
+
+		// }
 		return test
 	} else {
 		return func(A, B, C) {}
@@ -133,14 +125,12 @@ func CheckTest[A, B, C any](wg *sync.WaitGroup, config *Config, id string, test 
 func CheckMacroTest[A, B, C, D any](wg *sync.WaitGroup, config *Config, test func(A, B, C, D)) func(A, B, C, D) {
 	wg.Add(1)
 	// TODO check
-	if config.ServiceProgress.Bar != nil {
-		config.Lock()
-		config.ServiceProgress.Value++
-		config.ServiceProgress.Bar.SetTotal(int64(config.ServiceProgress.Value), false)
-		config.Unlock()
-		time.Sleep(time.Millisecond * 10)
+	// if config.ServiceProgress.Bar != nil {
+	// 	config.ServiceProgress.Value++
+	// 	config.ServiceProgress.Bar.SetTotal(int64(config.ServiceProgress.Value), false)
+	// 	time.Sleep(time.Millisecond * 10)
 
-	}
+	// }
 
 	return test
 }

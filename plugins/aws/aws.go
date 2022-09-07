@@ -2,7 +2,6 @@ package aws
 
 import (
 	"sync"
-	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/stangirard/yatas/internal/logger"
@@ -29,9 +28,7 @@ import (
 // Public Functin used to run the AWS tests
 func Run(c *yatas.Config) ([]yatas.Tests, error) {
 	logger.Info("Launching AWS checks")
-	if c.Progress != nil {
-		c.AddBar("AWS Accounts : ", "AWS", len(c.AWS), 2, c.Progress)
-	}
+
 	var wg sync.WaitGroup
 	var queue = make(chan yatas.Tests, 10)
 	var checks []yatas.Tests
@@ -42,9 +39,7 @@ func Run(c *yatas.Config) ([]yatas.Tests, error) {
 	go func() {
 		for t := range queue {
 			checks = append(checks, t)
-			if c.Progress != nil {
-				c.PluginsProgress["AWS"].Bar.Increment()
-			}
+
 			wg.Done()
 		}
 	}()
@@ -89,10 +84,7 @@ func initTest(s aws.Config, c *yatas.Config, a yatas.AWS_Account) yatas.Tests {
 		for t := range queue {
 
 			checks.Checks = append(checks.Checks, t...)
-			if c.ServiceProgress.Bar != nil {
-				c.ServiceProgress.Bar.Increment()
-				time.Sleep(time.Millisecond * 10)
-			}
+
 			wg.Done()
 
 		}

@@ -22,10 +22,6 @@ func RunChecks(wa *sync.WaitGroup, s aws.Config, c *yatas.Config, queue chan []y
 			t.EndCheck()
 			checks = append(checks, t)
 
-			if c.CheckProgress.Bar != nil {
-				c.CheckProgress.Bar.Increment()
-			}
-
 			checkConfig.Wg.Done()
 
 		}
