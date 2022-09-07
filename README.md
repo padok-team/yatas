@@ -101,7 +101,7 @@ plugins:
 
 <!-- BEGIN_YATAS -->
 
-## AWS - 61 Checks
+## AWS - 62 Checks
 
 ### AWS Certificate Manager
 - AWS_ACM_001 ACM certificates are valid
@@ -165,6 +165,7 @@ plugins:
 ### Lambda
 - AWS_LMD_001 Lambdas are private
 - AWS_LMD_002 Lambdas are in a security group
+- AWS_LMD_003 Lambdas are not with errors
 
 ### RDS
 - AWS_RDS_001 RDS are encrypted
