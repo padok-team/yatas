@@ -3,12 +3,12 @@ package report
 import (
 	"testing"
 
-	"github.com/stangirard/yatas/internal/yatas"
+	"github.com/stangirard/yatas/config"
 )
 
 func Test_countResultOkOverall(t *testing.T) {
 	type args struct {
-		results []yatas.Result
+		results []config.Result
 	}
 	tests := []struct {
 		name  string
@@ -19,7 +19,7 @@ func Test_countResultOkOverall(t *testing.T) {
 		{
 			name: "count result ok overall",
 			args: args{
-				results: []yatas.Result{
+				results: []config.Result{
 					{
 						Status: "OK",
 					},
@@ -34,7 +34,7 @@ func Test_countResultOkOverall(t *testing.T) {
 		{
 			name: "count result ok overall",
 			args: args{
-				results: []yatas.Result{
+				results: []config.Result{
 					{
 						Status: "FAIL",
 					},
@@ -62,9 +62,9 @@ func Test_countResultOkOverall(t *testing.T) {
 
 func TestIsIgnored(t *testing.T) {
 	type args struct {
-		c     *yatas.Config
-		r     yatas.Result
-		check yatas.Check
+		c     *config.Config
+		r     config.Result
+		check config.Check
 	}
 	tests := []struct {
 		name string
@@ -74,8 +74,8 @@ func TestIsIgnored(t *testing.T) {
 		{
 			name: "is ignored",
 			args: args{
-				c: &yatas.Config{
-					Ignore: []yatas.Ignore{
+				c: &config.Config{
+					Ignore: []config.Ignore{
 						{
 							ID:    "test",
 							Regex: true,
@@ -85,12 +85,12 @@ func TestIsIgnored(t *testing.T) {
 						},
 					},
 				},
-				r: yatas.Result{
+				r: config.Result{
 					Message:    "test",
 					Status:     "OK",
 					ResourceID: "test",
 				},
-				check: yatas.Check{
+				check: config.Check{
 					Id: "test",
 				},
 			},
@@ -99,8 +99,8 @@ func TestIsIgnored(t *testing.T) {
 		{
 			name: "is ignored",
 			args: args{
-				c: &yatas.Config{
-					Ignore: []yatas.Ignore{
+				c: &config.Config{
+					Ignore: []config.Ignore{
 						{
 							ID:    "test",
 							Regex: false,
@@ -110,12 +110,12 @@ func TestIsIgnored(t *testing.T) {
 						},
 					},
 				},
-				r: yatas.Result{
+				r: config.Result{
 					Message:    "test",
 					Status:     "OK",
 					ResourceID: "test",
 				},
-				check: yatas.Check{
+				check: config.Check{
 					Id: "test",
 				},
 			},
@@ -124,8 +124,8 @@ func TestIsIgnored(t *testing.T) {
 		{
 			name: "is ignored",
 			args: args{
-				c: &yatas.Config{
-					Ignore: []yatas.Ignore{
+				c: &config.Config{
+					Ignore: []config.Ignore{
 						{
 							ID:    "test",
 							Regex: false,
@@ -135,12 +135,12 @@ func TestIsIgnored(t *testing.T) {
 						},
 					},
 				},
-				r: yatas.Result{
+				r: config.Result{
 					Message:    "test",
 					Status:     "OK",
 					ResourceID: "test",
 				},
-				check: yatas.Check{
+				check: config.Check{
 					Id: "toto",
 				},
 			},
@@ -158,7 +158,7 @@ func TestIsIgnored(t *testing.T) {
 
 func TestExitCode(t *testing.T) {
 	type args struct {
-		checks []yatas.Tests
+		checks []config.Tests
 	}
 	tests := []struct {
 		name string
@@ -168,13 +168,13 @@ func TestExitCode(t *testing.T) {
 		{
 			name: "exit code",
 			args: args{
-				checks: []yatas.Tests{
+				checks: []config.Tests{
 					{
 						Account: "test",
-						Checks: []yatas.Check{
+						Checks: []config.Check{
 							{
 								Id: "test",
-								Results: []yatas.Result{
+								Results: []config.Result{
 									{
 										Status: "OK",
 									},
@@ -190,13 +190,13 @@ func TestExitCode(t *testing.T) {
 		{
 			name: "exit code",
 			args: args{
-				checks: []yatas.Tests{
+				checks: []config.Tests{
 					{
 						Account: "test",
-						Checks: []yatas.Check{
+						Checks: []config.Check{
 							{
 								Id: "test",
-								Results: []yatas.Result{
+								Results: []config.Result{
 									{
 										Status: "FAIL",
 									},
@@ -221,7 +221,7 @@ func TestExitCode(t *testing.T) {
 
 func TestCountChecksPassedOverall(t *testing.T) {
 	type args struct {
-		checks []yatas.Check
+		checks []config.Check
 	}
 	tests := []struct {
 		name  string
@@ -232,7 +232,7 @@ func TestCountChecksPassedOverall(t *testing.T) {
 		{
 			name: "count checks passed overall",
 			args: args{
-				checks: []yatas.Check{
+				checks: []config.Check{
 					{
 						Id:     "test",
 						Status: "OK",
@@ -245,7 +245,7 @@ func TestCountChecksPassedOverall(t *testing.T) {
 		{
 			name: "count checks passed overall",
 			args: args{
-				checks: []yatas.Check{
+				checks: []config.Check{
 					{
 						Id:     "test",
 						Status: "OK",
@@ -275,19 +275,19 @@ func TestCountChecksPassedOverall(t *testing.T) {
 
 func TestRemoveIgnored(t *testing.T) {
 	type args struct {
-		c     *yatas.Config
-		tests []yatas.Tests
+		c     *config.Config
+		tests []config.Tests
 	}
 	tests := []struct {
 		name string
 		args args
-		want []yatas.Tests
+		want []config.Tests
 	}{
 		{
 			name: "remove ignored",
 			args: args{
-				c: &yatas.Config{
-					Ignore: []yatas.Ignore{
+				c: &config.Config{
+					Ignore: []config.Ignore{
 						{
 							ID:    "test",
 							Regex: true,
@@ -297,14 +297,14 @@ func TestRemoveIgnored(t *testing.T) {
 						},
 					},
 				},
-				tests: []yatas.Tests{
+				tests: []config.Tests{
 					{
 						Account: "test",
-						Checks: []yatas.Check{
+						Checks: []config.Check{
 							{
 								Id: "test",
 
-								Results: []yatas.Result{
+								Results: []config.Result{
 									{
 										Status:     "FAIL",
 										Message:    "test",
@@ -321,14 +321,14 @@ func TestRemoveIgnored(t *testing.T) {
 					},
 				},
 			},
-			want: []yatas.Tests{
+			want: []config.Tests{
 				{
 					Account: "test",
-					Checks: []yatas.Check{
+					Checks: []config.Check{
 						{
 							Status: "OK",
 							Id:     "test",
-							Results: []yatas.Result{
+							Results: []config.Result{
 								{
 									Status:     "OK",
 									Message:    "toto",

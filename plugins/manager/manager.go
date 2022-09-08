@@ -7,11 +7,11 @@ import (
 
 	hclog "github.com/hashicorp/go-hclog"
 	"github.com/hashicorp/go-plugin"
-	"github.com/stangirard/yatas/internal/yatas"
+	"github.com/stangirard/yatas/config"
 	"github.com/stangirard/yatas/plugins/commons"
 )
 
-func RunPlugin(name string, c *yatas.Config) []yatas.Tests {
+func RunPlugin(name string, c *config.Config) []config.Tests {
 	// Create an hclog.Logger
 	logger := hclog.New(&hclog.LoggerOptions{
 		Name:   "plugin",

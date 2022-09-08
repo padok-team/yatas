@@ -5,8 +5,8 @@ import (
 	"os"
 	"sort"
 
+	"github.com/stangirard/yatas/config"
 	"github.com/stangirard/yatas/internal/report"
-	"github.com/stangirard/yatas/internal/yatas"
 	"github.com/stangirard/yatas/plugins/manager"
 )
 
@@ -16,7 +16,7 @@ var (
 )
 
 func Execute() error {
-	config, err := yatas.ParseConfig(".yatas.yml")
+	config, err := config.ParseConfig(".yatas.yml")
 	if err != nil {
 		return err
 	}

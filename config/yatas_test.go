@@ -1,4 +1,4 @@
-package yatas
+package config
 
 import (
 	"sync"
@@ -140,7 +140,7 @@ func TestParseConfig(t *testing.T) {
 		{
 			name: "parse config",
 			args: args{
-				configFile: "../../.yatas.yml.example",
+				configFile: "../.yatas.yml.example",
 			},
 			wantErr: false,
 		},

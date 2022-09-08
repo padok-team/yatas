@@ -1,4 +1,4 @@
-package yatas
+package config
 
 import (
 	"strings"

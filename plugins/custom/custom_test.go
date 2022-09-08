@@ -4,24 +4,24 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/stangirard/yatas/internal/yatas"
+	"github.com/stangirard/yatas/config"
 )
 
 func Test_findPluginWithName(t *testing.T) {
 	type args struct {
-		c    *yatas.Config
+		c    *config.Config
 		name string
 	}
 	tests := []struct {
 		name string
 		args args
-		want *yatas.Plugin
+		want *config.Plugin
 	}{
 		{
 			name: "find plugin with name",
 			args: args{
-				c: &yatas.Config{
-					Plugins: []yatas.Plugin{
+				c: &config.Config{
+					Plugins: []config.Plugin{
 						{
 							Name: "test",
 						},
@@ -29,7 +29,7 @@ func Test_findPluginWithName(t *testing.T) {
 				},
 				name: "test",
 			},
-			want: &yatas.Plugin{
+			want: &config.Plugin{
 				Name: "test",
 			},
 		},
@@ -45,19 +45,19 @@ func Test_findPluginWithName(t *testing.T) {
 
 func Test_findPluginWithNameFail(t *testing.T) {
 	type args struct {
-		c    *yatas.Config
+		c    *config.Config
 		name string
 	}
 	tests := []struct {
 		name string
 		args args
-		want *yatas.Plugin
+		want *config.Plugin
 	}{
 		{
 			name: "find plugin with name",
 			args: args{
-				c: &yatas.Config{
-					Plugins: []yatas.Plugin{
+				c: &config.Config{
+					Plugins: []config.Plugin{
 						{
 							Name: "test",
 						},
