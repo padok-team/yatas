@@ -1,6 +1,9 @@
 package config
 
 import (
+	"fmt"
+	"path/filepath"
+	"runtime"
 	"strings"
 	"sync"
 
@@ -13,6 +16,8 @@ import (
 type Plugin struct {
 	Name           string   `yaml:"name"`
 	Enabled        bool     `yaml:"enabled"`
+	Source         string   `yaml:"source"`
+	Version        string   `yaml:"version"`
 	Description    string   `yaml:"description"`
 	Exclude        []string `yaml:"exclude"`
 	Include        []string `yaml:"include"`
@@ -20,6 +25,53 @@ type Plugin struct {
 	Args           []string `yaml:"args"`
 	ExpectedOutput string   `yaml:"expected_output"`
 	ExpectedStatus int      `yaml:"expected_status"`
+
+	// Parsed source attributes
+	SourceOwner string
+	SourceRepo  string
+}
+
+// InstallPath returns an installation path from the plugin directory.
+func (c *Plugin) InstallPath() string {
+	return filepath.Join(c.Source, c.Version, fmt.Sprintf("yatas-%s", c.Name))
+}
+
+func (c *Plugin) TagName() string {
+	if c.Version == "latest" {
+		return "latest"
+	}
+	return fmt.Sprintf("v%s", c.Version)
+}
+
+// AssetName returns a name that the asset contained in the release should meet.
+// The name must be in a format similar to `yatas-aws_darwin_amd64.zip`.
+func (c *Plugin) AssetName() string {
+	return fmt.Sprintf("yatas-%s_%s_%s.zip", c.Name, runtime.GOOS, runtime.GOARCH)
+}
+
+func (c *Plugin) Validate() error {
+	if c.Version != "" && c.Source == "" {
+		return fmt.Errorf("plugin `%s`: `source` attribute cannot be omitted when specifying `version`", c.Name)
+	}
+
+	if c.Source != "" {
+		if c.Version == "" {
+			return fmt.Errorf("plugin `%s`: `version` attribute cannot be omitted when specifying `source`", c.Name)
+		}
+
+		parts := strings.Split(c.Source, "/")
+		// Expected `github.com/owner/repo` format
+		if len(parts) != 3 {
+			return fmt.Errorf("plugin `%s`: `source` is invalid. Must be in the format `github.com/owner/repo`", c.Name)
+		}
+		if parts[0] != "github.com" {
+			return fmt.Errorf("plugin `%s`: `source` is invalid. Hostname must be `github.com`", c.Name)
+		}
+		c.SourceOwner = parts[1]
+		c.SourceRepo = parts[2]
+	}
+
+	return nil
 }
 
 type Ignore struct {
