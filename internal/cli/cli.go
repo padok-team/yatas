@@ -4,19 +4,15 @@ import (
 	"flag"
 	"os"
 	"sort"
-	"time"
 
 	"github.com/stangirard/yatas/internal/report"
 	"github.com/stangirard/yatas/internal/yatas"
-	"github.com/stangirard/yatas/plugins"
-	"github.com/vbauerster/mpb/v7"
-	"github.com/vbauerster/mpb/v7/decor"
+	"github.com/stangirard/yatas/plugins/manager"
 )
 
 var (
-	compare      = flag.Bool("compare", false, "compare with previous report")
-	progressflag = flag.Bool("no-progress", false, "don't show the progress bar")
-	ci           = flag.Bool("ci", false, "run in CI with exit code")
+	compare = flag.Bool("compare", false, "compare with previous report")
+	ci      = flag.Bool("ci", false, "run in CI with exit code")
 )
 
 func Execute() error {
@@ -24,40 +20,8 @@ func Execute() error {
 	if err != nil {
 		return err
 	}
+	checks := manager.RunPlugin("aws", config)
 
-	if !*progressflag {
-		config.Progress = mpb.New(mpb.WithWidth(64))
-		bar := config.Progress.AddBar(0, mpb.PrependDecorators(
-			decor.Name("Categories : "),
-			decor.CountersNoUnit(" %d / %d")),
-			mpb.AppendDecorators(
-
-				decor.Percentage(),
-			),
-		)
-		bar.SetPriority(10)
-		config.ServiceProgress.Bar = bar
-
-		bar2 := config.Progress.AddBar(0,
-
-			mpb.PrependDecorators(
-				decor.Name("Checks : "),
-				decor.CountersNoUnit("%d / %d")),
-			mpb.AppendDecorators(
-				decor.Percentage(),
-			),
-		)
-		bar2.SetPriority(11)
-
-		config.CheckProgress.Bar = bar2
-
-	}
-	checks, err := plugins.Execute(config)
-	if config.Progress != nil {
-		config.ServiceProgress.Bar.SetTotal(config.ServiceProgress.Bar.Current(), true)
-		time.Sleep(time.Millisecond * 100)
-
-	}
 	if err != nil {
 		return err
 	}
