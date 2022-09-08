@@ -1,4 +1,4 @@
-package plugins_mananger
+package manager
 
 import (
 	"log"
@@ -7,8 +7,8 @@ import (
 
 	hclog "github.com/hashicorp/go-hclog"
 	"github.com/hashicorp/go-plugin"
-	"github.com/stangirard/yatas/example"
 	"github.com/stangirard/yatas/internal/yatas"
+	"github.com/stangirard/yatas/plugins/commons"
 )
 
 func RunPlugin(name string, c *yatas.Config) []yatas.Tests {
@@ -42,9 +42,9 @@ func RunPlugin(name string, c *yatas.Config) []yatas.Tests {
 
 	// We should have a Greeter now! This feels like a normal interface
 	// implementation but is in fact over an RPC connection.
-	greeter := raw.(example.Greeter)
+	yatasPlugin := raw.(commons.Yatas)
 
-	return greeter.Run(c)
+	return yatasPlugin.Run(c)
 }
 
 // handshakeConfigs are used to just do a basic handshake between
@@ -59,5 +59,5 @@ var handshakeConfig = plugin.HandshakeConfig{
 
 // pluginMap is the map of plugins we can dispense.
 var pluginMap = map[string]plugin.Plugin{
-	"aws": &example.GreeterPlugin{},
+	"aws": &commons.YatasPlugin{},
 }

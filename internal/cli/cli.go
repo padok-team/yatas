@@ -7,7 +7,7 @@ import (
 
 	"github.com/stangirard/yatas/internal/report"
 	"github.com/stangirard/yatas/internal/yatas"
-	plugins_mananger "github.com/stangirard/yatas/plugins_manager"
+	"github.com/stangirard/yatas/plugins/manager"
 )
 
 var (
@@ -20,7 +20,7 @@ func Execute() error {
 	if err != nil {
 		return err
 	}
-	checks := plugins_mananger.RunPlugin("aws", config)
+	checks := manager.RunPlugin("aws", config)
 
 	if err != nil {
 		return err

@@ -28,9 +28,9 @@ import (
 	"github.com/stangirard/yatas/aws/s3"
 	"github.com/stangirard/yatas/aws/volumes"
 	"github.com/stangirard/yatas/aws/vpc"
-	"github.com/stangirard/yatas/example"
 	"github.com/stangirard/yatas/internal/logger"
 	"github.com/stangirard/yatas/internal/yatas"
+	"github.com/stangirard/yatas/plugins/commons"
 )
 
 // Create a new session that the SDK will use to load
@@ -234,7 +234,7 @@ func main() {
 	}
 	// pluginMap is the map of plugins we can dispense.
 	var pluginMap = map[string]plugin.Plugin{
-		"aws": &example.GreeterPlugin{Impl: yatasPlugin},
+		"aws": &commons.YatasPlugin{Impl: yatasPlugin},
 	}
 
 	logger.Debug("message from plugin", "foo", "bar")

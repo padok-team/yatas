@@ -1,4 +1,4 @@
-package example
+package commons
 
 import (
 	"net/rpc"
@@ -7,15 +7,15 @@ import (
 	"github.com/stangirard/yatas/internal/yatas"
 )
 
-// Greeter is the interface that we're exposing as a plugin.
-type Greeter interface {
+// Yatas is the interface that we're exposing as a plugin.
+type Yatas interface {
 	Run(c *yatas.Config) []yatas.Tests
 }
 
 // Here is an implementation that talks over RPC
-type GreeterRPC struct{ client *rpc.Client }
+type YatasRPC struct{ client *rpc.Client }
 
-func (g *GreeterRPC) Run(c *yatas.Config) []yatas.Tests {
+func (g *YatasRPC) Run(c *yatas.Config) []yatas.Tests {
 	var resp []yatas.Tests
 	err := g.client.Call("Plugin.Run", c, &resp)
 	if err != nil {
@@ -27,14 +27,14 @@ func (g *GreeterRPC) Run(c *yatas.Config) []yatas.Tests {
 	return resp
 }
 
-// Here is the RPC server that GreeterRPC talks to, conforming to
+// Here is the RPC server that YatasRPC talks to, conforming to
 // the requirements of net/rpc
-type GreeterRPCServer struct {
+type YatasRPCServer struct {
 	// This is the real implementation
-	Impl Greeter
+	Impl Yatas
 }
 
-func (s *GreeterRPCServer) Run(c *yatas.Config, resp *[]yatas.Tests) error {
+func (s *YatasRPCServer) Run(c *yatas.Config, resp *[]yatas.Tests) error {
 	*resp = s.Impl.Run(c)
 	return nil
 }
@@ -42,22 +42,22 @@ func (s *GreeterRPCServer) Run(c *yatas.Config, resp *[]yatas.Tests) error {
 // This is the implementation of plugin.Plugin so we can serve/consume this
 //
 // This has two methods: Server must return an RPC server for this plugin
-// type. We construct a GreeterRPCServer for this.
+// type. We construct a YatasRPCServer for this.
 //
 // Client must return an implementation of our interface that communicates
-// over an RPC client. We return GreeterRPC for this.
+// over an RPC client. We return YatasRPC for this.
 //
 // Ignore MuxBroker. That is used to create more multiplexed streams on our
 // plugin connection and is a more advanced use case.
-type GreeterPlugin struct {
+type YatasPlugin struct {
 	// Impl Injection
-	Impl Greeter
+	Impl Yatas
 }
 
-func (p *GreeterPlugin) Server(*plugin.MuxBroker) (interface{}, error) {
-	return &GreeterRPCServer{Impl: p.Impl}, nil
+func (p *YatasPlugin) Server(*plugin.MuxBroker) (interface{}, error) {
+	return &YatasRPCServer{Impl: p.Impl}, nil
 }
 
-func (GreeterPlugin) Client(b *plugin.MuxBroker, c *rpc.Client) (interface{}, error) {
-	return &GreeterRPC{client: c}, nil
+func (YatasPlugin) Client(b *plugin.MuxBroker, c *rpc.Client) (interface{}, error) {
+	return &YatasRPC{client: c}, nil
 }
