@@ -33,6 +33,12 @@ yatas --init
 
 Modify .yatas.yml to your needs.
 
+```bash
+yatas --install
+```
+
+Installs the plugins you need.
+
 ## Usage
 
 ```bash
@@ -46,14 +52,15 @@ Flags:
 - `--resume`: Only shows the number of tests passing and failing.
 - `--time`: Shows the time each test took to run in order to help you find bottlenecks.
 - `--init`: Creates a .yatas.yml file in the current directory.
-- `--no-progress`: Don't show the progress bar.
+- `--install`: Installs the plugins you need.
 - `--only-failure`: Only show the tests that failed.
+- 
 
 ## Plugins
 
 | Name | Description | Checks |
 |------|-------------|--------|
-| *AWS* | AWS checks | Good practices and security checks|
+| [*AWS*](https://github.com/StanGirard/yatas-aws) | AWS checks | Good practices and security checks|
 
 
 ## Checks 
