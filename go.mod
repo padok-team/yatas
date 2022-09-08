@@ -7,6 +7,7 @@ require (
 	github.com/fatih/color v1.13.0
 	github.com/hashicorp/go-hclog v1.3.0
 	github.com/hashicorp/go-plugin v1.4.5
+	github.com/mitchellh/go-homedir v1.1.0
 	github.com/vbauerster/mpb/v7 v7.5.2
 	gopkg.in/yaml.v3 v3.0.1
 )

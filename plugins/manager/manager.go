@@ -7,6 +7,7 @@ import (
 
 	hclog "github.com/hashicorp/go-hclog"
 	"github.com/hashicorp/go-plugin"
+	"github.com/mitchellh/go-homedir"
 	"github.com/stangirard/yatas/config"
 	"github.com/stangirard/yatas/plugins/commons"
 )
@@ -20,10 +21,11 @@ func RunPlugin(name string, c *config.Config) []config.Tests {
 	})
 
 	// We're a host! Start by launching the plugin process.
+	homeDir, _ := homedir.Expand("~/.yatas.d/plugins")
 	client := plugin.NewClient(&plugin.ClientConfig{
 		HandshakeConfig: handshakeConfig,
 		Plugins:         pluginMap,
-		Cmd:             exec.Command("./plugins/" + name + "Plugins"),
+		Cmd:             exec.Command(homeDir + "/yatas-" + name),
 		Logger:          logger,
 	})
 	defer client.Kill()
