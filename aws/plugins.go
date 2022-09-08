@@ -195,12 +195,12 @@ func initTest(s aws.Config, c *yatas.Config, a yatas.AWS_Account) yatas.Tests {
 }
 
 // Here is a real implementation of Greeter
-type GreeterHello struct {
+type YatasPlugin struct {
 	logger hclog.Logger
 }
 
-func (g *GreeterHello) Run(c *yatas.Config) []yatas.Tests {
-	g.logger.Debug("message from GreeterHello.Run")
+func (g *YatasPlugin) Run(c *yatas.Config) []yatas.Tests {
+	g.logger.Debug("message from YatasPlugin.Run")
 
 	var checksAll []yatas.Tests
 
@@ -229,12 +229,12 @@ func main() {
 		JSONFormat: true,
 	})
 
-	greeter := &GreeterHello{
+	yatasPlugin := &YatasPlugin{
 		logger: logger,
 	}
 	// pluginMap is the map of plugins we can dispense.
 	var pluginMap = map[string]plugin.Plugin{
-		"aws": &example.GreeterPlugin{Impl: greeter},
+		"aws": &example.GreeterPlugin{Impl: yatasPlugin},
 	}
 
 	logger.Debug("message from plugin", "foo", "bar")
