@@ -12,7 +12,7 @@ import (
 	"github.com/stangirard/yatas/plugins/commons"
 )
 
-func RunPlugin(name string, c *config.Config) []config.Tests {
+func RunPlugin(pluginInput config.Plugin, c *config.Config) []config.Tests {
 	// Create an hclog.Logger
 	logger := hclog.New(&hclog.LoggerOptions{
 		Name:   "plugin",
@@ -21,11 +21,11 @@ func RunPlugin(name string, c *config.Config) []config.Tests {
 	})
 
 	// We're a host! Start by launching the plugin process.
-	homeDir, _ := homedir.Expand("~/.yatas.d/plugins")
+	homeDir, _ := homedir.Expand("~/.yatas.d/plugins/")
 	client := plugin.NewClient(&plugin.ClientConfig{
 		HandshakeConfig: handshakeConfig,
 		Plugins:         pluginMap,
-		Cmd:             exec.Command(homeDir + "/yatas-" + name),
+		Cmd:             exec.Command(homeDir + "/" + pluginInput.Source + "/" + pluginInput.Version + "/yatas-" + pluginInput.Name),
 		Logger:          logger,
 	})
 	defer client.Kill()
@@ -37,7 +37,7 @@ func RunPlugin(name string, c *config.Config) []config.Tests {
 	}
 
 	// Request the plugin
-	raw, err := rpcClient.Dispense(name)
+	raw, err := rpcClient.Dispense(pluginInput.Name)
 	if err != nil {
 		log.Fatal(err)
 	}

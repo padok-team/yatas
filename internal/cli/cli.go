@@ -13,19 +13,29 @@ import (
 var (
 	compare = flag.Bool("compare", false, "compare with previous report")
 	ci      = flag.Bool("ci", false, "run in CI with exit code")
+	install = flag.Bool("install", false, "install plugins")
 )
 
 func Execute() error {
-	config, err := config.ParseConfig(".yatas.yml")
+	configuration, err := config.ParseConfig(".yatas.yml")
 	if err != nil {
 		return err
 	}
-	checks := manager.RunPlugin("aws", config)
+	for _, plugins := range configuration.Plugins {
+		plugins.Validate()
+		if *install {
+			plugins.Install()
+		}
+	}
+	var checks []config.Tests
+	for _, plugins := range configuration.Plugins {
+		checks = manager.RunPlugin(plugins, configuration)
+	}
 
 	if err != nil {
 		return err
 	}
-	checks = report.RemoveIgnored(config, checks)
+	checks = report.RemoveIgnored(configuration, checks)
 	// if !*progressflag {
 
 	// }
@@ -45,12 +55,12 @@ func Execute() error {
 			return err
 		}
 		checksCompare := report.ComparePreviousWithNew(previous, checks)
-		report.PrettyPrintChecks(checksCompare, config)
-		report.WriteChecksToFile(checks, config)
+		report.PrettyPrintChecks(checksCompare, configuration)
+		report.WriteChecksToFile(checks, configuration)
 		checks = checksCompare
 	} else {
-		report.PrettyPrintChecks(checks, config)
-		report.WriteChecksToFile(checks, config)
+		report.PrettyPrintChecks(checks, configuration)
+		report.WriteChecksToFile(checks, configuration)
 
 	}
 	if *ci {
