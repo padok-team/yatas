@@ -2,6 +2,7 @@ package cli
 
 import (
 	"flag"
+	"fmt"
 	"os"
 	"sort"
 
@@ -25,10 +26,18 @@ func Execute() error {
 		plugins.Validate()
 		if *install {
 			plugins.Install()
+			return nil
 		}
 	}
 	var checks []config.Tests
 	for _, plugins := range configuration.Plugins {
+		latestVersion, err := config.GetLatestReleaseTag(plugins)
+		if err != nil {
+			return err
+		}
+		if plugins.Version != latestVersion {
+			fmt.Println("New version available for plugin " + plugins.Name + " : " + latestVersion)
+		}
 		checks = manager.RunPlugin(plugins, configuration)
 	}
 

@@ -61,6 +61,26 @@ func (c *Plugin) Install() (string, error) {
 	return path, nil
 }
 
+func GetRelease(ctx context.Context, client *github.Client, owner, repo, tag string) (*github.RepositoryRelease, *github.Response, error) {
+	if tag == "latest" {
+		return client.Repositories.GetLatestRelease(ctx, owner, repo)
+	} else {
+		return client.Repositories.GetReleaseByTag(ctx, owner, repo, tag)
+	}
+}
+
+func GetLatestReleaseTag(plugin Plugin) (string, error) {
+	ctx := context.Background()
+	client := newGitHubClient(ctx)
+	plugin.Validate()
+	latestRelease, _, err := client.Repositories.GetLatestRelease(ctx, plugin.SourceOwner, plugin.SourceRepo)
+	if err != nil {
+		return "", err
+	}
+
+	return latestRelease.GetName()[1:], nil
+}
+
 // fetchReleaseAssets fetches assets from the GitHub release.
 // The release is determined by the source path and tag name.
 func (c *Plugin) fetchReleaseAssets() (map[string]*github.ReleaseAsset, error) {
@@ -70,7 +90,7 @@ func (c *Plugin) fetchReleaseAssets() (map[string]*github.ReleaseAsset, error) {
 	client := newGitHubClient(ctx)
 
 	log.Printf("[DEBUG] Request to https://api.github.com/repos/%s/%s/releases/tags/%s", c.SourceOwner, c.SourceRepo, c.TagName())
-	release, _, err := client.Repositories.GetReleaseByTag(ctx, c.SourceOwner, c.SourceRepo, c.TagName())
+	release, _, err := GetRelease(ctx, client, c.SourceOwner, c.SourceRepo, c.TagName())
 	if err != nil {
 		return assets, err
 	}
@@ -167,7 +187,7 @@ func newGitHubClient(ctx context.Context) *github.Client {
 		return github.NewClient(nil)
 	}
 
-	log.Printf("[DEBUG] GITHUB_TOKEN set, plugin requests to the GitHub API will be authenticated")
+	// log.Printf("[DEBUG] GITHUB_TOKEN set, plugin requests to the GitHub API will be authenticated")
 
 	ts := oauth2.StaticTokenSource(
 		&oauth2.Token{AccessToken: token},

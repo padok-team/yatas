@@ -37,11 +37,14 @@ func (c *Plugin) InstallPath() string {
 }
 
 func (c *Plugin) TagName() string {
+	if c.Version == "latest" {
+		return "latest"
+	}
 	return fmt.Sprintf("v%s", c.Version)
 }
 
 // AssetName returns a name that the asset contained in the release should meet.
-// The name must be in a format similar to `tflint-ruleset-aws_darwin_amd64.zip`.
+// The name must be in a format similar to `yatas-aws_darwin_amd64.zip`.
 func (c *Plugin) AssetName() string {
 	return fmt.Sprintf("yatas-%s_%s_%s.zip", c.Name, runtime.GOOS, runtime.GOARCH)
 }
