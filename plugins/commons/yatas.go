@@ -158,10 +158,10 @@ func unmarshalYAML(data []byte, config *Config) error {
 func CheckTest[A, B, C any](wg *sync.WaitGroup, config *Config, id string, test func(A, B, C)) func(A, B, C) {
 	if !config.CheckExclude(id) && config.CheckInclude(id) {
 		wg.Add(1)
-		// if config.CheckProgress.Bar != nil {
+		// if commons.CheckProgress.Bar != nil {
 
-		// 	config.CheckProgress.Value++
-		// 	config.CheckProgress.Bar.SetTotal(int64(config.CheckProgress.Value), false)
+		// 	commons.CheckProgress.Value++
+		// 	commons.CheckProgress.Bar.SetTotal(int64(commons.CheckProgress.Value), false)
 		// 	time.Sleep(time.Millisecond * 10)
 
 		// }

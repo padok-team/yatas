@@ -61,7 +61,7 @@ func TestConfig_CheckExclude(t *testing.T) {
 				Ignore:  tt.fields.Ignore,
 			}
 			if got := c.CheckExclude(tt.args.id); got != tt.want {
-				t.Errorf("Config.CheckExclude() = %v, want %v", got, tt.want)
+				t.Errorf("commons.CheckExclude() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -122,7 +122,7 @@ func TestConfig_CheckInclude(t *testing.T) {
 				Ignore:  tt.fields.Ignore,
 			}
 			if got := c.CheckInclude(tt.args.id); got != tt.want {
-				t.Errorf("Config.CheckInclude() = %v, want %v", got, tt.want)
+				t.Errorf("commons.CheckInclude() = %v, want %v", got, tt.want)
 			}
 		})
 	}
