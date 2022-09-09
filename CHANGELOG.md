@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.11.3](https://github.com/StanGirard/YATAS/compare/v0.11.2...v0.11.3) (2022-09-09)
+
+
+### Bug Fixes
+
+* **print:** removed leftover print ([0269ce7](https://github.com/StanGirard/YATAS/commit/0269ce7bf2cc4630587e3ed4ffb99040ac5d842a))
+
 ### [0.11.2](https://github.com/StanGirard/YATAS/compare/v0.11.1...v0.11.2) (2022-09-09)
 
 
