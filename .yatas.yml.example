@@ -23,9 +23,9 @@ ignore:
 pluginsConfiguration:
   - pluginName: aws
     accounts:
-    - name: "example"
-      profile: ""
-      sso: false
-      region: "eu-west-3"
+      - profile: ""
+        sso: true
+        region: "eu-west-3"
+        name: "yatas"
     
       

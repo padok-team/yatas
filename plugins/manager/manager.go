@@ -15,10 +15,11 @@ import (
 func RunPlugin(pluginInput commons.Plugin, c *commons.Config) []commons.Tests {
 	// Create an hclog.Logger
 	gob.Register(map[string]interface{}{})
+	gob.Register([]interface{}{})
 	logger := hclog.New(&hclog.LoggerOptions{
 		Name:   "plugin",
 		Output: os.Stdout,
-		Level:  hclog.Debug,
+		Level:  hclog.Off,
 	})
 
 	// We're a host! Start by launching the plugin process.
