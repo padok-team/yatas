@@ -1,7 +1,6 @@
 package commons
 
 import (
-	"archive/zip"
 	"context"
 	"fmt"
 	"io"
@@ -10,28 +9,89 @@ import (
 	"os"
 	"path/filepath"
 	"runtime"
+	"strings"
 
 	"github.com/google/go-github/v35/github"
 	"github.com/mitchellh/go-homedir"
-	"golang.org/x/oauth2"
 )
+
+type Plugin struct {
+	Name           string   `yaml:"name"`
+	Enabled        bool     `yaml:"enabled"`
+	Source         string   `yaml:"source"`
+	Version        string   `yaml:"version"`
+	Description    string   `yaml:"description"`
+	Exclude        []string `yaml:"exclude"`
+	Include        []string `yaml:"include"`
+	Command        string   `yaml:"command"`
+	Args           []string `yaml:"args"`
+	ExpectedOutput string   `yaml:"expected_output"`
+	ExpectedStatus int      `yaml:"expected_status"`
+
+	// Parsed source attributes
+	SourceOwner string
+	SourceRepo  string
+}
+
+// InstallPath returns an installation path from the plugin directory.
+func (c *Plugin) InstallPath() string {
+	return filepath.Join(c.Source, c.Version, fmt.Sprintf("yatas-%s", c.Name))
+}
+
+func (c *Plugin) TagName() string {
+	if c.Version == "latest" {
+		return "latest"
+	}
+	return fmt.Sprintf("v%s", c.Version)
+}
+
+// AssetName returns a name that the asset contained in the release should meet.
+// The name must be in a format similar to `yatas-aws_darwin_amd64.zip`.
+func (c *Plugin) AssetName() string {
+	return fmt.Sprintf("yatas-%s_%s_%s.zip", c.Name, runtime.GOOS, runtime.GOARCH)
+}
+
+func (c *Plugin) Validate() error {
+	if c.Version != "" && c.Source == "" {
+		return fmt.Errorf("plugin `%s`: `source` attribute cannot be omitted when specifying `version`", c.Name)
+	}
+
+	if c.Source != "" {
+		if c.Version == "" {
+			return fmt.Errorf("plugin `%s`: `version` attribute cannot be omitted when specifying `source`", c.Name)
+		}
+
+		parts := strings.Split(c.Source, "/")
+		// Expected `github.com/owner/repo` format
+		if len(parts) != 3 {
+			return fmt.Errorf("plugin `%s`: `source` is invalid. Must be in the format `github.com/owner/repo`", c.Name)
+		}
+		if parts[0] != "github.com" {
+			return fmt.Errorf("plugin `%s`: `source` is invalid. Hostname must be `github.com`", c.Name)
+		}
+		c.SourceOwner = parts[1]
+		c.SourceRepo = parts[2]
+	}
+
+	return nil
+}
 
 func (c *Plugin) Install() (string, error) {
 
 	dir, err := homedir.Expand("~/.yatas.d/plugins")
 	if err != nil {
-		return "", fmt.Errorf("Failed to get plugin dir: %w", err)
+		return "", fmt.Errorf("failed to get plugin dir: %w", err)
 	}
 
 	path := filepath.Join(dir, c.InstallPath()+fileExt())
 	log.Printf("[DEBUG] Mkdir plugin dir: %s", filepath.Dir(path))
 	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
-		return "", fmt.Errorf("Failed to mkdir to %s: %w", filepath.Dir(path), err)
+		return "", fmt.Errorf("failed to mkdir to %s: %w", filepath.Dir(path), err)
 	}
 
 	assets, err := c.fetchReleaseAssets()
 	if err != nil {
-		return "", fmt.Errorf("Failed to fetch GitHub releases: %w", err)
+		return "", fmt.Errorf("failed to fetch GitHub releases: %w", err)
 	}
 
 	log.Printf("[DEBUG] Download checksums.txt")
@@ -41,7 +101,7 @@ func (c *Plugin) Install() (string, error) {
 		defer os.Remove(checksumsFile.Name())
 	}
 	if err != nil {
-		return "", fmt.Errorf("Failed to download checksums.txt: %s", err)
+		return "", fmt.Errorf("failed to download checksums.txt: %s", err)
 	}
 
 	log.Printf("[DEBUG] Download %s", c.AssetName())
@@ -50,11 +110,11 @@ func (c *Plugin) Install() (string, error) {
 		defer os.Remove(zipFile.Name())
 	}
 	if err != nil {
-		return "", fmt.Errorf("Failed to download %s: %s", c.AssetName(), err)
+		return "", fmt.Errorf("failed to download %s: %s", c.AssetName(), err)
 	}
 
 	if err = extractFileFromZipFile(zipFile, path); err != nil {
-		return "", fmt.Errorf("Failed to extract binary from %s: %s", c.AssetName(), err)
+		return "", fmt.Errorf("failed to extract binary from %s: %s", c.AssetName(), err)
 	}
 
 	log.Printf("[DEBUG] Installed %s successfully", path)
@@ -138,66 +198,4 @@ func (c *Plugin) downloadToTempFile(asset *github.ReleaseAsset) (*os.File, error
 
 	log.Printf("[DEBUG] Downloaded to %s", file.Name())
 	return file, nil
-}
-
-func extractFileFromZipFile(zipFile *os.File, savePath string) error {
-	zipFileStat, err := zipFile.Stat()
-	if err != nil {
-		return err
-	}
-	zipReader, err := zip.NewReader(zipFile, zipFileStat.Size())
-	if err != nil {
-		return err
-	}
-
-	var reader io.ReadCloser
-	for _, f := range zipReader.File {
-		log.Printf("[DEBUG] file found in zip: %s", f.Name)
-		if f.Name != filepath.Base(savePath) {
-			continue
-		}
-
-		reader, err = f.Open()
-		if err != nil {
-			return err
-		}
-		break
-	}
-	if reader == nil {
-		return fmt.Errorf("file not found. Does the zip contain %s ?", filepath.Base(savePath))
-	}
-
-	file, err := os.OpenFile(savePath, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0755)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	if _, err := io.Copy(file, reader); err != nil {
-		os.Remove(file.Name())
-		return err
-	}
-
-	return nil
-}
-
-func newGitHubClient(ctx context.Context) *github.Client {
-	token := os.Getenv("GITHUB_TOKEN")
-	if token == "" {
-		return github.NewClient(nil)
-	}
-
-	// log.Printf("[DEBUG] GITHUB_TOKEN set, plugin requests to the GitHub API will be authenticated")
-
-	ts := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: token},
-	)
-	return github.NewClient(oauth2.NewClient(ctx, ts))
-}
-
-func fileExt() string {
-	if runtime.GOOS == "windows" {
-		return ".exe"
-	}
-	return ""
 }

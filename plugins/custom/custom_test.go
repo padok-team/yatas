@@ -36,7 +36,7 @@ func Test_findPluginWithName(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := findPluginWithName(tt.args.c, tt.args.name); !reflect.DeepEqual(got, tt.want) {
+			if got := tt.args.c.FindPluginWithName(tt.args.name); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("findPluginWithName() = %v, want %v", got, tt.want)
 			}
 		})
@@ -70,7 +70,7 @@ func Test_findPluginWithNameFail(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := findPluginWithName(tt.args.c, tt.args.name); !reflect.DeepEqual(got, tt.want) {
+			if got := tt.args.c.FindPluginWithName(tt.args.name); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("findPluginWithName() = %v, want %v", got, tt.want)
 			}
 		})

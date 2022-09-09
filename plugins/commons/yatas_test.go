@@ -9,11 +9,9 @@ import (
 
 func TestConfig_CheckExclude(t *testing.T) {
 	type fields struct {
-		Plugins       []Plugin
-		AWS           []AWS_Account
-		Ignore        []Ignore
-		Progress      Progress
-		CheckProgress Progress
+		Plugins []Plugin
+		AWS     []AWS_Account
+		Ignore  []Ignore
 	}
 	type args struct {
 		id string
@@ -69,10 +67,9 @@ func TestConfig_CheckExclude(t *testing.T) {
 
 func TestConfig_CheckInclude(t *testing.T) {
 	type fields struct {
-		Plugins  []Plugin
-		AWS      []AWS_Account
-		Ignore   []Ignore
-		Progress Progress
+		Plugins []Plugin
+		AWS     []AWS_Account
+		Ignore  []Ignore
 	}
 	type args struct {
 		id string

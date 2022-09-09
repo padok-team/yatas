@@ -10,17 +10,8 @@ import (
 	"github.com/stangirard/yatas/plugins/commons"
 )
 
-func findPluginWithName(c *commons.Config, name string) *commons.Plugin {
-	for _, plugin := range c.Plugins {
-		if plugin.Name == name {
-			return &plugin
-		}
-	}
-	return nil
-}
-
 func Run(c *commons.Config, name string) (commons.Tests, error) {
-	plugin := findPluginWithName(c, name)
+	plugin := c.FindPluginWithName(name)
 	checks, err := ExecuteCommand(c, plugin)
 	return checks, err
 
