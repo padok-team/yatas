@@ -7,7 +7,7 @@
   },
   "standard-version": {
     "skip": {
-      "changelog": true
+      "changelog": false
     }
   },
   "repository": {
