@@ -58,9 +58,9 @@ Flags:
 
 ## Plugins
 
-| Name | Description | Checks |
+| Plugins | Description | Checks |
 |------|-------------|--------|
-| [*AWS*](https://github.com/StanGirard/yatas-aws) | AWS checks | Good practices and security checks|
+| [*AWS Audit*](https://github.com/StanGirard/yatas-aws) | AWS checks | Good practices and security checks|
 
 
 ## Checks 
