@@ -8,10 +8,10 @@ import (
 )
 
 type Config struct {
-	Plugins      []Plugin      `yaml:"plugins"`
-	AWS          []AWS_Account `yaml:"aws"`
-	Ignore       []Ignore      `yaml:"ignore"`
-	PluginConfig []interface{} `yaml:"pluginsConfiguration"`
+	Plugins      []Plugin                 `yaml:"plugins"`
+	AWS          []AWS_Account            `yaml:"aws"`
+	Ignore       []Ignore                 `yaml:"ignore"`
+	PluginConfig []map[string]interface{} `yaml:"pluginsConfiguration"`
 }
 
 func ParseConfig(configFile string) (*Config, error) {
