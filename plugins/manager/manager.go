@@ -8,11 +8,10 @@ import (
 	hclog "github.com/hashicorp/go-hclog"
 	"github.com/hashicorp/go-plugin"
 	"github.com/mitchellh/go-homedir"
-	"github.com/stangirard/yatas/config"
 	"github.com/stangirard/yatas/plugins/commons"
 )
 
-func RunPlugin(pluginInput config.Plugin, c *config.Config) []config.Tests {
+func RunPlugin(pluginInput commons.Plugin, c *commons.Config) []commons.Tests {
 	// Create an hclog.Logger
 	logger := hclog.New(&hclog.LoggerOptions{
 		Name:   "plugin",
@@ -60,6 +59,7 @@ var handshakeConfig = plugin.HandshakeConfig{
 }
 
 // pluginMap is the map of plugins we can dispense.
+
 var pluginMap = map[string]plugin.Plugin{
 	"aws": &commons.YatasPlugin{},
 }

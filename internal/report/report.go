@@ -7,7 +7,7 @@ import (
 	"regexp"
 
 	"github.com/fatih/color"
-	"github.com/stangirard/yatas/config"
+	"github.com/stangirard/yatas/plugins/commons"
 	"gopkg.in/yaml.v3"
 )
 
@@ -24,7 +24,7 @@ var (
 	onlyFailure = flag.Bool("only-failure", false, "print only failed checks")
 )
 
-func countResultOkOverall(results []config.Result) (int, int) {
+func countResultOkOverall(results []commons.Result) (int, int) {
 	var ok int
 	var all int
 	for _, result := range results {
@@ -36,7 +36,7 @@ func countResultOkOverall(results []config.Result) (int, int) {
 	return ok, all
 }
 
-func IsIgnored(c *config.Config, r config.Result, check config.Check) bool {
+func IsIgnored(c *commons.Config, r commons.Result, check commons.Check) bool {
 	for _, ignored := range c.Ignore {
 		if ignored.ID == check.Id {
 			for i := range ignored.Values {
@@ -51,16 +51,16 @@ func IsIgnored(c *config.Config, r config.Result, check config.Check) bool {
 	return false
 }
 
-func RemoveIgnored(c *config.Config, tests []config.Tests) []config.Tests {
-	resultsTmp := []config.Tests{}
+func RemoveIgnored(c *commons.Config, tests []commons.Tests) []commons.Tests {
+	resultsTmp := []commons.Tests{}
 	for _, test := range tests {
-		var testTpm config.Tests
+		var testTpm commons.Tests
 		testTpm.Account = test.Account
-		testTpm.Checks = []config.Check{}
+		testTpm.Checks = []commons.Check{}
 
 		for _, check := range test.Checks {
 			checkTmp := check
-			checkTmp.Results = []config.Result{}
+			checkTmp.Results = []commons.Result{}
 			checkTmp.InitCheck(check.Name, check.Description, check.Id)
 			for _, result := range check.Results {
 				if !IsIgnored(c, result, check) {
@@ -74,7 +74,7 @@ func RemoveIgnored(c *config.Config, tests []config.Tests) []config.Tests {
 	return resultsTmp
 }
 
-func CountChecksPassedOverall(checks []config.Check) (int, int) {
+func CountChecksPassedOverall(checks []commons.Check) (int, int) {
 	var ok int
 	var all int
 	for _, check := range checks {
@@ -86,7 +86,7 @@ func CountChecksPassedOverall(checks []config.Check) (int, int) {
 	return ok, all
 }
 
-func PrettyPrintChecks(checks []config.Tests, c *config.Config) {
+func PrettyPrintChecks(checks []commons.Tests, c *commons.Config) {
 	flag.Parse()
 	for _, tests := range checks {
 		ok, all := CountChecksPassedOverall(tests.Checks)
@@ -127,11 +127,11 @@ func PrettyPrintChecks(checks []config.Tests, c *config.Config) {
 	}
 }
 
-func ComparePreviousWithNew(previous []config.Tests, new []config.Tests) []config.Tests {
-	returnedResults := []config.Tests{}
+func ComparePreviousWithNew(previous []commons.Tests, new []commons.Tests) []commons.Tests {
+	returnedResults := []commons.Tests{}
 	for _, tests := range new {
 
-		var checks []config.Check
+		var checks []commons.Check
 		for _, check := range tests.Checks {
 			found := false
 			for _, previousTests := range previous {
@@ -161,12 +161,12 @@ func ComparePreviousWithNew(previous []config.Tests, new []config.Tests) []confi
 	return returnedResults
 }
 
-func ReadPreviousResults() []config.Tests {
+func ReadPreviousResults() []commons.Tests {
 	d, err := ioutil.ReadFile("results.yaml")
 	if err != nil {
-		return []config.Tests{}
+		return []commons.Tests{}
 	}
-	var checks []config.Tests
+	var checks []commons.Tests
 	err = yaml.Unmarshal(d, &checks)
 	if err != nil {
 		panic(err)
@@ -174,9 +174,9 @@ func ReadPreviousResults() []config.Tests {
 	return checks
 }
 
-func WriteChecksToFile(checks []config.Tests, c *config.Config) {
+func WriteChecksToFile(checks []commons.Tests, c *commons.Config) {
 	for _, tests := range checks {
-		var checksToWrite []config.Check
+		var checksToWrite []commons.Check
 
 		for _, check := range tests.Checks {
 			if !c.CheckExclude(check.Id) {
@@ -199,7 +199,7 @@ func WriteChecksToFile(checks []config.Tests, c *config.Config) {
 
 }
 
-func ExitCode(checks []config.Tests) int {
+func ExitCode(checks []commons.Tests) int {
 	var exitCode int
 	for _, tests := range checks {
 		for _, check := range tests.Checks {

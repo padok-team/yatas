@@ -6,8 +6,8 @@ import (
 	"os"
 	"sort"
 
-	"github.com/stangirard/yatas/config"
 	"github.com/stangirard/yatas/internal/report"
+	"github.com/stangirard/yatas/plugins/commons"
 	"github.com/stangirard/yatas/plugins/manager"
 )
 
@@ -18,7 +18,7 @@ var (
 )
 
 func Execute() error {
-	configuration, err := config.ParseConfig(".yatas.yml")
+	configuration, err := commons.ParseConfig(".yatas.yml")
 	if err != nil {
 		return err
 	}
@@ -29,9 +29,9 @@ func Execute() error {
 			return nil
 		}
 	}
-	var checks []config.Tests
+	var checks []commons.Tests
 	for _, plugins := range configuration.Plugins {
-		latestVersion, err := config.GetLatestReleaseTag(plugins)
+		latestVersion, err := commons.GetLatestReleaseTag(plugins)
 		if err != nil {
 			return err
 		}

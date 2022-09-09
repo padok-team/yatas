@@ -4,19 +4,18 @@ import (
 	"net/rpc"
 
 	"github.com/hashicorp/go-plugin"
-	"github.com/stangirard/yatas/config"
 )
 
 // Yatas is the interface that we're exposing as a plugin.
 type Yatas interface {
-	Run(c *config.Config) []config.Tests
+	Run(c *Config) []Tests
 }
 
 // Here is an implementation that talks over RPC
 type YatasRPC struct{ client *rpc.Client }
 
-func (g *YatasRPC) Run(c *config.Config) []config.Tests {
-	var resp []config.Tests
+func (g *YatasRPC) Run(c *Config) []Tests {
+	var resp []Tests
 	err := g.client.Call("Plugin.Run", c, &resp)
 	if err != nil {
 		// You usually want your interfaces to return errors. If they don't,
@@ -34,7 +33,7 @@ type YatasRPCServer struct {
 	Impl Yatas
 }
 
-func (s *YatasRPCServer) Run(c *config.Config, resp *[]config.Tests) error {
+func (s *YatasRPCServer) Run(c *Config, resp *[]Tests) error {
 	*resp = s.Impl.Run(c)
 	return nil
 }

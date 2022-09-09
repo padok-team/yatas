@@ -7,12 +7,12 @@ import (
 
 	"testing"
 
-	"github.com/stangirard/yatas/config"
+	"github.com/stangirard/yatas/plugins/commons"
 	"gopkg.in/yaml.v3"
 )
 
 func TestParseReportYaml(t *testing.T) {
-	var report []config.Tests
+	var report []commons.Tests
 
 	data, err := os.ReadFile("../testdata/results_data.yaml")
 	if err != nil {

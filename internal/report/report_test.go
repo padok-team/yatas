@@ -1,14 +1,13 @@
 package report
 
 import (
+	"github.com/stangirard/yatas/plugins/commons"
 	"testing"
-
-	"github.com/stangirard/yatas/config"
 )
 
 func Test_countResultOkOverall(t *testing.T) {
 	type args struct {
-		results []config.Result
+		results []commons.Result
 	}
 	tests := []struct {
 		name  string
@@ -19,7 +18,7 @@ func Test_countResultOkOverall(t *testing.T) {
 		{
 			name: "count result ok overall",
 			args: args{
-				results: []config.Result{
+				results: []commons.Result{
 					{
 						Status: "OK",
 					},
@@ -34,7 +33,7 @@ func Test_countResultOkOverall(t *testing.T) {
 		{
 			name: "count result ok overall",
 			args: args{
-				results: []config.Result{
+				results: []commons.Result{
 					{
 						Status: "FAIL",
 					},
@@ -62,9 +61,9 @@ func Test_countResultOkOverall(t *testing.T) {
 
 func TestIsIgnored(t *testing.T) {
 	type args struct {
-		c     *config.Config
-		r     config.Result
-		check config.Check
+		c     *commons.Config
+		r     commons.Result
+		check commons.Check
 	}
 	tests := []struct {
 		name string
@@ -74,8 +73,8 @@ func TestIsIgnored(t *testing.T) {
 		{
 			name: "is ignored",
 			args: args{
-				c: &config.Config{
-					Ignore: []config.Ignore{
+				c: &commons.Config{
+					Ignore: []commons.Ignore{
 						{
 							ID:    "test",
 							Regex: true,
@@ -85,12 +84,12 @@ func TestIsIgnored(t *testing.T) {
 						},
 					},
 				},
-				r: config.Result{
+				r: commons.Result{
 					Message:    "test",
 					Status:     "OK",
 					ResourceID: "test",
 				},
-				check: config.Check{
+				check: commons.Check{
 					Id: "test",
 				},
 			},
@@ -99,8 +98,8 @@ func TestIsIgnored(t *testing.T) {
 		{
 			name: "is ignored",
 			args: args{
-				c: &config.Config{
-					Ignore: []config.Ignore{
+				c: &commons.Config{
+					Ignore: []commons.Ignore{
 						{
 							ID:    "test",
 							Regex: false,
@@ -110,12 +109,12 @@ func TestIsIgnored(t *testing.T) {
 						},
 					},
 				},
-				r: config.Result{
+				r: commons.Result{
 					Message:    "test",
 					Status:     "OK",
 					ResourceID: "test",
 				},
-				check: config.Check{
+				check: commons.Check{
 					Id: "test",
 				},
 			},
@@ -124,8 +123,8 @@ func TestIsIgnored(t *testing.T) {
 		{
 			name: "is ignored",
 			args: args{
-				c: &config.Config{
-					Ignore: []config.Ignore{
+				c: &commons.Config{
+					Ignore: []commons.Ignore{
 						{
 							ID:    "test",
 							Regex: false,
@@ -135,12 +134,12 @@ func TestIsIgnored(t *testing.T) {
 						},
 					},
 				},
-				r: config.Result{
+				r: commons.Result{
 					Message:    "test",
 					Status:     "OK",
 					ResourceID: "test",
 				},
-				check: config.Check{
+				check: commons.Check{
 					Id: "toto",
 				},
 			},
@@ -158,7 +157,7 @@ func TestIsIgnored(t *testing.T) {
 
 func TestExitCode(t *testing.T) {
 	type args struct {
-		checks []config.Tests
+		checks []commons.Tests
 	}
 	tests := []struct {
 		name string
@@ -168,13 +167,13 @@ func TestExitCode(t *testing.T) {
 		{
 			name: "exit code",
 			args: args{
-				checks: []config.Tests{
+				checks: []commons.Tests{
 					{
 						Account: "test",
-						Checks: []config.Check{
+						Checks: []commons.Check{
 							{
 								Id: "test",
-								Results: []config.Result{
+								Results: []commons.Result{
 									{
 										Status: "OK",
 									},
@@ -190,13 +189,13 @@ func TestExitCode(t *testing.T) {
 		{
 			name: "exit code",
 			args: args{
-				checks: []config.Tests{
+				checks: []commons.Tests{
 					{
 						Account: "test",
-						Checks: []config.Check{
+						Checks: []commons.Check{
 							{
 								Id: "test",
-								Results: []config.Result{
+								Results: []commons.Result{
 									{
 										Status: "FAIL",
 									},
@@ -221,7 +220,7 @@ func TestExitCode(t *testing.T) {
 
 func TestCountChecksPassedOverall(t *testing.T) {
 	type args struct {
-		checks []config.Check
+		checks []commons.Check
 	}
 	tests := []struct {
 		name  string
@@ -232,7 +231,7 @@ func TestCountChecksPassedOverall(t *testing.T) {
 		{
 			name: "count checks passed overall",
 			args: args{
-				checks: []config.Check{
+				checks: []commons.Check{
 					{
 						Id:     "test",
 						Status: "OK",
@@ -245,7 +244,7 @@ func TestCountChecksPassedOverall(t *testing.T) {
 		{
 			name: "count checks passed overall",
 			args: args{
-				checks: []config.Check{
+				checks: []commons.Check{
 					{
 						Id:     "test",
 						Status: "OK",
@@ -275,19 +274,19 @@ func TestCountChecksPassedOverall(t *testing.T) {
 
 func TestRemoveIgnored(t *testing.T) {
 	type args struct {
-		c     *config.Config
-		tests []config.Tests
+		c     *commons.Config
+		tests []commons.Tests
 	}
 	tests := []struct {
 		name string
 		args args
-		want []config.Tests
+		want []commons.Tests
 	}{
 		{
 			name: "remove ignored",
 			args: args{
-				c: &config.Config{
-					Ignore: []config.Ignore{
+				c: &commons.Config{
+					Ignore: []commons.Ignore{
 						{
 							ID:    "test",
 							Regex: true,
@@ -297,14 +296,14 @@ func TestRemoveIgnored(t *testing.T) {
 						},
 					},
 				},
-				tests: []config.Tests{
+				tests: []commons.Tests{
 					{
 						Account: "test",
-						Checks: []config.Check{
+						Checks: []commons.Check{
 							{
 								Id: "test",
 
-								Results: []config.Result{
+								Results: []commons.Result{
 									{
 										Status:     "FAIL",
 										Message:    "test",
@@ -321,14 +320,14 @@ func TestRemoveIgnored(t *testing.T) {
 					},
 				},
 			},
-			want: []config.Tests{
+			want: []commons.Tests{
 				{
 					Account: "test",
-					Checks: []config.Check{
+					Checks: []commons.Check{
 						{
 							Status: "OK",
 							Id:     "test",
-							Results: []config.Result{
+							Results: []commons.Result{
 								{
 									Status:     "OK",
 									Message:    "toto",

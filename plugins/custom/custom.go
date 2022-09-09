@@ -7,10 +7,10 @@ import (
 	"os/exec"
 	"strings"
 
-	"github.com/stangirard/yatas/config"
+	"github.com/stangirard/yatas/plugins/commons"
 )
 
-func findPluginWithName(c *config.Config, name string) *config.Plugin {
+func findPluginWithName(c *commons.Config, name string) *commons.Plugin {
 	for _, plugin := range c.Plugins {
 		if plugin.Name == name {
 			return &plugin
@@ -19,16 +19,16 @@ func findPluginWithName(c *config.Config, name string) *config.Plugin {
 	return nil
 }
 
-func Run(c *config.Config, name string) (config.Tests, error) {
+func Run(c *commons.Config, name string) (commons.Tests, error) {
 	plugin := findPluginWithName(c, name)
 	checks, err := ExecuteCommand(c, plugin)
 	return checks, err
 
 }
 
-func ExecuteCommand(c *config.Config, plugin *config.Plugin) (config.Tests, error) {
-	checks := []config.Check{}
-	check := config.Check{}
+func ExecuteCommand(c *commons.Config, plugin *commons.Plugin) (commons.Tests, error) {
+	checks := []commons.Check{}
+	check := commons.Check{}
 	check.Name = plugin.Name
 	check.Description = plugin.Description
 	check.Status = "OK"
@@ -41,7 +41,7 @@ func ExecuteCommand(c *config.Config, plugin *config.Plugin) (config.Tests, erro
 	if err != nil {
 		log.Fatal(err)
 	}
-	result := config.Result{}
+	result := commons.Result{}
 	if strings.TrimRight(outb.String(), "\n") == plugin.ExpectedOutput {
 		result.Message = fmt.Sprint("Output matched: ", plugin.ExpectedOutput)
 		result.Status = "OK"
@@ -51,7 +51,7 @@ func ExecuteCommand(c *config.Config, plugin *config.Plugin) (config.Tests, erro
 	}
 	check.Results = append(check.Results, result)
 	checks = append(checks, check)
-	test := config.Tests{}
+	test := commons.Tests{}
 	test.Checks = checks
 	test.Account = plugin.Name
 	return test, nil

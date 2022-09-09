@@ -3,12 +3,12 @@ package report
 import (
 	"io/ioutil"
 
-	"github.com/stangirard/yatas/config"
+	"github.com/stangirard/yatas/plugins/commons"
 	"gopkg.in/yaml.v3"
 )
 
-func parseReportYaml(filename string) ([]config.Tests, error) {
-	var report []config.Tests
+func parseReportYaml(filename string) ([]commons.Tests, error) {
+	var report []commons.Tests
 	data, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return report, err
