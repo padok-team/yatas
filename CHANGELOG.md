@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.11.2](https://github.com/StanGirard/YATAS/compare/v0.11.1...v0.11.2) (2022-09-09)
+
+
+### Bug Fixes
+
+* **plugin:** fixed registration of interface when no parameters ([e8dd022](https://github.com/StanGirard/YATAS/commit/e8dd022fbb9f17e73b58f07b52e3340ea8a9d832))
+
 ### [0.11.1](https://github.com/StanGirard/YATAS/compare/v0.11.0...v0.11.1) (2022-09-09)
 
 
