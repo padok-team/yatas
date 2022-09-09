@@ -26,6 +26,16 @@ snapshot:
   name_template: '{{ .Tag }}-next'
 changelog:
   sort: asc
+  use: github
+  groups:
+    - title: Features
+      regexp: "^.*feat[(\\w)]*:+.*$"
+      order: 0
+    - title: 'Bug fixes'
+      regexp: "^.*fix[(\\w)]*:+.*$"
+      order: 1
+    - title: Others
+      order: 999
   filters:
     exclude:
       - '^docs'
@@ -45,7 +55,7 @@ brews:
     token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"  
 nfpms:
   - maintainer: stan@primates.dev <stan@primates.dev>
-    description: Aws Cost Report
+    description: YATAS audit tool
     homepage: https://github.com/stangirard/yatas
     license: Apache 2.0
     file_name_template: '{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}'
