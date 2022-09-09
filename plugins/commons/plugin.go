@@ -96,7 +96,6 @@ func (c *Plugin) Install() (string, error) {
 
 	log.Printf("[DEBUG] Download checksums.txt")
 	checksumsFile, err := c.downloadToTempFile(assets["checksums.txt"])
-	fmt.Println("Debug 1")
 	if checksumsFile != nil {
 		defer os.Remove(checksumsFile.Name())
 	}
@@ -172,23 +171,20 @@ func (c *Plugin) downloadToTempFile(asset *github.ReleaseAsset) (*os.File, error
 
 	ctx := context.Background()
 	client := newGitHubClient(ctx)
-
-	log.Printf("[DEBUG] Request to https://api.github.com/repos/%s/%s/releases/assets/%d", c.SourceOwner, c.SourceRepo, asset.GetID())
+	
+log.Printf("[DEBUG] Request to https://api.github.com/repos/%s/%s/releases/assets/%d", c.SourceOwner, c.SourceRepo, asset.GetID())
 	downloader, _, err := client.Repositories.DownloadReleaseAsset(ctx, c.SourceOwner, c.SourceRepo, asset.GetID(), http.DefaultClient)
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("Debug 2")
 	file, err := os.CreateTemp("", "yatas-tmp-*")
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println("Debug 3")
 
 	fmt.Println(file.Name())
 	fmt.Println(downloader)
 	if _, err = io.Copy(file, downloader); err != nil {
-		fmt.Println("Debug 4")
 		return file, err
 	}
 	downloader.Close()
