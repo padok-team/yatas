@@ -44,7 +44,7 @@ changelog:
       - '^refactor'
       - '^build'
       - '^ci'
-      - '^chore'
+      - '^chore(release)'
 
 brews:
 - name: yatas
