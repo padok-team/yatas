@@ -28,5 +28,6 @@
       "groupName": "all minor aws dependencies",
       "groupSlug": "all-minor-aws"
     }
-  ]
+  ],
+  "semanticCommits": "enabled"
 }
