@@ -53,7 +53,7 @@ func RunPlugin(pluginInput commons.Plugin, c *commons.Config) []commons.Tests {
 // This prevents users from executing bad plugins or executing a plugin
 // directory. It is a UX feature, not a security feature.
 var handshakeConfig = plugin.HandshakeConfig{
-	ProtocolVersion:  1,
+	ProtocolVersion:  2,
 	MagicCookieKey:   "BASIC_PLUGIN",
 	MagicCookieValue: "hello",
 }

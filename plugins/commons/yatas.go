@@ -2,34 +2,7 @@ package commons
 
 import (
 	"sync"
-
-	"github.com/stangirard/yatas/internal/helpers"
-	"gopkg.in/yaml.v3"
 )
-
-func ParseConfig(configFile string) (*Config, error) {
-	// Read the file .yatas.yml
-	// File to array of bytes
-	data, err := helpers.ReadFile(configFile)
-	if err != nil {
-		return &Config{}, err
-	}
-
-	// Parse the yaml file
-	config := Config{}
-	err = unmarshalYAML(data, &config)
-	if err != nil {
-		return &Config{}, err
-	}
-
-	return &config, nil
-}
-
-func unmarshalYAML(data []byte, config *Config) error {
-	err := yaml.Unmarshal([]byte(data), &config)
-
-	return err
-}
 
 // Check test if a wrapper around a check that allows to verify if the check is included or excluded and add some custom logic.
 // It allows for a simpler integration of new tests without bloating the code.

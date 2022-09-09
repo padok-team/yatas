@@ -20,11 +20,12 @@ ignore:
     values: 
       - "VPC has only one gateway on vpc-08ffec87e034a8953"
 
-
-aws:
-  - name: "TODO"
-    profile: ""
-    sso: false
-    region: "eu-west-3"
+pluginsConfiguration:
+  - pluginName: aws
+    accounts:
+    - name: "example"
+      profile: ""
+      sso: false
+      region: "eu-west-3"
     
       

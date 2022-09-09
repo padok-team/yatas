@@ -1,6 +1,7 @@
 package commons
 
 import (
+	"fmt"
 	"sync"
 	"testing"
 
@@ -67,9 +68,10 @@ func TestConfig_CheckExclude(t *testing.T) {
 
 func TestConfig_CheckInclude(t *testing.T) {
 	type fields struct {
-		Plugins []Plugin
-		AWS     []AWS_Account
-		Ignore  []Ignore
+		Plugins      []Plugin
+		AWS          []AWS_Account
+		Ignore       []Ignore
+		PluginConfig interface{}
 	}
 	type args struct {
 		id string
@@ -144,7 +146,8 @@ func TestParseConfig(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, err := ParseConfig(tt.args.configFile)
+			config, err := ParseConfig(tt.args.configFile)
+			fmt.Println(config)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("ParseConfig() error = %v, wantErr %v", err, tt.wantErr)
 				return
