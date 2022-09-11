@@ -171,8 +171,8 @@ func (c *Plugin) downloadToTempFile(asset *github.ReleaseAsset) (*os.File, error
 
 	ctx := context.Background()
 	client := newGitHubClient(ctx)
-	
-log.Printf("[DEBUG] Request to https://api.github.com/repos/%s/%s/releases/assets/%d", c.SourceOwner, c.SourceRepo, asset.GetID())
+
+	log.Printf("[DEBUG] Request to https://api.github.com/repos/%s/%s/releases/assets/%d", c.SourceOwner, c.SourceRepo, asset.GetID())
 	downloader, _, err := client.Repositories.DownloadReleaseAsset(ctx, c.SourceOwner, c.SourceRepo, asset.GetID(), http.DefaultClient)
 	if err != nil {
 		return nil, err

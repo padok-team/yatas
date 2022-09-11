@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"strings"
 
 	hclog "github.com/hashicorp/go-hclog"
 	"github.com/hashicorp/go-plugin"
@@ -16,6 +17,12 @@ func RunPlugin(pluginInput commons.Plugin, c *commons.Config) []commons.Tests {
 	// Create an hclog.Logger
 	gob.Register(map[string]interface{}{})
 	gob.Register([]interface{}{})
+	pluginMap := make(map[string]plugin.Plugin)
+
+	for _, plugin := range c.Plugins {
+		pluginMap[strings.ToLower(plugin.Name)] = &commons.YatasPlugin{}
+	}
+
 	logger := hclog.New(&hclog.LoggerOptions{
 		Name:   "plugin",
 		Output: os.Stdout,
@@ -62,7 +69,3 @@ var handshakeConfig = plugin.HandshakeConfig{
 }
 
 // pluginMap is the map of plugins we can dispense.
-
-var pluginMap = map[string]plugin.Plugin{
-	"aws": &commons.YatasPlugin{},
-}
