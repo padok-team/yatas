@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.11.4](https://github.com/StanGirard/YATAS/compare/v0.11.3...v0.11.4) (2022-09-11)
+
+
+### Features
+
+* **plugins:** can now dynamically call plugins and not only aws named plugins ([36ac556](https://github.com/StanGirard/YATAS/commit/36ac5565d7bf1bb90e7cb74f810d72fbbfe6be04))
+
 ### [0.11.3](https://github.com/StanGirard/YATAS/compare/v0.11.2...v0.11.3) (2022-09-09)
 
 
