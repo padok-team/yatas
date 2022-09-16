@@ -19,6 +19,7 @@ type Plugin struct {
 	Name           string   `yaml:"name"`
 	Enabled        bool     `yaml:"enabled"`
 	Source         string   `yaml:"source"`
+	Type           string   `default:"checks" yaml:"type" `
 	Version        string   `yaml:"version"`
 	Description    string   `yaml:"description"`
 	Exclude        []string `yaml:"exclude"`
@@ -54,6 +55,10 @@ func (c *Plugin) AssetName() string {
 func (c *Plugin) Validate() error {
 	if c.Version != "" && c.Source == "" {
 		return fmt.Errorf("plugin `%s`: `source` attribute cannot be omitted when specifying `version`", c.Name)
+	}
+
+	if c.Type != "checks" && c.Type != "" && c.Type != "reporting" && c.Type != "mod" {
+		return fmt.Errorf("plugin `%s`: `type` attribute must be either `checks` or `reporting` or `mod`", c.Name)
 	}
 
 	if c.Source != "" {
