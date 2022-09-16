@@ -39,5 +39,5 @@ critic:
 ## release: Release a new version
 .PHONY: release
 release: test
-	npm run release
+	standard-version
 	git push --follow-tags origin main 
