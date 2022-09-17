@@ -61,6 +61,7 @@ Flags:
 | Plugins | Description | Checks |
 |------|-------------|--------|
 | [*AWS Audit*](https://github.com/StanGirard/yatas-aws) | AWS checks | Good practices and security checks|
+| [*Markdown Reports*](https://github.com/StanGirard/yatas-markdown) | Reporting | Generates a markdown report |
 
 
 ## Checks 
@@ -210,29 +211,6 @@ plugins:
 
 <!-- END_YATAS -->
 
-## How to add a new test ?
+## How to create a new plugin ?
 
-You'd like to add a new test ? Then simply fork the repository and create a pull request.
-
-### Add a test to an existing category
-
-If the package already exists and has a `getter.go`
-- Create a file with the name of the test
-- Add your test
-- If you need to query the AWS API, add your query to the  `getter.go` file
-- Add you test to the `<category_name>.go` file with a new id incremented by 1
-- Make sure to add unit tests
-
-
-### Add a new category
-
-- Create a new folder
-- The folder should contain a `getter.go` file
-- The folder should contain a `<category_name>.go` file which exports a Run function
-- Add your test to the `<category_name>.go` file with a new id incremented by 1
-- Add your category in the `<cloudprovider>/<cloudprovider_name>.go` file in the `initTest` function
-
-
-### FYI 
-
-All tests are wrapped with a generic functions that allows us to run the test in parallel and disable some without running them. 
+You'd like to add a new plugin ? Then simply visit [yatas-plugin](https://github.com/stangirard/yatas-template) and follow the instructions.
