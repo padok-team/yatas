@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [0.11.7](https://github.com/StanGirard/YATAS/compare/v0.11.6...v0.11.7) (2022-09-17)
+
+
+### Bug Fixes
+
+* **report:** changed from reporting to report ([5683163](https://github.com/StanGirard/YATAS/commit/56831633bba8f6f27c59360618f8421e29994ed3))
+
 ### [0.11.6](https://github.com/StanGirard/YATAS/compare/v0.11.5...v0.11.6) (2022-09-16)
 
 
