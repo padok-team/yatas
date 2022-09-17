@@ -19,6 +19,7 @@ var (
 
 func initialisePlugins(configuration commons.Config) error {
 	for _, plugins := range configuration.Plugins {
+
 		plugins.Validate()
 		if *install {
 			_, err := plugins.Install()

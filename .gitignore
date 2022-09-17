@@ -30,3 +30,4 @@ package-lock.json
 node_modules/*
 results.yaml
 .vscode/*
+report.md

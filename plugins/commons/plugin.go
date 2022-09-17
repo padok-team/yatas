@@ -57,10 +57,9 @@ func (c *Plugin) Validate() error {
 		return fmt.Errorf("plugin `%s`: `source` attribute cannot be omitted when specifying `version`", c.Name)
 	}
 
-	if c.Type != "checks" && c.Type != "" && c.Type != "reporting" && c.Type != "mod" {
+	if c.Type != "checks" && c.Type != "" && c.Type != "report" && c.Type != "mod" {
 		return fmt.Errorf("plugin `%s`: `type` attribute must be either `checks` or `reporting` or `mod`", c.Name)
 	}
-
 	if c.Source != "" {
 		if c.Version == "" {
 			return fmt.Errorf("plugin `%s`: `version` attribute cannot be omitted when specifying `source`", c.Name)
@@ -76,6 +75,7 @@ func (c *Plugin) Validate() error {
 		}
 		c.SourceOwner = parts[1]
 		c.SourceRepo = parts[2]
+
 	}
 
 	return nil
@@ -93,6 +93,9 @@ func (c *Plugin) Install() (string, error) {
 	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
 		return "", fmt.Errorf("failed to mkdir to %s: %w", filepath.Dir(path), err)
 	}
+	fmt.Println("GOGOGOGOG", c.SourceOwner, c.SourceRepo, c.TagName())
+	c.Validate()
+	fmt.Println("GOGOGOGOG", c.SourceOwner, c.SourceRepo, c.TagName())
 
 	assets, err := c.fetchReleaseAssets()
 	if err != nil {
