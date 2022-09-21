@@ -6,7 +6,7 @@ require (
 	github.com/aws/aws-sdk-go-v2 v1.16.16
 	github.com/fatih/color v1.13.0
 	github.com/google/go-github/v35 v35.3.0
-	github.com/hashicorp/go-hclog v1.3.0
+	github.com/hashicorp/go-hclog v1.3.1
 	github.com/hashicorp/go-plugin v1.4.5
 	github.com/mitchellh/go-homedir v1.1.0
 	golang.org/x/oauth2 v0.0.0-20220909003341-f21342109be1
