@@ -214,3 +214,18 @@ plugins:
 ## How to create a new plugin ?
 
 You'd like to add a new plugin ? Then simply visit [yatas-plugin](https://github.com/stangirard/yatas-template) and follow the instructions.
+
+
+  <h2>Contributors ❤️</h2>
+  <br />
+  <div align="center">
+  <br />
+  <a href="https://github.com/stangirard/yatas/graphs/contributors">
+    <img src="https://contrib.rocks/image?repo=stangirard/yatas" />
+  </a>
+  <br/>
+  <br/>
+  <h4>Your contributions are very welcome, feel free to add new rules to Guardian !</h4>
+  <br />
+  <br />
+</div>
