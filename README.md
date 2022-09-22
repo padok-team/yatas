@@ -67,7 +67,7 @@ Flags:
 ## Checks 
 
 ### Ignore results for known issues
-You can ignore results of checks by add the following to your `.yatas.yml` file:
+You can ignore results of checks by adding the following to your `.yatas.yml` file:
 
 ```yaml
 ignore:
@@ -225,7 +225,7 @@ You'd like to add a new plugin ? Then simply visit [yatas-plugin](https://github
   </a>
   <br/>
   <br/>
-  <h4>Your contributions are very welcome, feel free to add new rules to Guardian !</h4>
+  <h4>Your contributions are very welcome, feel free to add new rules to YATAS !</h4>
   <br />
   <br />
 </div>
