@@ -2,7 +2,7 @@ plugins:
   - name: "aws"
     enabled: true
     source: "github.com/StanGirard/yatas-aws"
-    version: "0.0.4"
+    version: "latest"
     description: "Check for AWS good practices"
     exclude:
      # - AWS_S3_001
