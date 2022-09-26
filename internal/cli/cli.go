@@ -31,7 +31,7 @@ func initialisePlugins(configuration commons.Config) error {
 	return nil
 }
 
-func RunChecksPlugins(configuration *commons.Config, checks *[]commons.Tests) {
+func runChecksPlugins(configuration *commons.Config, checks *[]commons.Tests) {
 	for _, plugins := range configuration.Plugins {
 		if plugins.Type == "checks" || plugins.Type == "" {
 
@@ -92,7 +92,7 @@ func runModPlugins(configuration *commons.Config, checks *[]commons.Tests) bool 
 	return mod
 }
 
-func RunReportPlugins(configuration *commons.Config, checks *[]commons.Tests) {
+func runReportPlugins(configuration *commons.Config, checks *[]commons.Tests) {
 	for _, plugins := range configuration.Plugins {
 		if plugins.Type == "report" {
 			latestVersion, _ := commons.GetLatestReleaseTag(plugins)
@@ -127,7 +127,7 @@ func Execute() error {
 	}
 
 	// Run plugins
-	RunChecksPlugins(configuration, &checks)
+	runChecksPlugins(configuration, &checks)
 
 	// Clean results
 	checks = report.RemoveIgnored(configuration, checks)
@@ -142,6 +142,8 @@ func Execute() error {
 		})
 	}
 
+	configuration.Tests = checks
+
 	// Compare with previous report
 	compareResults(configuration, &checks)
 
@@ -149,7 +151,7 @@ func Execute() error {
 	ciReporting(checks)
 
 	// Run report plugins
-	RunReportPlugins(configuration, &checks)
+	runReportPlugins(configuration, &configuration.Tests)
 
 	return nil
 }

@@ -12,6 +12,7 @@ type Config struct {
 	AWS          []AWS_Account            `yaml:"aws"`
 	Ignore       []Ignore                 `yaml:"ignore"`
 	PluginConfig []map[string]interface{} `yaml:"pluginsConfiguration"`
+	Tests        []Tests                  `yaml:"tests"`
 }
 
 func ParseConfig(configFile string) (*Config, error) {
