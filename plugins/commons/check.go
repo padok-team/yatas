@@ -8,6 +8,7 @@ type Check struct {
 	Description string        `yaml:"description"` // Description of the check
 	Status      string        `yaml:"status"`      // Status of the check - OK, FAIL
 	Id          string        `yaml:"id"`          // ID of the check - unique identifier for the check - AWS_IAM_001
+	Category    string        `yaml:"category"`    // Category of the check - Security, Cost, Performance, Fault Tolerance, Operational Excellence, etc ...
 	Results     []Result      `yaml:"results"`     // Results of the check
 	Duration    time.Duration `yaml:"duration"`    // Duration of the check
 	StartTime   time.Time
