@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.0.0](https://github.com/StanGirard/YATAS/compare/v0.11.10...v1.0.0) (2022-09-26)
+
+
+### Features
+
+* **plugins:** added better error message ([2f8d566](https://github.com/StanGirard/YATAS/commit/2f8d56686888234884f20f27703cc9a9a6bff68f))
+
 ### [0.11.10](https://github.com/StanGirard/YATAS/compare/v0.11.9...v0.11.10) (2022-09-26)
 
 
