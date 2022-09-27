@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.2.0](https://github.com/StanGirard/YATAS/compare/v1.1.0...v1.2.0) (2022-09-27)
+
+
+### Features
+
+* **categories:** added categories in init check ([69c7afb](https://github.com/StanGirard/YATAS/commit/69c7afba8ba7a5e46d738e207c455aff10c3cb5c))
+
 ## [1.1.0](https://github.com/StanGirard/YATAS/compare/v1.0.0...v1.1.0) (2022-09-27)
 
 
