@@ -15,11 +15,12 @@ func (c *Check) AddResult(result Result) {
 }
 
 // Initialise a check
-func (c *Check) InitCheck(name, description, id string) {
+func (c *Check) InitCheck(name, description, id string, category string) {
 	c.Name = name
 	c.Description = description
 	c.Status = "OK"
 	c.Id = id
+	c.Category = category
 	c.StartTime = time.Now()
 }
 

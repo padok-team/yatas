@@ -61,7 +61,7 @@ func RemoveIgnored(c *commons.Config, tests []commons.Tests) []commons.Tests {
 		for _, check := range test.Checks {
 			checkTmp := check
 			checkTmp.Results = []commons.Result{}
-			checkTmp.InitCheck(check.Name, check.Description, check.Id)
+			checkTmp.InitCheck(check.Name, check.Description, check.Id, check.Category)
 			for _, result := range check.Results {
 				if !IsIgnored(c, result, check) {
 					checkTmp.AddResult(result)
