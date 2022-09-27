@@ -163,7 +163,8 @@ func TestCheck_InitCheck(t *testing.T) {
 				Id:          tt.fields.Id,
 				Results:     tt.fields.Results,
 			}
-			c.InitCheck(tt.args.name, tt.args.description, tt.args.id, "test")
+			categories := []string{"test"}
+			c.InitCheck(tt.args.name, tt.args.description, tt.args.id, categories)
 			if c.Name != tt.args.name {
 				t.Errorf("Name is not %s", tt.args.name)
 			}
