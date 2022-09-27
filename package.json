@@ -1,6 +1,6 @@
 {
   "name": "yatas",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Yet Another Testing &amp; Auditing Solution",
   "scripts": {
     "release": "standard-version"
