@@ -23,6 +23,7 @@ var fullName = map[string]string{
 	"BAK": "Backup",
 	"RDS": "RDS",
 	"VPC": "VPC",
+	"COG": "Cognito",
 	"CLD": "CloudTrail",
 	"ECR": "ECR",
 	"LMD": "Lambda",
