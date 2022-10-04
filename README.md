@@ -109,7 +109,7 @@ plugins:
 
 <!-- BEGIN_YATAS -->
 
-## AWS - 62 Checks
+## AWS - 63 Checks
 
 ### AWS Certificate Manager
 - AWS_ACM_001 ACM certificates are valid
@@ -140,6 +140,9 @@ plugins:
 - AWS_CLD_001 Cloudtrails are encrypted
 - AWS_CLD_002 Cloudtrails have Global Service Events Activated
 - AWS_CLD_003 Cloudtrails are in multiple regions
+
+### COG
+- AWS_COG_001 Cognito allows unauthenticated users
 
 ### DynamoDB
 - AWS_DYN_001 Dynamodbs are encrypted
