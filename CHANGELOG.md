@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.3.0](https://github.com/StanGirard/YATAS/compare/v1.2.0...v1.3.0) (2022-10-12)
+
+
+### Features
+
+* **yatas:** added debug log ([eb32a4c](https://github.com/StanGirard/YATAS/commit/eb32a4cffa8f869611a59976ec76cce45a07329a))
+
+
+### Bug Fixes
+
+* **readme-gen:** added cognito because readme generator was wrong ([83a2c45](https://github.com/StanGirard/YATAS/commit/83a2c453d896e3df00c8722d288c722369fca9de))
+
 ## [1.2.0](https://github.com/StanGirard/YATAS/compare/v1.1.0...v1.2.0) (2022-09-27)
 
 
