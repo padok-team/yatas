@@ -23,11 +23,16 @@ func RunPlugin(pluginInput commons.Plugin, c *commons.Config) []commons.Tests {
 	for _, plugin := range c.Plugins {
 		pluginMap[strings.ToLower(plugin.Name)] = &commons.YatasPlugin{}
 	}
+	// Check env variable yatas-log-level
+	logLevel := os.Getenv("YATAS_LOG_LEVEL")
+	if logLevel == "" {
+		logLevel = "OFF"
+	}
 
 	logger := hclog.New(&hclog.LoggerOptions{
 		Name:   "plugin",
 		Output: os.Stdout,
-		Level:  hclog.Off,
+		Level:  hclog.LevelFromString(logLevel),
 	})
 
 	// We're a host! Start by launching the plugin process.
