@@ -5,7 +5,7 @@
 # YATAS
 [![codecov](https://codecov.io/gh/StanGirard/YATAS/branch/main/graph/badge.svg?token=OFGny8Za4x)](https://codecov.io/gh/StanGirard/YATAS) [![goreport](https://goreportcard.com/badge/github.com/stangirard/yatas)](https://goreportcard.com/badge/github.com/stangirard/yatas)
 
-Yet Another Testing &amp; Auditing Solution 
+Yet Another Testing &amp; Auditing Solution
 
 The goal of YATAS is to help you create a secure AWS environment without too much hassle. It won't check for all best practices but only for the ones that are important for you based on my experience. Please feel free to tell me if you find something that is not covered.
 
@@ -54,7 +54,7 @@ Flags:
 - `--init`: Creates a .yatas.yml file in the current directory.
 - `--install`: Installs the plugins you need.
 - `--only-failure`: Only show the tests that failed.
-- 
+-
 
 ## Plugins
 
@@ -64,7 +64,7 @@ Flags:
 | [*Markdown Reports*](https://github.com/StanGirard/yatas-markdown) | Reporting | Generates a markdown report |
 
 
-## Checks 
+## Checks
 
 ### Ignore results for known issues
 You can ignore results of checks by adding the following to your `.yatas.yml` file:
@@ -73,11 +73,11 @@ You can ignore results of checks by adding the following to your `.yatas.yml` fi
 ignore:
   - id: "AWS_VPC_004"
     regex: true
-    values: 
+    values:
       - "VPC Flow Logs are not enabled on vpc-.*"
   - id: "AWS_VPC_003"
     regex: false
-    values: 
+    values:
       - "VPC has only one gateway on vpc-08ffec87e034a8953"
 ```
 
@@ -93,7 +93,7 @@ plugins:
       - AWS_S3_001
 ```
 
-### Specify which tests to run 
+### Specify which tests to run
 
 To only run a specific test, add the following to your `.yatas.yml` file:
 

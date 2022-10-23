@@ -40,4 +40,4 @@ critic:
 .PHONY: release
 release: test
 	standard-version
-	git push --follow-tags origin main 
+	git push --follow-tags origin main

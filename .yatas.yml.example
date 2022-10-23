@@ -13,11 +13,11 @@ plugins:
 ignore:
   - id: "AWS_VPC_004"
     regex: true
-    values: 
+    values:
       - "VPC Flow Logs are not enabled on vpc-888.*"
   - id: "AWS_VPC_003"
     regex: false
-    values: 
+    values:
       - "VPC has only one gateway on vpc-08ffec87e034a8953"
 
 pluginsConfiguration:
@@ -27,5 +27,3 @@ pluginsConfiguration:
         sso: true
         region: "eu-west-3"
         name: "yatas"
-    
-      

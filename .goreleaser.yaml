@@ -52,7 +52,7 @@ brews:
   tap:
     owner: stangirard
     name: homebrew-tap
-    token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"  
+    token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
 nfpms:
   - maintainer: stan@primates.dev <stan@primates.dev>
     description: YATAS audit tool
