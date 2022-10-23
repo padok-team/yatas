@@ -1,5 +1,4 @@
 .DEFAULT_TARGET=help
-VERSION:=$(shell cat VERSION)
 
 ## help: Display list of commands
 .PHONY: help
