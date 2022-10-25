@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.3.1](https://github.com/padok-team/YATAS/compare/v1.3.0...v1.3.1) (2022-10-25)
+
+
+### Bug Fixes
+
+* fix yatas-aws plugin source ([#84](https://github.com/padok-team/YATAS/issues/84)) ([a7cc241](https://github.com/padok-team/YATAS/commit/a7cc2413fa9ed8cedaa84e8ce3615b34eb795432))
+* **name:** changed name ([f822e58](https://github.com/padok-team/YATAS/commit/f822e580155ebd14f0ea218173e84864d1396d65))
+
 ## [1.3.0](https://github.com/padok-team/YATAS/compare/v1.2.0...v1.3.0) (2022-10-12)
 
 
