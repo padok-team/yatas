@@ -11,7 +11,7 @@ import (
 	hclog "github.com/hashicorp/go-hclog"
 	"github.com/hashicorp/go-plugin"
 	"github.com/mitchellh/go-homedir"
-	"github.com/stangirard/yatas/plugins/commons"
+	"github.com/padok-team/yatas/plugins/commons"
 )
 
 func RunPlugin(pluginInput commons.Plugin, c *commons.Config) []commons.Tests {

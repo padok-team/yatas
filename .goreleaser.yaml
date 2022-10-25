@@ -48,15 +48,15 @@ changelog:
 
 brews:
 - name: yatas
-  homepage: https://github.com/stangirard/yatas
+  homepage: https://github.com/padok-team/yatas
   tap:
-    owner: stangirard
+    owner: padok-team
     name: homebrew-tap
     token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"  
 nfpms:
   - maintainer: stan@primates.dev <stan@primates.dev>
     description: YATAS audit tool
-    homepage: https://github.com/stangirard/yatas
+    homepage: https://github.com/padok-team/yatas
     license: Apache 2.0
     file_name_template: '{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}'
     formats:

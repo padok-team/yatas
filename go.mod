@@ -1,4 +1,4 @@
-module github.com/stangirard/yatas
+module github.com/padok-team/yatas
 
 go 1.19
 

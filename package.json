@@ -12,13 +12,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/StanGirard/YATAS.git"
+    "url": "git+https://github.com/padok-team/YATAS.git"
   },
-  "author": "stangirard",
+  "author": "padok-team",
   "bugs": {
-    "url": "https://github.com/StanGirard/YATAS/issues"
+    "url": "https://github.com/padok-team/YATAS/issues"
   },
-  "homepage": "https://github.com/StanGirard/YATAS#readme",
+  "homepage": "https://github.com/padok-team/YATAS#readme",
   "devDependencies": {
     "standard-version": "9.5.0"
   }

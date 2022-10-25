@@ -1,8 +1,9 @@
 package report
 
 import (
-	"github.com/stangirard/yatas/plugins/commons"
 	"testing"
+
+	"github.com/padok-team/yatas/plugins/commons"
 )
 
 func Test_countResultOkOverall(t *testing.T) {

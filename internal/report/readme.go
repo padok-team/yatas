@@ -6,7 +6,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/stangirard/yatas/internal/helpers"
+	"github.com/padok-team/yatas/internal/helpers"
 )
 
 func WriteReadme(readmeFile string, resultFile string) error {

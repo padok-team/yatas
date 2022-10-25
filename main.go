@@ -6,8 +6,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/stangirard/yatas/internal/cli"
-	"github.com/stangirard/yatas/internal/report"
+	"github.com/padok-team/yatas/internal/cli"
+	"github.com/padok-team/yatas/internal/report"
 )
 
 func main() {

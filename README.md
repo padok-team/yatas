@@ -3,7 +3,7 @@
 <p align="center">
 
 # YATAS
-[![codecov](https://codecov.io/gh/StanGirard/YATAS/branch/main/graph/badge.svg?token=OFGny8Za4x)](https://codecov.io/gh/StanGirard/YATAS) [![goreport](https://goreportcard.com/badge/github.com/stangirard/yatas)](https://goreportcard.com/badge/github.com/stangirard/yatas)
+[![codecov](https://codecov.io/gh/padok-team/YATAS/branch/main/graph/badge.svg?token=OFGny8Za4x)](https://codecov.io/gh/padok-team/YATAS) [![goreport](https://goreportcard.com/badge/github.com/padok-team/yatas)](https://goreportcard.com/badge/github.com/padok-team/yatas)
 
 Yet Another Testing &amp; Auditing Solution 
 
@@ -23,7 +23,7 @@ YATAS is a simple and easy to use tool to audit your infrastructure for misconfi
 ## Installation
 
 ```bash
-brew tap stangirard/tap
+brew tap padok-team/tap
 brew install yatas
 ```
 
@@ -60,8 +60,8 @@ Flags:
 
 | Plugins | Description | Checks |
 |------|-------------|--------|
-| [*AWS Audit*](https://github.com/StanGirard/yatas-aws) | AWS checks | Good practices and security checks|
-| [*Markdown Reports*](https://github.com/StanGirard/yatas-markdown) | Reporting | Generates a markdown report |
+| [*AWS Audit*](https://github.com/padok-team/yatas-aws) | AWS checks | Good practices and security checks|
+| [*Markdown Reports*](https://github.com/padok-team/yatas-markdown) | Reporting | Generates a markdown report |
 
 
 ## Checks 
@@ -226,15 +226,15 @@ The available log levels are: `debug`, `info`, `warn`, `error`, `fatal`, `panic`
 
 ## How to create a new plugin ?
 
-You'd like to add a new plugin ? Then simply visit [yatas-plugin](https://github.com/stangirard/yatas-template) and follow the instructions.
+You'd like to add a new plugin ? Then simply visit [yatas-plugin](https://github.com/padok-team/yatas-template) and follow the instructions.
 
 
   <h2>Contributors ❤️</h2>
   <br />
   <div align="center">
   <br />
-  <a href="https://github.com/stangirard/yatas/graphs/contributors">
-    <img src="https://contrib.rocks/image?repo=stangirard/yatas" />
+  <a href="https://github.com/padok-team/yatas/graphs/contributors">
+    <img src="https://contrib.rocks/image?repo=padok-team/yatas" />
   </a>
   <br/>
   <br/>

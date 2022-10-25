@@ -6,9 +6,9 @@ import (
 	"os"
 	"sort"
 
-	"github.com/stangirard/yatas/internal/report"
-	"github.com/stangirard/yatas/plugins/commons"
-	"github.com/stangirard/yatas/plugins/manager"
+	"github.com/padok-team/yatas/internal/report"
+	"github.com/padok-team/yatas/plugins/commons"
+	"github.com/padok-team/yatas/plugins/manager"
 )
 
 var (

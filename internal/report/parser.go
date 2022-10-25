@@ -3,7 +3,7 @@ package report
 import (
 	"io/ioutil"
 
-	"github.com/stangirard/yatas/plugins/commons"
+	"github.com/padok-team/yatas/plugins/commons"
 	"gopkg.in/yaml.v3"
 )
 

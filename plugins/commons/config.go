@@ -3,7 +3,7 @@ package commons
 import (
 	"strings"
 
-	"github.com/stangirard/yatas/internal/helpers"
+	"github.com/padok-team/yatas/internal/helpers"
 	"gopkg.in/yaml.v3"
 )
 
