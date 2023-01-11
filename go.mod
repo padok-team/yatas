@@ -5,7 +5,7 @@ go 1.19
 require (
 	github.com/aws/aws-sdk-go-v2 v1.16.16
 	github.com/fatih/color v1.13.0
-	github.com/google/go-github/v35 v35.3.0
+	github.com/google/go-github/v49 v49.1.0
 	github.com/hashicorp/go-hclog v1.4.0
 	github.com/hashicorp/go-plugin v1.4.8
 	github.com/mitchellh/go-homedir v1.1.0
