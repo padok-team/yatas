@@ -3,7 +3,7 @@ module github.com/padok-team/yatas
 go 1.19
 
 require (
-	github.com/aws/aws-sdk-go-v2 v1.16.16
+	github.com/aws/aws-sdk-go-v2 v1.17.7
 	github.com/fatih/color v1.13.0
 	github.com/google/go-github/v35 v35.3.0
 	github.com/hashicorp/go-hclog v1.4.0
@@ -14,7 +14,7 @@ require (
 )
 
 require (
-	github.com/aws/smithy-go v1.13.3 // indirect
+	github.com/aws/smithy-go v1.13.5 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/go-querystring v1.1.0 // indirect
 	github.com/hashicorp/yamux v0.1.1 // indirect
