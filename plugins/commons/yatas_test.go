@@ -4,14 +4,11 @@ import (
 	"fmt"
 	"sync"
 	"testing"
-
-	"github.com/aws/aws-sdk-go-v2/aws"
 )
 
 func TestConfig_CheckExclude(t *testing.T) {
 	type fields struct {
 		Plugins []Plugin
-		AWS     []AWS_Account
 		Ignore  []Ignore
 	}
 	type args struct {
@@ -56,7 +53,6 @@ func TestConfig_CheckExclude(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			c := &Config{
 				Plugins: tt.fields.Plugins,
-				AWS:     tt.fields.AWS,
 				Ignore:  tt.fields.Ignore,
 			}
 			if got := c.CheckExclude(tt.args.id); got != tt.want {
@@ -69,7 +65,6 @@ func TestConfig_CheckExclude(t *testing.T) {
 func TestConfig_CheckInclude(t *testing.T) {
 	type fields struct {
 		Plugins      []Plugin
-		AWS          []AWS_Account
 		Ignore       []Ignore
 		PluginConfig interface{}
 	}
@@ -117,7 +112,6 @@ func TestConfig_CheckInclude(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			c := &Config{
 				Plugins: tt.fields.Plugins,
-				AWS:     tt.fields.AWS,
 				Ignore:  tt.fields.Ignore,
 			}
 			if got := c.CheckInclude(tt.args.id); got != tt.want {
@@ -159,12 +153,10 @@ func TestParseConfig(t *testing.T) {
 func TestCheckConfig_Init(t *testing.T) {
 	type fields struct {
 		Wg          *sync.WaitGroup
-		ConfigAWS   aws.Config
 		Queue       chan Check
 		ConfigYatas *Config
 	}
 	type args struct {
-		s      aws.Config
 		config *Config
 	}
 	tests := []struct {
@@ -175,19 +167,21 @@ func TestCheckConfig_Init(t *testing.T) {
 		{
 			name: "check config",
 			fields: fields{
-				Wg:          &sync.WaitGroup{},
-				ConfigAWS:   aws.Config{},
-				Queue:       make(chan Check),
-				ConfigYatas: &Config{},
+				Wg:    &sync.WaitGroup{},
+				Queue: make(chan Check),
+				ConfigYatas: &Config{
+					Ignore: []Ignore{
+						{
+							ID: "test",
+						},
+					},
+				},
 			},
 			args: args{
-				s: aws.Config{
-					Region: "eu-west-1",
-				},
 				config: &Config{
-					AWS: []AWS_Account{
+					Ignore: []Ignore{
 						{
-							Name: "test",
+							ID: "test",
 						},
 					},
 				},
@@ -198,18 +192,13 @@ func TestCheckConfig_Init(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			c := &CheckConfig{
 				Wg:          tt.fields.Wg,
-				ConfigAWS:   tt.fields.ConfigAWS,
 				Queue:       tt.fields.Queue,
 				ConfigYatas: tt.fields.ConfigYatas,
 			}
-			c.Init(tt.args.s, tt.args.config)
-			if c.ConfigAWS.Region != tt.args.s.Region {
-				t.Errorf("CheckConfig.Init() ConfigAWS.Region = %v, want %v", c.ConfigAWS.Region, tt.args.s.Region)
+			c.Init(tt.args.config)
+			if c.ConfigYatas.Ignore[0].ID != tt.args.config.Ignore[0].ID {
+				t.Errorf("CheckConfig.Init() ConfigYatas.Ignore[0].ID = %v, want %v", c.ConfigYatas.Ignore[0].ID, tt.args.config.Ignore[0].ID)
 			}
-			if c.ConfigYatas.AWS[0].Name != tt.args.config.AWS[0].Name {
-				t.Errorf("CheckConfig.Init() ConfigYatas.AWS[0].Name = %v, want %v", c.ConfigYatas.AWS[0].Name, tt.args.config.AWS[0].Name)
-			}
-
 		})
 	}
 }
