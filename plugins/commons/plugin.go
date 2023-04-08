@@ -15,25 +15,6 @@ import (
 	"github.com/mitchellh/go-homedir"
 )
 
-type Plugin struct {
-	Name           string   `yaml:"name"`
-	Enabled        bool     `yaml:"enabled"`
-	Source         string   `yaml:"source"`
-	Type           string   `default:"checks" yaml:"type" `
-	Version        string   `yaml:"version"`
-	Description    string   `yaml:"description"`
-	Exclude        []string `yaml:"exclude"`
-	Include        []string `yaml:"include"`
-	Command        string   `yaml:"command"`
-	Args           []string `yaml:"args"`
-	ExpectedOutput string   `yaml:"expected_output"`
-	ExpectedStatus int      `yaml:"expected_status"`
-
-	// Parsed source attributes
-	SourceOwner string
-	SourceRepo  string
-}
-
 // InstallPath returns an installation path from the plugin directory.
 func (c *Plugin) InstallPath() string {
 	return filepath.Join(c.Source, c.Version, fmt.Sprintf("yatas-%s", c.Name))

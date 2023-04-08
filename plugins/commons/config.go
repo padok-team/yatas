@@ -7,13 +7,6 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-type Config struct {
-	Plugins      []Plugin                 `yaml:"plugins"`
-	Ignore       []Ignore                 `yaml:"ignore"`
-	PluginConfig []map[string]interface{} `yaml:"pluginsConfiguration"`
-	Tests        []Tests                  `yaml:"tests"`
-}
-
 func ParseConfig(configFile string) (*Config, error) {
 	// Read the file .yatas.yml
 	// File to array of bytes
