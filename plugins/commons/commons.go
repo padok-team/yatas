@@ -6,14 +6,6 @@ import (
 	"github.com/hashicorp/go-plugin"
 )
 
-// Yatas is the interface that we're exposing as a plugin.
-type Yatas interface {
-	Run(c *Config) []Tests
-}
-
-// Here is an implementation that talks over RPC
-type YatasRPC struct{ client *rpc.Client }
-
 func (g *YatasRPC) Run(c *Config) []Tests {
 	var resp []Tests
 	err := g.client.Call("Plugin.Run", c, &resp)
@@ -26,31 +18,9 @@ func (g *YatasRPC) Run(c *Config) []Tests {
 	return resp
 }
 
-// Here is the RPC server that YatasRPC talks to, conforming to
-// the requirements of net/rpc
-type YatasRPCServer struct {
-	// This is the real implementation
-	Impl Yatas
-}
-
 func (s *YatasRPCServer) Run(c *Config, resp *[]Tests) error {
 	*resp = s.Impl.Run(c)
 	return nil
-}
-
-// This is the implementation of plugin.Plugin so we can serve/consume this
-//
-// This has two methods: Server must return an RPC server for this plugin
-// type. We construct a YatasRPCServer for this.
-//
-// Client must return an implementation of our interface that communicates
-// over an RPC client. We return YatasRPC for this.
-//
-// Ignore MuxBroker. That is used to create more multiplexed streams on our
-// plugin connection and is a more advanced use case.
-type YatasPlugin struct {
-	// Impl Injection
-	Impl Yatas
 }
 
 func (p *YatasPlugin) Server(*plugin.MuxBroker) (interface{}, error) {

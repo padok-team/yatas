@@ -4,14 +4,13 @@ import (
 	"encoding/gob"
 	"fmt"
 	"log"
-	"os"
 	"os/exec"
 	"strings"
 
-	hclog "github.com/hashicorp/go-hclog"
 	"github.com/hashicorp/go-plugin"
 	"github.com/mitchellh/go-homedir"
 	"github.com/padok-team/yatas/plugins/commons"
+	"github.com/padok-team/yatas/plugins/logger"
 )
 
 func RunPlugin(pluginInput commons.Plugin, c *commons.Config) []commons.Tests {
@@ -23,17 +22,6 @@ func RunPlugin(pluginInput commons.Plugin, c *commons.Config) []commons.Tests {
 	for _, plugin := range c.Plugins {
 		pluginMap[strings.ToLower(plugin.Name)] = &commons.YatasPlugin{}
 	}
-	// Check env variable yatas-log-level
-	logLevel := os.Getenv("YATAS_LOG_LEVEL")
-	if logLevel == "" {
-		logLevel = "OFF"
-	}
-
-	logger := hclog.New(&hclog.LoggerOptions{
-		Name:   "plugin",
-		Output: os.Stdout,
-		Level:  hclog.LevelFromString(logLevel),
-	})
 
 	// We're a host! Start by launching the plugin process.
 	homeDir, _ := homedir.Expand("~/.yatas.d/plugins/")
@@ -41,7 +29,7 @@ func RunPlugin(pluginInput commons.Plugin, c *commons.Config) []commons.Tests {
 		HandshakeConfig: handshakeConfig,
 		Plugins:         pluginMap,
 		Cmd:             exec.Command(homeDir + "/" + pluginInput.Source + "/" + pluginInput.Version + "/yatas-" + pluginInput.Name),
-		Logger:          logger,
+		Logger:          logger.Logger(),
 	})
 	defer client.Kill()
 

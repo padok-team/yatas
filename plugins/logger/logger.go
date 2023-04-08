@@ -73,3 +73,8 @@ func Error(msg string, args ...interface{}) {
 	}
 	logger.Error(msg, args...)
 }
+
+// SetLogger sets the global logger to the provided logger
+func SetLogger(l hclog.Logger) {
+	logger = l
+}
