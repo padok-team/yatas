@@ -15,15 +15,17 @@ func init() {
 	level := os.Getenv("YATAS_LOG")
 	if level == "" {
 		// Do not emit logs by default
-		level = "off"
+		level = "error"
 	}
 
 	logger = hclog.New(&hclog.LoggerOptions{
 		Level:                    hclog.LevelFromString(level),
 		Output:                   os.Stderr,
 		TimeFormat:               "15:04:05",
-		IncludeLocation:          false,
+		IncludeLocation:          true,
 		AdditionalLocationOffset: 1,
+		Color:                    hclog.AutoColor,
+		ColorHeaderOnly:          true,
 	})
 }
 
