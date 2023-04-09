@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.1](https://github.com/padok-team/YATAS/compare/v1.4.0...v1.4.1) (2023-04-09)
+
+
+### Bug Fixes
+
+* **workflow:** version go ([8498efe](https://github.com/padok-team/YATAS/commit/8498efee03520f91253fe675b6c13fec175f1776))
+
 ## [1.4.0](https://github.com/padok-team/YATAS/compare/v1.3.3...v1.4.0) (2023-04-09)
 
 
