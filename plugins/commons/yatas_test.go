@@ -202,3 +202,55 @@ func TestCheckConfig_Init(t *testing.T) {
 		})
 	}
 }
+
+func TestCheckTest(t *testing.T) {
+	var wg sync.WaitGroup
+	config := &Config{
+		Plugins: []Plugin{
+			{
+				Name:    "test",
+				Include: []string{"test"},
+				Exclude: []string{},
+			},
+		},
+	}
+
+	id := "test"
+
+	testFunc := func(a, b, c int) {
+		wg.Done()
+	}
+
+	wrappedTest := CheckTest(&wg, config, id, testFunc)
+
+	wrappedTest(1, 2, 3)
+	wg.Wait()
+
+	config.Plugins[0].Exclude = []string{"test"}
+
+	wrappedTestExcluded := CheckTest(&wg, config, id, testFunc)
+
+	wrappedTestExcluded(1, 2, 3)
+}
+
+func TestCheckMacroTest(t *testing.T) {
+	var wg sync.WaitGroup
+	config := &Config{
+		Plugins: []Plugin{
+			{
+				Name:    "test",
+				Include: []string{},
+				Exclude: []string{},
+			},
+		},
+	}
+
+	testFunc := func(a, b, c, d int) {
+		wg.Done()
+	}
+
+	wrappedTest := CheckMacroTest(&wg, config, testFunc)
+
+	wrappedTest(1, 2, 3, 4)
+	wg.Wait()
+}
