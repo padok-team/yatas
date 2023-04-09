@@ -114,7 +114,7 @@ plugins:
 You can get the error logs by adding the following to your env variables:
 
 ```bash
-export YATAS_LOG_LEVEL=debug
+export YATAS_LOG=debug
 ```
 The available log levels are: `debug`, `info`, `warn`, `error`, `fatal`, `panic` and `off` by default
 
