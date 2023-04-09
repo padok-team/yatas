@@ -4,15 +4,14 @@ import (
 	"net/rpc"
 
 	"github.com/hashicorp/go-plugin"
+	"github.com/padok-team/yatas/plugins/logger"
 )
 
 func (g *YatasRPC) Run(c *Config) []Tests {
 	var resp []Tests
 	err := g.client.Call("Plugin.Run", c, &resp)
 	if err != nil {
-		// You usually want your interfaces to return errors. If they don't,
-		// there isn't much other choice here.
-		panic(err)
+		logger.Error(err.Error())
 	}
 
 	return resp

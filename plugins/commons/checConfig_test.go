@@ -2,6 +2,7 @@ package commons
 
 import (
 	"testing"
+	"time"
 )
 
 func TestCheck_AddResult(t *testing.T) {
@@ -175,5 +176,75 @@ func TestCheck_InitCheck(t *testing.T) {
 				t.Errorf("Id is not %s", tt.args.id)
 			}
 		})
+	}
+}
+
+func TestCheckConfig_Init2(t *testing.T) {
+	cfg := &Config{}
+	checkCfg := &CheckConfig{}
+	checkCfg.Init(cfg)
+
+	if checkCfg.Wg == nil {
+		t.Error("CheckConfig Init failed to initialize WaitGroup")
+	}
+
+	if checkCfg.Queue == nil {
+		t.Error("CheckConfig Init failed to initialize Queue")
+	}
+
+	if checkCfg.ConfigYatas != cfg {
+		t.Error("CheckConfig Init failed to assign ConfigYatas")
+	}
+}
+
+func TestCheck_EndCheck2(t *testing.T) {
+	check := Check{
+		Name:        "testName",
+		Description: "testDescription",
+		Status:      "OK",
+		Id:          "testID",
+		StartTime:   time.Now(),
+	}
+
+	time.Sleep(100 * time.Millisecond)
+	check.EndCheck()
+
+	if check.EndTime.Before(check.StartTime) {
+		t.Error("EndTime is not after StartTime")
+	}
+
+	if check.Duration < 100*time.Millisecond {
+		t.Error("Duration is incorrect")
+	}
+}
+
+func TestCheck_InitCheckAndUpdateStatus2(t *testing.T) {
+	check := Check{}
+	check.InitCheck("testName", "testDescription", "testID", []string{"TestCategory"})
+
+	if check.Name != "testName" {
+		t.Errorf("Name should be testName, got %s", check.Name)
+	}
+
+	if check.Description != "testDescription" {
+		t.Errorf("Description should be testDescription, got %s", check.Description)
+	}
+
+	if check.Status != "OK" {
+		t.Errorf("Status should be OK, got %s", check.Status)
+	}
+
+	if check.Id != "testID" {
+		t.Errorf("Id should be testID, got %s", check.Id)
+	}
+
+	check.AddResult(Result{
+		Message:    "Test message",
+		Status:     "FAIL",
+		ResourceID: "testResourceID",
+	})
+
+	if check.Status != "FAIL" {
+		t.Errorf("Status should be FAIL after adding a failing result, got %s", check.Status)
 	}
 }
