@@ -3,7 +3,6 @@ package manager
 import (
 	"encoding/gob"
 	"fmt"
-	"log"
 	"os/exec"
 	"strings"
 
@@ -14,7 +13,6 @@ import (
 )
 
 func RunPlugin(pluginInput commons.Plugin, c *commons.Config) []commons.Tests {
-	// Create an hclog.Logger
 	gob.Register(map[string]interface{}{})
 	gob.Register([]interface{}{})
 	pluginMap := make(map[string]plugin.Plugin)
@@ -23,48 +21,43 @@ func RunPlugin(pluginInput commons.Plugin, c *commons.Config) []commons.Tests {
 		pluginMap[strings.ToLower(plugin.Name)] = &commons.YatasPlugin{}
 	}
 
-	// We're a host! Start by launching the plugin process.
-	homeDir, _ := homedir.Expand("~/.yatas.d/plugins/")
+	homeDir, err := homedir.Expand("~/.yatas.d/plugins/")
+	if err != nil {
+		logger.Error("Error expanding home directory", "error", err)
+	}
+	cmd := exec.Command(fmt.Sprintf("%s/%s/%s/yatas-%s", homeDir, pluginInput.Source, pluginInput.Version, pluginInput.Name))
+
 	client := plugin.NewClient(&plugin.ClientConfig{
 		HandshakeConfig: handshakeConfig,
 		Plugins:         pluginMap,
-		Cmd:             exec.Command(homeDir + "/" + pluginInput.Source + "/" + pluginInput.Version + "/yatas-" + pluginInput.Name),
+		Cmd:             cmd,
 		Logger:          logger.Logger(),
 	})
 	defer client.Kill()
 
-	// Connect via RPC
 	rpcClient, err := client.Client()
 	if err != nil {
 		if strings.Contains(err.Error(), "Incompatible API version with plugin") {
-			fmt.Println("Plugin " + pluginInput.Name + " is not compatible with YATAS. Please update it.")
-			log.Fatal(err)
+			logger.Error("Plugin is not compatible with YATAS. Please update it.", "plugin_name", pluginInput.Name, "error", err)
+			return nil
 		}
-		log.Fatal(err)
-
+		logger.Error("Error creating RPC client", "error", err)
+		return nil
 	}
 
-	// Request the plugin
 	raw, err := rpcClient.Dispense(pluginInput.Name)
 	if err != nil {
-		log.Fatal(err)
+		logger.Error("Error dispensing plugin", "plugin_name", pluginInput.Name, "error", err)
+		return nil
 	}
 
-	// We should have a Greeter now! This feels like a normal interface
-	// implementation but is in fact over an RPC connection.
 	yatasPlugin := raw.(commons.Yatas)
 
 	return yatasPlugin.Run(c)
 }
 
-// handshakeConfigs are used to just do a basic handshake between
-// a plugin and host. If the handshake fails, a user friendly error is shown.
-// This prevents users from executing bad plugins or executing a plugin
-// directory. It is a UX feature, not a security feature.
 var handshakeConfig = plugin.HandshakeConfig{
 	ProtocolVersion:  2,
 	MagicCookieKey:   "BASIC_PLUGIN",
 	MagicCookieValue: "hello",
 }
-
-// pluginMap is the map of plugins we can dispense.
