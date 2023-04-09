@@ -2,12 +2,12 @@ package cli
 
 import (
 	"flag"
-	"fmt"
 	"os"
 	"sort"
 
 	"github.com/padok-team/yatas/internal/report"
 	"github.com/padok-team/yatas/plugins/commons"
+	"github.com/padok-team/yatas/plugins/logger"
 	"github.com/padok-team/yatas/plugins/manager"
 )
 
@@ -17,13 +17,14 @@ var (
 	install = flag.Bool("install", false, "install plugins")
 )
 
+// initialisePlugins installs plugins if needed and validates their configuration.
 func initialisePlugins(configuration commons.Config) error {
-	for _, plugins := range configuration.Plugins {
-
-		plugins.Validate()
+	for _, plugin := range configuration.Plugins {
+		plugin.Validate()
 		if *install {
-			_, err := plugins.Install()
+			_, err := plugin.Install()
 			if err != nil {
+				logger.Error("Error installing plugin", "plugin_name", plugin.Name, "error", err)
 				return err
 			}
 		}
@@ -31,31 +32,32 @@ func initialisePlugins(configuration commons.Config) error {
 	return nil
 }
 
+// runChecksPlugins runs checks plugins and appends their test results to the checks slice.
 func runChecksPlugins(configuration *commons.Config, checks *[]commons.Tests) {
-	for _, plugins := range configuration.Plugins {
-		if plugins.Type == "checks" || plugins.Type == "" {
-
-			latestVersion, _ := commons.GetLatestReleaseTag(plugins)
-
-			if plugins.Version != latestVersion {
-				fmt.Println("New version available for plugin " + plugins.Name + " : " + latestVersion)
+	for _, plugin := range configuration.Plugins {
+		if plugin.Type == "checks" || plugin.Type == "" {
+			latestVersion, _ := commons.GetLatestReleaseTag(plugin)
+			if plugin.Version != latestVersion {
+				logger.Info("New version available for plugin", "plugin_name", plugin.Name, "latest_version", latestVersion)
 			}
-			checksFromPlugin := manager.RunPlugin(plugins, configuration)
+			checksFromPlugin := manager.RunPlugin(plugin, configuration)
 			*checks = append(*checks, checksFromPlugin...)
 		}
 	}
 }
 
+// parseConfig parses the configuration file and returns a Config object.
 func parseConfig() (*commons.Config, error) {
 	configuration, err := commons.ParseConfig(".yatas.yml")
 	if err != nil {
+		logger.Error("Error parsing config", "error", err)
 		return nil, err
 	}
 	return configuration, nil
 }
 
+// compareResults compares the current test results with the previous ones and writes the results to a file.
 func compareResults(configuration *commons.Config, checks *[]commons.Tests) {
-	// Compare with previous report
 	if *compare {
 		previous := report.ReadPreviousResults()
 		checksCompare := report.ComparePreviousWithNew(previous, *checks)
@@ -65,57 +67,60 @@ func compareResults(configuration *commons.Config, checks *[]commons.Tests) {
 	} else {
 		report.PrettyPrintChecks(*checks, configuration)
 		report.WriteChecksToFile(*checks, configuration)
-
 	}
 }
 
+// ciReporting sets the exit code for the CI based on the test results.
 func ciReporting(checks []commons.Tests) {
 	if *ci {
 		os.Exit(report.ExitCode(checks))
 	}
 }
 
+// runModPlugins runs mod plugins and appends their test results to the checks slice. Returns true if any mod plugin is executed.
 func runModPlugins(configuration *commons.Config, checks *[]commons.Tests) bool {
 	mod := false
-	for _, plugins := range configuration.Plugins {
-		if plugins.Type == "mod" {
+	for _, plugin := range configuration.Plugins {
+		if plugin.Type == "mod" {
 			mod = true
-			latestVersion, _ := commons.GetLatestReleaseTag(plugins)
-
-			if plugins.Version != latestVersion {
-				fmt.Println("New version available for plugin " + plugins.Name + " : " + latestVersion)
+			latestVersion, _ := commons.GetLatestReleaseTag(plugin)
+			if plugin.Version != latestVersion {
+				logger.Info("New version available for plugin", "plugin_name", plugin.Name, "latest_version", latestVersion)
 			}
-			checksFromPlugin := manager.RunPlugin(plugins, configuration)
+			checksFromPlugin := manager.RunPlugin(plugin, configuration)
 			*checks = append(*checks, checksFromPlugin...)
 		}
 	}
 	return mod
 }
 
+// runReportPlugins runs report plugins.
 func runReportPlugins(configuration *commons.Config, checks *[]commons.Tests) {
-	for _, plugins := range configuration.Plugins {
-		if plugins.Type == "report" {
-			latestVersion, _ := commons.GetLatestReleaseTag(plugins)
+	for _, plugin := range configuration.Plugins {
+		if plugin.Type == "report" {
+			latestVersion, _ := commons.GetLatestReleaseTag(plugin)
 
-			if plugins.Version != latestVersion {
-				fmt.Println("New version available for plugin " + plugins.Name + " : " + latestVersion)
+			if plugin.Version != latestVersion {
+				logger.Info("New version available for plugin", "plugin_name", plugin.Name, "latest_version", latestVersion)
 			}
-			manager.RunPlugin(plugins, configuration)
+			manager.RunPlugin(plugin, configuration)
 		}
 	}
 }
 
-// Execute YATAS
+// Execute runs YATAS.
 func Execute() error {
 	// Parse the config file
 	configuration, err := parseConfig()
 	if err != nil {
+		logger.Error("Error parsing config", "error", err)
 		return err
 	}
 
 	// Initialise plugins by installing them if needed and checking if the config is valid
 	err = initialisePlugins(*configuration)
 	if err != nil {
+		logger.Error("Error initializing plugins", "error", err)
 		return err
 	}
 
@@ -126,7 +131,7 @@ func Execute() error {
 		return nil
 	}
 
-	// Run plugins
+	// Run checks plugins
 	runChecksPlugins(configuration, &checks)
 
 	// Clean results
