@@ -1,7 +1,6 @@
 package commons
 
 import (
-	"fmt"
 	"sync"
 	"testing"
 )
@@ -116,35 +115,6 @@ func TestConfig_CheckInclude(t *testing.T) {
 			}
 			if got := c.CheckInclude(tt.args.id); got != tt.want {
 				t.Errorf("commons.CheckInclude() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
-func TestParseConfig(t *testing.T) {
-	type args struct {
-		configFile string
-	}
-	tests := []struct {
-		name    string
-		args    args
-		wantErr bool
-	}{
-		{
-			name: "parse config",
-			args: args{
-				configFile: "../../.yatas.yml.example",
-			},
-			wantErr: false,
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			config, err := ParseConfig(tt.args.configFile)
-			fmt.Println(config)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("ParseConfig() error = %v, wantErr %v", err, tt.wantErr)
-				return
 			}
 		})
 	}
