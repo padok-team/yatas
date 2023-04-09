@@ -14,7 +14,6 @@ permissions:
 jobs:
   goreleaser:
     runs-on: ubuntu-latest
-    environment: production
     steps:
       -
         name: Checkout
@@ -22,13 +21,8 @@ jobs:
         with:
           fetch-depth: 0
       -
-        name: Fetch all tags
-        run: git fetch --force --tags
-      -
         name: Set up Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: 1.20
+        uses: actions/setup-go@v3
       -
         name: Run GoReleaser
         uses: goreleaser/goreleaser-action@v4
@@ -36,9 +30,8 @@ jobs:
           # either 'goreleaser' (default) or 'goreleaser-pro'
           distribution: goreleaser
           version: latest
-          args: release --rm-dist
+          args: release --clean
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          HOMEBREW_TAP_GITHUB_TOKEN: ${{ secrets.HOMEBREW_TAP_GITHUB_TOKEN }}
           # Your GoReleaser Pro key, if you are using the 'goreleaser-pro' distribution
           # GORELEASER_KEY: ${{ secrets.GORELEASER_KEY }}

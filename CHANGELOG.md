@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.4.0](https://github.com/padok-team/YATAS/compare/v1.3.3...v1.4.0) (2023-04-09)
+
+
+### Features
+
+* **cli:** added documentation ([5ef60b3](https://github.com/padok-team/YATAS/commit/5ef60b3ff9d90bc0816f68e9ac09d7395eafee4d))
+* **config:** added validation ([c170337](https://github.com/padok-team/YATAS/commit/c170337a0af0b14f833c64fedc61d08aa4ead98c))
+* **global:** remove all AWS references ([#102](https://github.com/padok-team/YATAS/issues/102)) ([d559814](https://github.com/padok-team/YATAS/commit/d559814ccf80f77a194c322d156531ba2f58f03e))
+* **golang:** updated to 1.20 ([f16bf3d](https://github.com/padok-team/YATAS/commit/f16bf3d657249978b0d5295dc0dd8c90e6bea786))
+* **internal:** improved logging ([71850f2](https://github.com/padok-team/YATAS/commit/71850f25e9919fdc1bc70b517cae94556881a6f9))
+* **labeler:** updated labeler ([e9e503b](https://github.com/padok-team/YATAS/commit/e9e503ba282f28de1c316c04f1655ea5b2b8656a))
+* **logger:** improved coloring and default to error ([3ccfcac](https://github.com/padok-team/YATAS/commit/3ccfcac75bcb663c8e0c71580277d9afbe907162))
+* **logger:** moved to own package ([75cdb23](https://github.com/padok-team/YATAS/commit/75cdb23f5bc8a182add0b26737d1ae086b3d0b91))
+* **manager:** improved logging and readability of code ([2920936](https://github.com/padok-team/YATAS/commit/2920936bf203a0d2ca525cf7aab56aece4f2df3a))
+* **panic:** removed the last ones :) ([a675028](https://github.com/padok-team/YATAS/commit/a675028afe493b2393cee42e271eef9f9552f246))
+* **releaser:** updated to latest ([399da1a](https://github.com/padok-team/YATAS/commit/399da1a7d470f2a070189fe0357876a99419b62d))
+* **tests:** added test ([19f46bb](https://github.com/padok-team/YATAS/commit/19f46bb14f081841a598e99ad32736790de3b635))
+* **tests:** added test for plugin installation ([ef17889](https://github.com/padok-team/YATAS/commit/ef17889fbc64925ca4dab17982dd717f8fbca257))
+* **tests:** added tests on types shared so that it can be changed ([0a35d93](https://github.com/padok-team/YATAS/commit/0a35d9348c0133481848887748f541add7e9ff79))
+* **types:** added type checking check ([8546be1](https://github.com/padok-team/YATAS/commit/8546be189cac38f6ea8eaf3cf38b4e6d25b1a1af))
+
+
+### Bug Fixes
+
+* **release:** updated to 1.20 ([7c241d2](https://github.com/padok-team/YATAS/commit/7c241d21f51bfff2423a0f305554c24138dcce3d))
+
 ### [1.3.3](https://github.com/padok-team/YATAS/compare/v1.3.2...v1.3.3) (2022-12-23)
 
 ### [1.3.2](https://github.com/padok-team/YATAS/compare/v1.3.1...v1.3.2) (2022-12-15)
