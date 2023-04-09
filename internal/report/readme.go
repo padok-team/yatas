@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/padok-team/yatas/internal/helpers"
+	"github.com/padok-team/yatas/plugins/logger"
 )
 
 func WriteReadme(readmeFile string, resultFile string) error {
@@ -31,7 +32,8 @@ func GenerateReadme(filename string) string {
 	report, err := parseReportYaml(filename)
 	readme := ""
 	if err != nil {
-		panic(err)
+		logger.Error(err.Error())
+		return readme
 	}
 	splitFirst := ""
 	splitSecond := ""

@@ -8,6 +8,7 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/padok-team/yatas/plugins/commons"
+	"github.com/padok-team/yatas/plugins/logger"
 	"gopkg.in/yaml.v3"
 )
 
@@ -176,7 +177,8 @@ func ReadPreviousResults() []commons.Tests {
 	var checks []commons.Tests
 	err = yaml.Unmarshal(d, &checks)
 	if err != nil {
-		panic(err)
+		logger.Error(err.Error())
+		return nil
 	}
 	return checks
 }
@@ -196,13 +198,15 @@ func WriteChecksToFile(checks []commons.Tests, c *commons.Config) {
 	}
 	d, err := yaml.Marshal(checks)
 	if err != nil {
-		panic(err)
+		logger.Error(err.Error())
+		return
 	}
 
 	// Write to results.yaml
 	err = ioutil.WriteFile("results.yaml", d, 0644)
 	if err != nil {
-		panic(err)
+		logger.Error(err.Error())
+		return
 	}
 
 }
