@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.4.2](https://github.com/padok-team/YATAS/compare/v1.4.1...v1.4.2) (2023-04-09)
+
+
+### Bug Fixes
+
+* **goreleaser:** fixed ([a13d958](https://github.com/padok-team/YATAS/commit/a13d95813d13fd2f0174b34a92568f337c93c972))
+
 ### [1.4.1](https://github.com/padok-team/YATAS/compare/v1.4.0...v1.4.1) (2023-04-09)
 
 
