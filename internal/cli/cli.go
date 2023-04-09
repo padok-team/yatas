@@ -20,7 +20,11 @@ var (
 // initialisePlugins installs plugins if needed and validates their configuration.
 func initialisePlugins(configuration commons.Config) error {
 	for _, plugin := range configuration.Plugins {
-		plugin.Validate()
+		err := plugin.Validate()
+		if err != nil {
+			logger.Error("Error validating plugin", "plugin_name", plugin.Name, "error", err)
+			return err
+		}
 		if *install {
 			_, err := plugin.Install()
 			if err != nil {
@@ -83,7 +87,10 @@ func runModPlugins(configuration *commons.Config, checks *[]commons.Tests) bool 
 	for _, plugin := range configuration.Plugins {
 		if plugin.Type == "mod" {
 			mod = true
-			latestVersion, _ := commons.GetLatestReleaseTag(plugin)
+			latestVersion, err := commons.GetLatestReleaseTag(plugin)
+			if err != nil {
+				logger.Error("Error getting latest release tag", "plugin_name", plugin.Name, "error", err)
+			}
 			if plugin.Version != latestVersion {
 				logger.Info("New version available for plugin", "plugin_name", plugin.Name, "latest_version", latestVersion)
 			}
@@ -98,11 +105,13 @@ func runModPlugins(configuration *commons.Config, checks *[]commons.Tests) bool 
 func runReportPlugins(configuration *commons.Config, checks *[]commons.Tests) {
 	for _, plugin := range configuration.Plugins {
 		if plugin.Type == "report" {
+			logger.Debug("Running report plugin", "plugin_name", plugin.Name)
 			latestVersion, _ := commons.GetLatestReleaseTag(plugin)
 
 			if plugin.Version != latestVersion {
 				logger.Info("New version available for plugin", "plugin_name", plugin.Name, "latest_version", latestVersion)
 			}
+			logger.Debug("Running report plugin", "plugin_name", plugin.Name)
 			manager.RunPlugin(plugin, configuration)
 		}
 	}
@@ -110,6 +119,7 @@ func runReportPlugins(configuration *commons.Config, checks *[]commons.Tests) {
 
 // Execute runs YATAS.
 func Execute() error {
+
 	// Parse the config file
 	configuration, err := parseConfig()
 	if err != nil {
@@ -128,13 +138,16 @@ func Execute() error {
 
 	// Run Mods plugins
 	if runModPlugins(configuration, &checks) {
+		logger.Debug("Mod plugins executed, skipping checks")
 		return nil
 	}
 
 	// Run checks plugins
+	logger.Debug("Running checks plugins")
 	runChecksPlugins(configuration, &checks)
 
 	// Clean results
+	logger.Debug("Cleaning results")
 	checks = report.RemoveIgnored(configuration, checks)
 
 	// Sort checks by ID
@@ -150,13 +163,17 @@ func Execute() error {
 	configuration.Tests = checks
 
 	// Compare with previous report
+	logger.Debug("Comparing with previous report")
 	compareResults(configuration, &checks)
 
 	// CI reporting
+	logger.Debug("CI reporting")
 	ciReporting(checks)
 
 	// Run report plugins
+	logger.Debug("Running report plugins")
 	runReportPlugins(configuration, &configuration.Tests)
 
+	logger.Debug("Done")
 	return nil
 }
