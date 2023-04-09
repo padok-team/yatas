@@ -1,29 +1,32 @@
-aws: 
-- internal/aws/**/*
+aws:
+- plugins/aws/**/*
 
 custom:
-- internal/custom/**/*
+- plugins/custom/**/*
 
-cmd:
-- internal/cmd/**/*
+commons:
+- plugins/commons/**/*
+
+manager:
+- plugins/manager/**/*
+
+logger:
+- plugins/logger/**/*
 
 helpers:
 - internal/helpers/**/*
 
-logger:
-- internal/logger/**/*
-
-plugins:
-- internal/plugins/**/*
+cli:
+- internal/cli/**/*
 
 report:
 - internal/report/**/*
 
-results:
-- internal/results/**/*
+testdata:
+- internal/testdata/**/*
 
-yatas: 
-- internal/yatas/**/*
+breaking-changes:
+- plugins/commons/types.go
 
 dependencies:
 - go.mod
