@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.5.0](https://github.com/padok-team/YATAS/compare/v1.4.2...v1.5.0) (2023-04-14)
+
+
+### Features
+
+* **refacto:** added examples ([899deb3](https://github.com/padok-team/YATAS/commit/899deb33f77a0b7d4d9face1d1a1b7c2f5c736e7))
+
 ### [1.4.2](https://github.com/padok-team/YATAS/compare/v1.4.1...v1.4.2) (2023-04-09)
 
 
