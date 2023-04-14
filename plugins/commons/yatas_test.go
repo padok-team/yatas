@@ -224,3 +224,83 @@ func TestCheckMacroTest(t *testing.T) {
 	wrappedTest(1, 2, 3, 4)
 	wg.Wait()
 }
+
+// MockResource to be used for testing
+type MockResource struct {
+	ID string
+}
+
+func (m *MockResource) GetID() string {
+	return m.ID
+}
+
+func TestCreateCheck(t *testing.T) {
+	checkDefinition := CheckDefinition{
+		Title:          "AWS_TEST_001",
+		Description:    "Test check",
+		Categories:     []string{"Test"},
+		ConditionFn:    nil,
+		SuccessMessage: "Test check succeeded",
+		FailureMessage: "Test check failed",
+	}
+
+	check := createCheck(checkDefinition)
+
+	if check.Description != checkDefinition.Description {
+		t.Errorf("Expected Description: %v, got: %v", checkDefinition.Description, check.Description)
+	}
+
+	if check.Id != checkDefinition.Title {
+		t.Errorf("Expected Title: %v, got: %v", checkDefinition.Title, check.Id)
+	}
+
+	for i, tag := range check.Categories {
+		if tag != checkDefinition.Categories[i] {
+			t.Errorf("Expected Tag: %v, got: %v", checkDefinition.Categories[i], tag)
+		}
+	}
+}
+
+func TestCheckResource(t *testing.T) {
+	resource := &MockResource{ID: "test-resource-id"}
+	conditionFn := func(r Resource) bool {
+		return r.GetID() == "test-resource-id"
+	}
+	successMessage := "Resource check succeeded"
+	failureMessage := "Resource check failed"
+
+	result := checkResource(resource, conditionFn, successMessage, failureMessage)
+
+	if result.Status != "OK" {
+		t.Errorf("Expected Status: OK, got: %v", result.Status)
+	}
+
+	expectedMessage := successMessage + " - Resource " + resource.GetID()
+	if result.Message != expectedMessage {
+		t.Errorf("Expected Message: %v, got: %v", expectedMessage, result.Message)
+	}
+
+	if result.ResourceID != resource.GetID() {
+		t.Errorf("Expected ResourceID: %v, got: %v", resource.GetID(), result.ResourceID)
+	}
+
+	// Test failing condition
+	conditionFn = func(r Resource) bool {
+		return r.GetID() != "test-resource-id"
+	}
+
+	result = checkResource(resource, conditionFn, successMessage, failureMessage)
+
+	if result.Status != "FAIL" {
+		t.Errorf("Expected Status: FAIL, got: %v", result.Status)
+	}
+
+	expectedMessage = failureMessage + " - Resource " + resource.GetID()
+	if result.Message != expectedMessage {
+		t.Errorf("Expected Message: %v, got: %v", expectedMessage, result.Message)
+	}
+
+	if result.ResourceID != resource.GetID() {
+		t.Errorf("Expected ResourceID: %v, got: %v", resource.GetID(), result.ResourceID)
+	}
+}

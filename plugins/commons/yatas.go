@@ -24,3 +24,47 @@ func CheckMacroTest[A, B, C, D any](wg *sync.WaitGroup, config *Config, test fun
 
 	return test
 }
+
+type CheckFunc func(interface{}) Result
+
+type Resource interface {
+	GetID() string
+}
+
+type CheckDefinition struct {
+	Title          string
+	Description    string
+	Categories     []string
+	ConditionFn    func(Resource) bool
+	SuccessMessage string
+	FailureMessage string
+}
+
+func CheckResources(checkConfig CheckConfig, resources []Resource, checkDefinitions []CheckDefinition) {
+	for _, checkDefinition := range checkDefinitions {
+		if !checkConfig.ConfigYatas.CheckExclude(checkDefinition.Title) && checkConfig.ConfigYatas.CheckInclude(checkDefinition.Title) {
+			check := createCheck(checkDefinition)
+			for _, resource := range resources {
+				result := checkResource(resource, checkDefinition.ConditionFn, checkDefinition.SuccessMessage, checkDefinition.FailureMessage)
+				check.AddResult(result)
+			}
+			checkConfig.Queue <- check
+		}
+	}
+}
+
+func createCheck(checkDefinition CheckDefinition) Check {
+	var check Check
+	check.InitCheck(checkDefinition.Description, checkDefinition.Description, checkDefinition.Title, checkDefinition.Categories)
+	return check
+}
+
+func checkResource(resource Resource, conditionFn func(Resource) bool, successMessage, failureMessage string) Result {
+	if conditionFn(resource) {
+		message := successMessage + " - Resource " + resource.GetID()
+		return Result{Status: "OK", Message: message, ResourceID: resource.GetID()}
+	} else {
+		message := failureMessage + " - Resource " + resource.GetID()
+		return Result{Status: "FAIL", Message: message, ResourceID: resource.GetID()}
+	}
+}
