@@ -53,6 +53,15 @@ func CheckResources(checkConfig CheckConfig, resources []Resource, checkDefiniti
 	}
 }
 
+func AddChecks(checkConfig *CheckConfig, resources ...[]CheckDefinition) {
+	//Print the resources to check
+	totalCount := 0
+	for _, resourceSlice := range resources {
+		totalCount += len(resourceSlice)
+	}
+	checkConfig.Wg.Add(totalCount)
+}
+
 func createCheck(checkDefinition CheckDefinition) Check {
 	var check Check
 	check.InitCheck(checkDefinition.Description, checkDefinition.Description, checkDefinition.Title, checkDefinition.Categories)
