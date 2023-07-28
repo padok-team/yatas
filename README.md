@@ -70,7 +70,7 @@ Flags:
 |------|-------------|
 | [*Markdown Reports*](https://github.com/padok-team/yatas-markdown) |  Generates a markdown report |
 | [*Notion Reports*](https://github.com/Thibaut-Padok/yatas-notion) |  Generates a Notion Database report |
-| [*HTML Reports*](https://github.com/Thibaut-Padok/yatas-html) | Generates an HTLM report |
+| [*HTML Reports*](https://github.com/Thibaut-Padok/yatas-html) | Generates an HTML report |
 
 ## Checks
 
