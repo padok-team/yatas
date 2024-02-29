@@ -11,7 +11,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/google/go-github/v35/github"
+	"github.com/google/go-github/v60/github"
 	"github.com/mitchellh/go-homedir"
 )
 
