@@ -103,3 +103,31 @@ func TestFindPluginWithName(t *testing.T) {
 		t.Error("Expected to not find a plugin with name 'NonExistentPlugin', got a plugin")
 	}
 }
+
+func TestCheckHasHDSCategory(t *testing.T) {
+	config := Config{}
+
+	checkWithHDS := Check{
+		Categories: []string{"Security", "HDS", "Performance"},
+	}
+
+	checkWithoutHDS := Check{
+		Categories: []string{"Security", "Performance"},
+	}
+
+	checkWithLowercaseHDS := Check{
+		Categories: []string{"Security", "hds", "Performance"},
+	}
+
+	if !config.CheckHasHDSCategory(checkWithHDS) {
+		t.Error("Expected CheckHasHDSCategory to return true for check with HDS category, got false")
+	}
+
+	if config.CheckHasHDSCategory(checkWithoutHDS) {
+		t.Error("Expected CheckHasHDSCategory to return false for check without HDS category, got true")
+	}
+
+	if !config.CheckHasHDSCategory(checkWithLowercaseHDS) {
+		t.Error("Expected CheckHasHDSCategory to return true for check with lowercase hds category, got false")
+	}
+}
