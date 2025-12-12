@@ -15,6 +15,7 @@ var (
 	compare = flag.Bool("compare", false, "compare with previous report")
 	ci      = flag.Bool("ci", false, "run in CI with exit code")
 	install = flag.Bool("install", false, "install plugins")
+	hds     = flag.Bool("hds", false, "only run HDS checks")
 )
 
 // initialisePlugins installs plugins if needed and validates their configuration.
@@ -149,6 +150,12 @@ func Execute() error {
 	// Clean results
 	logger.Debug("Cleaning results")
 	checks = report.RemoveIgnored(configuration, checks)
+
+	if *hds {
+		// Filter HDS checks if --hds flag is set
+		logger.Debug("Filtering HDS checks only")
+		checks = report.FilterHDSChecks(checks)
+	}
 
 	// Sort checks by ID
 	sort.Slice(checks, func(i, j int) bool {

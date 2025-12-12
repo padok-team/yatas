@@ -78,6 +78,34 @@ func RemoveIgnored(c *commons.Config, tests []commons.Tests) []commons.Tests {
 	return resultsTmp
 }
 
+// FilterHDSChecks filters checks to only include those with "HDS" in their categories
+func FilterHDSChecks(tests []commons.Tests) []commons.Tests {
+	resultsTmp := []commons.Tests{}
+	for _, test := range tests {
+		var testTmp commons.Tests
+		testTmp.Account = test.Account
+		testTmp.Checks = []commons.Check{}
+
+		for _, check := range test.Checks {
+			// Check if "HDS" is in any of the categories
+			hasHDS := false
+			for _, category := range check.Categories {
+				if category == "HDS" {
+					hasHDS = true
+					break
+				}
+			}
+			if hasHDS {
+				testTmp.Checks = append(testTmp.Checks, check)
+			}
+		}
+		if len(testTmp.Checks) > 0 {
+			resultsTmp = append(resultsTmp, testTmp)
+		}
+	}
+	return resultsTmp
+}
+
 // CountChecksPassedOverall counts the number of passed and total checks.
 func CountChecksPassedOverall(checks []commons.Check) (int, int) {
 	var ok int

@@ -350,3 +350,106 @@ func TestRemoveIgnored(t *testing.T) {
 		})
 	}
 }
+
+func TestFilterHDSChecks(t *testing.T) {
+	type args struct {
+		tests []commons.Tests
+	}
+	tests := []struct {
+		name string
+		args args
+		want []commons.Tests
+	}{
+		{
+			name: "filter HDS checks - some have HDS category",
+			args: args{
+				tests: []commons.Tests{
+					{
+						Account: "test-account",
+						Checks: []commons.Check{
+							{
+								Id:         "CHECK_001",
+								Name:       "HDS Check",
+								Categories: []string{"Security", "HDS"},
+								Status:     "OK",
+							},
+							{
+								Id:         "CHECK_002",
+								Name:       "Non-HDS Check",
+								Categories: []string{"Security", "Performance"},
+								Status:     "FAIL",
+							},
+							{
+								Id:         "CHECK_003",
+								Name:       "Another HDS Check",
+								Categories: []string{"HDS", "Compliance"},
+								Status:     "OK",
+							},
+						},
+					},
+				},
+			},
+			want: []commons.Tests{
+				{
+					Account: "test-account",
+					Checks: []commons.Check{
+						{
+							Id:         "CHECK_001",
+							Name:       "HDS Check",
+							Categories: []string{"Security", "HDS"},
+							Status:     "OK",
+						},
+						{
+							Id:         "CHECK_003",
+							Name:       "Another HDS Check",
+							Categories: []string{"HDS", "Compliance"},
+							Status:     "OK",
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "filter HDS checks - no HDS checks",
+			args: args{
+				tests: []commons.Tests{
+					{
+						Account: "test-account",
+						Checks: []commons.Check{
+							{
+								Id:         "CHECK_001",
+								Name:       "Security Check",
+								Categories: []string{"Security"},
+								Status:     "OK",
+							},
+							{
+								Id:         "CHECK_002",
+								Name:       "Performance Check",
+								Categories: []string{"Performance"},
+								Status:     "FAIL",
+							},
+						},
+					},
+				},
+			},
+			want: []commons.Tests{},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := FilterHDSChecks(tt.args.tests)
+			if len(got) != len(tt.want) {
+				t.Errorf("FilterHDSChecks() length = %v, want %v", len(got), len(tt.want))
+				return
+			}
+			for i, test := range got {
+				if test.Account != tt.want[i].Account {
+					t.Errorf("FilterHDSChecks() account = %v, want %v", test.Account, tt.want[i].Account)
+				}
+				if len(test.Checks) != len(tt.want[i].Checks) {
+					t.Errorf("FilterHDSChecks() checks length = %v, want %v", len(test.Checks), len(tt.want[i].Checks))
+				}
+			}
+		})
+	}
+}
