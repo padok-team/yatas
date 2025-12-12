@@ -1,29 +1,30 @@
-# before:
-#   hooks:
-#     - go mod tidy
 builds:
   - env:
       - CGO_ENABLED=0
+    main: ./
+    binary: yatas
     goos:
       - linux
       - windows
       - darwin
-    main: ./
-    binary: yatas
+    goarch:
+      - amd64
+      - 386
+      - arm64
 archives:
-  - replacements:
-      darwin: Darwin
-      linux: Linux
-      windows: Windows
-      386: i386
-      amd64: x86_64
+  - name_template: >-
+      {{ .ProjectName }}_{{ .Version }}_{{ title .Os }}_
+      {{- if eq .Arch "amd64" -}}x86_64
+      {{- else if eq .Arch "386" -}}i386
+      {{- else -}}{{ .Arch }}{{- end -}}
+    format: tar.gz
     format_overrides:
       - goos: windows
         format: zip
 checksum:
-  name_template: 'checksums.txt'
+  name_template: "checksums.txt"
 snapshot:
-  name_template: '{{ .Tag }}-next'
+  name_template: "{{ .Tag }}-next"
 changelog:
   sort: asc
   use: github
@@ -31,33 +32,33 @@ changelog:
     - title: Features
       regexp: "^.*feat[(\\w)]*:+.*$"
       order: 0
-    - title: 'Bug fixes'
+    - title: "Bug fixes"
       regexp: "^.*fix[(\\w)]*:+.*$"
       order: 1
     - title: Others
       order: 999
   filters:
     exclude:
-      - '^docs'
-      - '^test'
-      - '^style'
-      - '^refactor'
-      - '^build'
-      - '^ci'
-      - '^chore(release)'
+      - "^docs"
+      - "^test"
+      - "^style"
+      - "^refactor"
+      - "^build"
+      - "^ci"
+      - "^chore(release)"
 
 brews:
-- name: yatas
-  homepage: https://github.com/padok-team/yatas
-  tap:
-    owner: padok-team
-    name: homebrew-tap
-    token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"  
+  - name: yatas
+    homepage: https://github.com/padok-team/yatas
+    tap:
+      owner: padok-team
+      name: homebrew-tap
+      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
 nfpms:
   - maintainer: stan@primates.dev <stan@primates.dev>
     description: YATAS audit tool
     homepage: https://github.com/padok-team/yatas
     license: Apache 2.0
-    file_name_template: '{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}'
+    file_name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}"
     formats:
       - deb
