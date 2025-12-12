@@ -147,14 +147,14 @@ func Execute() error {
 	logger.Debug("Running checks plugins")
 	runChecksPlugins(configuration, &checks)
 
+	// Clean results
+	logger.Debug("Cleaning results")
+	checks = report.RemoveIgnored(configuration, checks)
+
 	if *hds {
 		// Filter HDS checks if --hds flag is set
 		logger.Debug("Filtering HDS checks only")
 		checks = report.FilterHDSChecks(checks)
-	} else {
-		// Clean results
-		logger.Debug("Cleaning results")
-		checks = report.RemoveIgnored(configuration, checks)
 	}
 
 	// Sort checks by ID
