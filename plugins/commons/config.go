@@ -103,13 +103,3 @@ func (c *Config) CheckInclude(id string) bool {
 	}
 	return true
 }
-
-// CheckHasHDSCategory checks if a check has "HDS" in its categories
-func (c *Config) CheckHasHDSCategory(check Check) bool {
-	for _, category := range check.Categories {
-		if strings.ToUpper(category) == "HDS" {
-			return true
-		}
-	}
-	return false
-}
