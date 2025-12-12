@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.6.0](https://github.com/padok-team/YATAS/compare/v1.5.1...v1.6.0) (2025-12-12)
+
+
+### Features
+
+* add HDS cli option ([#149](https://github.com/padok-team/YATAS/issues/149)) ([64370ad](https://github.com/padok-team/YATAS/commit/64370ad941ac466af6b67e665bfb7952ce763d36))
+
 ### [1.5.1](https://github.com/padok-team/YATAS/compare/v1.5.0...v1.5.1) (2023-04-14)
 
 
