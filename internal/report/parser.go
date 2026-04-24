@@ -1,7 +1,7 @@
 package report
 
 import (
-	"io/ioutil"
+	"os"
 
 	"github.com/padok-team/yatas/plugins/commons"
 	"gopkg.in/yaml.v3"
@@ -9,7 +9,7 @@ import (
 
 func parseReportYaml(filename string) ([]commons.Tests, error) {
 	var report []commons.Tests
-	data, err := ioutil.ReadFile(filename)
+	data, err := os.ReadFile(filename)
 	if err != nil {
 		return report, err
 	}

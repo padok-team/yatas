@@ -1,7 +1,7 @@
 package report
 
 import (
-	"io/ioutil"
+	"io"
 	"os"
 	"strings"
 
@@ -41,9 +41,9 @@ func TestGenerateReadme(t *testing.T) {
 
 	w.Close()
 	os.Stdout = old
-	out, _ := ioutil.ReadAll(r)
+	out, _ := io.ReadAll(r)
 	//Read the file  readme_generated.txt and compare it to the output
-	data, err := ioutil.ReadFile("../testdata/readme_generated.txt")
+	data, err := os.ReadFile("../testdata/readme_generated.txt")
 	if err != nil {
 		t.Error(err)
 	}
