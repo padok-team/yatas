@@ -1,7 +1,7 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:base",
+    "config:recommended",
     ":automergePatch",
     ":semanticCommitTypeAll(chore)"
   ],
@@ -9,7 +9,7 @@
   "postUpdateOptions": ["gomodTidy", "gomodUpdateImportPaths"],
   "packageRules": [
     {
-      "matchPackagePatterns": [
+      "matchPackageNames": [
         "*"
       ],
       "matchUpdateTypes": [
@@ -19,7 +19,7 @@
       "groupSlug": "all-patch"
     },
     {
-      "matchPackagePatterns": [
+      "matchPackageNames": [
         "github.com/aws/aws-sdk-go-v2/service/*"
       ],
       "matchUpdateTypes": [
