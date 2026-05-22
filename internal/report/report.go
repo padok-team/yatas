@@ -3,7 +3,7 @@ package report
 import (
 	"flag"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"regexp"
 
 	"github.com/fatih/color"
@@ -198,7 +198,7 @@ func ComparePreviousWithNew(previous []commons.Tests, new []commons.Tests) []com
 
 // ReadPreviousResults reads the previous test results from the results.yaml file.
 func ReadPreviousResults() []commons.Tests {
-	d, err := ioutil.ReadFile("results.yaml")
+	d, err := os.ReadFile("results.yaml")
 	if err != nil {
 		return []commons.Tests{}
 	}
@@ -231,7 +231,7 @@ func WriteChecksToFile(checks []commons.Tests, c *commons.Config) {
 	}
 
 	// Write to results.yaml
-	err = ioutil.WriteFile("results.yaml", d, 0644)
+	err = os.WriteFile("results.yaml", d, 0644)
 	if err != nil {
 		logger.Error(err.Error())
 		return

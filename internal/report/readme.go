@@ -2,7 +2,7 @@ package report
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 	"regexp"
 	"strings"
 
@@ -20,7 +20,7 @@ func WriteReadme(readmeFile string, resultFile string) error {
 
 	re := regexp.MustCompile("(?s)(?:<!-- BEGIN_YATAS -->)(.*)(?:<!-- END_YATAS -->)")
 	s := re.ReplaceAllString(string(file), fmt.Sprintf("<!-- BEGIN_YATAS -->\n%s\n<!-- END_YATAS -->", readme))
-	err = ioutil.WriteFile(readmeFile, []byte(s), 0644)
+	err = os.WriteFile(readmeFile, []byte(s), 0644)
 	if err != nil {
 		return err
 	}
