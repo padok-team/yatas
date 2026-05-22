@@ -11,7 +11,6 @@ import (
 	"runtime"
 
 	"github.com/google/go-github/v88/github"
-	"golang.org/x/oauth2"
 )
 
 func extractFileFromZipFile(zipFile *os.File, savePath string) error {
@@ -55,18 +54,15 @@ func extractFileFromZipFile(zipFile *os.File, savePath string) error {
 	return nil
 }
 
-func newGitHubClient(ctx context.Context) *github.Client {
+func newGitHubClient(ctx context.Context) (*github.Client, error) {
 	token := os.Getenv("GITHUB_TOKEN")
 	if token == "" {
-		return github.NewClient(nil)
+		return github.NewClient()
 	}
 
 	// log.Printf("[DEBUG] GITHUB_TOKEN set, plugin requests to the GitHub API will be authenticated")
 
-	ts := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: token},
-	)
-	return github.NewClient(oauth2.NewClient(ctx, ts))
+	return github.NewClient(github.WithAuthToken(token))
 }
 
 func fileExt() string {
