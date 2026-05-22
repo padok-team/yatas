@@ -1,45 +1,61 @@
 aws:
-- plugins/aws/**/*
+  - changed-files:
+    - any-glob-to-any-file: 'plugins/aws/**/*'
 
 custom:
-- plugins/custom/**/*
+  - changed-files:
+    - any-glob-to-any-file: 'plugins/custom/**/*'
 
 commons:
-- plugins/commons/**/*
+  - changed-files:
+    - any-glob-to-any-file: 'plugins/commons/**/*'
 
 manager:
-- plugins/manager/**/*
+  - changed-files:
+    - any-glob-to-any-file: 'plugins/manager/**/*'
 
 logger:
-- plugins/logger/**/*
+  - changed-files:
+    - any-glob-to-any-file: 'plugins/logger/**/*'
 
 helpers:
-- internal/helpers/**/*
+  - changed-files:
+    - any-glob-to-any-file: 'internal/helpers/**/*'
 
 cli:
-- internal/cli/**/*
+  - changed-files:
+    - any-glob-to-any-file: 'internal/cli/**/*'
 
 report:
-- internal/report/**/*
+  - changed-files:
+    - any-glob-to-any-file: 'internal/report/**/*'
 
 testdata:
-- internal/testdata/**/*
+  - changed-files:
+    - any-glob-to-any-file: 'internal/testdata/**/*'
 
 breaking-changes:
-- plugins/commons/types.go
+  - changed-files:
+    - any-glob-to-any-file: 'plugins/commons/types.go'
 
 dependencies:
-- go.mod
-- go.sum
+  - changed-files:
+    - any-glob-to-any-file:
+      - 'go.mod'
+      - 'go.sum'
 
 main:
-- main.go
+  - changed-files:
+    - any-glob-to-any-file: 'main.go'
 
 makefile:
-- Makefile
+  - changed-files:
+    - any-glob-to-any-file: 'Makefile'
 
 readme:
-- README.md
+  - changed-files:
+    - any-glob-to-any-file: 'README.md'
 
 github-actions:
-- .github/workflows/*
+  - changed-files:
+    - any-glob-to-any-file: '.github/workflows/*'
