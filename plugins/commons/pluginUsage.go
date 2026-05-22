@@ -11,7 +11,7 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/google/go-github/v35/github"
+	"github.com/google/go-github/v88/github"
 	"github.com/mitchellh/go-homedir"
 )
 
@@ -119,7 +119,10 @@ func GetRelease(ctx context.Context, client *github.Client, owner, repo, tag str
 
 func GetLatestReleaseTag(plugin Plugin) (string, error) {
 	ctx := context.Background()
-	client := newGitHubClient(ctx)
+	client, err := newGitHubClient(ctx)
+	if err != nil {
+		return "", err
+	}
 	plugin.Validate()
 	latestRelease, _, err := client.Repositories.GetLatestRelease(ctx, plugin.SourceOwner, plugin.SourceRepo)
 	if err != nil {
@@ -135,7 +138,10 @@ func (c *Plugin) fetchReleaseAssets() (map[string]*github.ReleaseAsset, error) {
 	assets := map[string]*github.ReleaseAsset{}
 
 	ctx := context.Background()
-	client := newGitHubClient(ctx)
+	client, err := newGitHubClient(ctx)
+	if err != nil {
+		return assets, err
+	}
 
 	log.Printf("[DEBUG] Request to https://api.github.com/repos/%s/%s/releases/tags/%s", c.SourceOwner, c.SourceRepo, c.TagName())
 	release, _, err := GetRelease(ctx, client, c.SourceOwner, c.SourceRepo, c.TagName())
@@ -159,7 +165,10 @@ func (c *Plugin) downloadToTempFile(asset *github.ReleaseAsset) (*os.File, error
 	}
 
 	ctx := context.Background()
-	client := newGitHubClient(ctx)
+	client, err := newGitHubClient(ctx)
+	if err != nil {
+		return nil, err
+	}
 
 	log.Printf("[DEBUG] Request to https://api.github.com/repos/%s/%s/releases/assets/%d", c.SourceOwner, c.SourceRepo, asset.GetID())
 	downloader, _, err := client.Repositories.DownloadReleaseAsset(ctx, c.SourceOwner, c.SourceRepo, asset.GetID(), http.DefaultClient)
