@@ -1,15 +1,14 @@
 module github.com/padok-team/yatas
 
-go 1.25.0
+go 1.26.0
 
 require (
 	github.com/fatih/color v1.19.0
-	github.com/google/go-github/v88 v88.0.0
+	github.com/google/go-github/v91 v91.0.0
 	github.com/hashicorp/go-hclog v1.6.3
 	github.com/hashicorp/go-plugin v1.8.0
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/stretchr/testify v1.11.1
-	golang.org/x/oauth2 v0.36.0
 	gopkg.in/yaml.v3 v3.0.1
 )
 
